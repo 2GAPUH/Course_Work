@@ -1,5 +1,5 @@
 #pragma once
 #include <SDL.h>
 
-void DeInit(int error, SDL_Window** win, SDL_Renderer** ren);
-void Init(SDL_Window** win, SDL_Renderer** ren, int WINDOW_HEIGHT = 600, int WINDOW_WIDTH = 800);
+void DeInit(int error, SDL_Window** win, SDL_Renderer** ren, SDL_Surface** surface);
+void Init(SDL_Window** win, SDL_Renderer** ren, SDL_Surface** surface, int WINDOW_HEIGHT, int WINDOW_WIDTH);

@@ -11,17 +11,28 @@
 
 SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
-
-
+SDL_Surface* surface = NULL;
+SDL_Event ev;
 
 int main(int argc, char* argv[])
 {
-	Init(&win, &ren, WINDOW_HEIGHT, WINDOW_WIDTH);
+	Init(&win, &ren, &surface, WINDOW_HEIGHT, WINDOW_WIDTH);
 
 	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 
-	while (true)
+	bool isRunning = true;
+
+	while (isRunning)
 	{
+		while (SDL_PollEvent(&ev))
+		{
+			switch (ev.type)
+			{
+			case SDL_QUIT:
+				isRunning = false;
+				break;
+			}
+		}
 
 		SDL_RenderPresent(ren);
 		SDL_RenderClear(ren);
@@ -29,7 +40,7 @@ int main(int argc, char* argv[])
 
 	//SDL_Delay(10000);
 
-	DeInit(0, &win, &ren);
-
+	DeInit(0, &win, &ren, &surface);
+	
 	return 0;
 }
