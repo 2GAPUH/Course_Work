@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <SDL_Image.h>
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,12 +12,14 @@
 
 SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
-SDL_Surface* surface = NULL;
+SDL_Surface* win_surface = NULL;
 SDL_Event ev;
 
 int main(int argc, char* argv[])
 {
-	Init(&win, &ren, &surface, WINDOW_HEIGHT, WINDOW_WIDTH);
+	SDL_Surface* surface = IMG_Load("Hentai.jpg");
+
+	Init(&win, &ren, &win_surface, WINDOW_HEIGHT, WINDOW_WIDTH);
 
 	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 
@@ -33,14 +36,21 @@ int main(int argc, char* argv[])
 				break;
 			}
 		}
+		SDL_Rect destrect = { 0, 0, 100, 100 };
 
-		SDL_RenderPresent(ren);
+		SDL_BlitSurface(surface, NULL, win_surface, &destrect);
+
+		SDL_UpdateWindowSurface(win);
+
+		//SDL_RenderPresent(ren);
 		SDL_RenderClear(ren);
+
+		SDL_Delay(100);
 	}
 
 	//SDL_Delay(10000);
 
-	DeInit(0, &win, &ren, &surface);
+	DeInit(0, &win, &ren, &win_surface);
 	
 	return 0;
 }
