@@ -1,5 +1,5 @@
 #include <SDL.h>
-#include <SDL_image.h>
+#include <SDL_Image.h>
 #include <iostream>
 
 void DeInit(int error, SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface)
