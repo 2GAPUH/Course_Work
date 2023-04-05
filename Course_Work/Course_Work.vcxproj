@@ -145,6 +145,7 @@
     <ClInclude Include="func.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="barrel1.png" />
     <Image Include="Hentai.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

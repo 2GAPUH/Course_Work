@@ -51,7 +51,8 @@ bool CheckBorders(SDL_Rect* unit, SDL_Rect* item, int Move)
 
 int main(int argc, char* argv[])
 {
-	SDL_Rect borders{ 300, 350, WINDOW_WIDTH- 600, 300 };
+	SDL_Rect borders{ 300, 550, WINDOW_WIDTH - 600, 300 };
+	SDL_Rect borders1{ 100, 350, WINDOW_WIDTH - 800, 100 };
 
 
 	mainHero Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT }, 
@@ -97,7 +98,7 @@ int main(int argc, char* argv[])
 				case SDL_SCANCODE_SPACE:
 					if (Laplas.physic.onBorder)
 					{
-						Laplas.physic.impulse = 1;
+						Laplas.physic.impulse = 0.8;
 						Laplas.physic.acceleration = 0;
 					}
 					break;
@@ -150,17 +151,19 @@ int main(int argc, char* argv[])
 		}
 
 
-		if (Laplas.physic.impulse > 0)
+		if (Laplas.physic.impulse > 0.2)
 		{
 			Laplas.hitbox.y -= 30 * Laplas.physic.impulse;
 			if (Laplas.physic.impulse > 0)
-				Laplas.physic.impulse -= 0.05;
+				Laplas.physic.impulse -= 0.03;
 			Laplas.physic.onBorder = 0;
 		}
 			
 		if(!CheckBorders(&Laplas.hitbox, &borders, Laplas.physic.yMove))
 			Laplas.physic.onBorder = 1;
 
+		if (!CheckBorders(&Laplas.hitbox, &borders1, Laplas.physic.yMove))
+			Laplas.physic.onBorder = 1;
 
 		#pragma endregion 
 
@@ -168,10 +171,14 @@ int main(int argc, char* argv[])
 		SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
 		SDL_RenderFillRect(ren, &Laplas.hitbox);
 
+
+
 		SDL_SetRenderDrawColor(ren, 128, 128, 128, 255);
 		SDL_RenderFillRect(ren, &borders);
+		SDL_RenderFillRect(ren, &borders1);
 
 		SDL_RenderPresent(ren);
+
 		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 		SDL_RenderClear(ren);
 		#pragma endregion 
@@ -196,9 +203,9 @@ int main(int argc, char* argv[])
 }
 
 
-//SDL_Surface* surface = IMG_Load("Hentai.jpg");
+//SDL_Surface* surface = IMG_Load("barrel1.png");
 //
-//SDL_Rect destrect = { 0, 0, 100, 100 };
+//SDL_Rect destrect = { Laplas.hitbox.x, Laplas.hitbox.y, 100, 100 };
 //
 //SDL_BlitSurface(surface, NULL, win_surface, &destrect);
 //

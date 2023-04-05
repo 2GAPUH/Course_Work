@@ -37,5 +37,8 @@
     <Image Include="Hentai.jpg">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="barrel1.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>
