@@ -3,6 +3,7 @@
 #include <iostream>
 #include "func.h"
 #include "common_parameters.h"
+#include <math.h>
 
 SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
@@ -10,8 +11,49 @@ SDL_Surface* win_surface = NULL;
 SDL_Event ev;
 
 
+bool CheckBorders(SDL_Rect* unit, SDL_Rect* item, int Move)
+{
+	if (unit->x > item->x && unit->x < item->x + item->w)
+		if (unit->y > item->y && unit->y < item->y + item->h)
+		{
+			unit->y = item->y+item->h;
+			return 0;
+		}
+
+	if (unit->x > item->x && unit->x < item->x + item->w)
+		if (unit->y + unit->h > item->y && unit->y + unit->h < item->y + item->h)
+		{
+
+			unit->y = item->y - unit->h;
+
+			return 0;
+		}
+
+	if (unit->x + unit->w> item->x && unit->x + unit->w < item->x + item->w)
+		if (unit->y > item->y && unit->y < item->y + item->h)
+		{
+
+			unit->y = item->y + item->h;
+			return 0;
+		}
+
+	if (unit->x + unit->w > item->x && unit->x + unit->w < item->x + item->w)
+		if (unit->y + unit->h > item->y && unit->y + unit->h < item->y + item->h)
+		{
+
+			unit->y = item->y - unit->h;
+
+			return 0;
+		}
+
+	return 1;
+}
+
 int main(int argc, char* argv[])
 {
+	SDL_Rect borders{ 300, 350, WINDOW_WIDTH- 600, 300 };
+
+
 	mainHero Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT }, 
 		{X_MOVE, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION, IMPULSE, ON_BORDER} };
 	int temp = 0;
@@ -62,6 +104,8 @@ int main(int argc, char* argv[])
 				}
 				break;
 
+				
+
 			case SDL_KEYUP:
 				switch (ev.key.keysym.scancode)
 				{
@@ -86,7 +130,8 @@ int main(int argc, char* argv[])
 		#pragma endregion
 
 		#pragma region PHYSIC_CHECK
-		if (Laplas.hitbox.x + (temp = Laplas.physic.xMove * Laplas.physic.speed) >= 0 && Laplas.physic.xMove == -1)
+
+		if (Laplas.hitbox.x + (temp = Laplas.physic.xMove * Laplas.physic.speed) >= 0 && Laplas.physic.xMove == -1 )
 			Laplas.hitbox.x += temp;							  
 																  
 		if (Laplas.hitbox.x + (temp = Laplas.physic.xMove * Laplas.physic.speed) + HERO_WIDHT <= WINDOW_WIDTH && Laplas.physic.xMove == 1)
@@ -113,18 +158,22 @@ int main(int argc, char* argv[])
 			Laplas.physic.onBorder = 0;
 		}
 			
-
+		if(!CheckBorders(&Laplas.hitbox, &borders, Laplas.physic.yMove))
+			Laplas.physic.onBorder = 1;
 
 
 		#pragma endregion 
 
 		#pragma region DRAW
-				SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
-				SDL_RenderFillRect(ren, &Laplas.hitbox);
+		SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
+		SDL_RenderFillRect(ren, &Laplas.hitbox);
 
-				SDL_RenderPresent(ren);
-				SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-				SDL_RenderClear(ren);
+		SDL_SetRenderDrawColor(ren, 128, 128, 128, 255);
+		SDL_RenderFillRect(ren, &borders);
+
+		SDL_RenderPresent(ren);
+		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+		SDL_RenderClear(ren);
 		#pragma endregion 
 
 		#pragma region FPS_DELAY
