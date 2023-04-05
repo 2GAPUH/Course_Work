@@ -141,6 +141,7 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common_parameters.h" />
     <ClInclude Include="func.h" />
   </ItemGroup>
   <ItemGroup>

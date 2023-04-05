@@ -2,35 +2,28 @@
 #include <SDL_Image.h>
 #include <iostream>
 #include "func.h"
-
-#define WINDOW_HEIGHT 720
-#define WINDOW_WIDTH 1280
-#define FPS 60
-#define HERO_SPEED 5
-#define HERO_WIDHT 20
-#define HERO_HEIGHT 20
-#define GRAVITY 5
-
+#include "common_parameters.h"
 
 SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
 
+
 int main(int argc, char* argv[])
 {
-	int xMove = 0, yMove = 0;
+	mainHero Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT }, 
+		{X_MOVE, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION, IMPULSE, ON_BORDER} };
 	int temp = 0;
-	SDL_Rect hero = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT };
+	int time = 0;
 
 	Init(&win, &ren, &win_surface, WINDOW_HEIGHT, WINDOW_WIDTH);
-
-	
 
 	bool isRunning = true;
 
 	while (isRunning)
 	{
+		#pragma region BUTTON_CHECK
 		while (SDL_PollEvent(&ev))
 		{
 			switch (ev.type)
@@ -46,16 +39,25 @@ int main(int argc, char* argv[])
 					isRunning = false;
 					break;
 				case SDL_SCANCODE_A:
-					xMove = -1;
+					Laplas.physic.xMove = -1;
+					Laplas.physic.gazeDirection = 0;
 					break;
-				case SDL_SCANCODE_W:
-					yMove = -1;
-					break;
-				case SDL_SCANCODE_S:
-					yMove = 1;
-					break;
+				//case SDL_SCANCODE_W:
+				//	Laplas.physic.yMove = -1;
+				//	break;
+				//case SDL_SCANCODE_S:
+				//	Laplas.physic.yMove = 1;
+				//	break;
 				case SDL_SCANCODE_D:
-					xMove = 1;
+					Laplas.physic.xMove = 1;
+					Laplas.physic.gazeDirection = 1;
+					break;
+				case SDL_SCANCODE_SPACE:
+					if (Laplas.physic.onBorder)
+					{
+						Laplas.physic.impulse = 1;
+						Laplas.physic.acceleration = 0;
+					}
 					break;
 				}
 				break;
@@ -64,48 +66,80 @@ int main(int argc, char* argv[])
 				switch (ev.key.keysym.scancode)
 				{
 				case SDL_SCANCODE_A:
-					xMove = 0;
+					Laplas.physic.xMove = 0;
 					break;
-				case SDL_SCANCODE_W:
-					yMove = 0;
-					break;
-				case SDL_SCANCODE_S:
-					yMove = 0;
-					break;
+				//case SDL_SCANCODE_W:
+				//	Laplas.physic.yMove = 0;
+				//	break;
+				//case SDL_SCANCODE_S:
+				//	Laplas.physic.yMove = 0;
+				//	break;
 				case SDL_SCANCODE_D:
-					xMove = 0;
+					Laplas.physic.xMove = 0;
 					break;
 				}
 				break;
 			}
-					
+			
+
+		}
+		#pragma endregion
+
+		#pragma region PHYSIC_CHECK
+		if (Laplas.hitbox.x + (temp = Laplas.physic.xMove * Laplas.physic.speed) >= 0 && Laplas.physic.xMove == -1)
+			Laplas.hitbox.x += temp;							  
+																  
+		if (Laplas.hitbox.x + (temp = Laplas.physic.xMove * Laplas.physic.speed) + HERO_WIDHT <= WINDOW_WIDTH && Laplas.physic.xMove == 1)
+			Laplas.hitbox.x += temp;							  
+																  
+		if (Laplas.hitbox.y + Laplas.physic.gravity + HERO_HEIGHT <= WINDOW_HEIGHT)
+		{
+			Laplas.hitbox.y += Laplas.physic.gravity * Laplas.physic.acceleration;
+			if (Laplas.physic.acceleration < 1)
+				Laplas.physic.acceleration += 0.05;
+		}
+		else
+		{
+			Laplas.physic.acceleration = 0;
+			Laplas.physic.onBorder = 1;
 		}
 
-		if (hero.x + (temp = xMove * HERO_SPEED) >= 0 && xMove == -1)
-			hero.x += temp;
 
-		if (hero.x + (temp = xMove * HERO_SPEED) + HERO_WIDHT <= WINDOW_WIDTH && xMove == 1)
-			hero.x += temp;
+		if (Laplas.physic.impulse > 0)
+		{
+			Laplas.hitbox.y -= 30 * Laplas.physic.impulse;
+			if (Laplas.physic.impulse > 0)
+				Laplas.physic.impulse -= 0.05;
+			Laplas.physic.onBorder = 0;
+		}
+			
 
-		if (hero.y + (temp = yMove * HERO_SPEED) >= 0 && yMove == -1)
-			hero.y += temp;
 
-		if (hero.y + (temp = yMove * HERO_SPEED) + HERO_HEIGHT <= WINDOW_HEIGHT && yMove == 1)
-			hero.y += temp;
 
-		hero.y += GRAVITY;
+		#pragma endregion 
 
-		SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
-		SDL_RenderFillRect(ren, &hero);
+		#pragma region DRAW
+				SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
+				SDL_RenderFillRect(ren, &Laplas.hitbox);
 
-		SDL_RenderPresent(ren);
-		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-		SDL_RenderClear(ren);
+				SDL_RenderPresent(ren);
+				SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+				SDL_RenderClear(ren);
+		#pragma endregion 
 
-		SDL_Delay(1000/FPS);
+		#pragma region FPS_DELAY
+				while (true)
+				{
+					if (clock() - time >= 1000/FPS)
+					{
+						time = clock();
+						break;
+					}
+					else
+						SDL_Delay(1);
+				}
+		#pragma endregion 
 	}
-
-	//SDL_Delay(10000);
 
 	DeInit(0, &win, &ren, &win_surface);
 	
