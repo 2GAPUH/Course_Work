@@ -10,7 +10,11 @@ SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
 
+#include <utility>
 
+using std::swap;
+using std::max;
+using std::min;
 
 bool CheckBorders(mainHero* Laplas, SDL_Rect* item)
 {
