@@ -14,7 +14,6 @@ SDL_Event ev;
 
 bool CheckBorders(mainHero* Laplas, SDL_Rect* item)
 {
-	if(Laplas->xPosition)
 
 
 	return 1;
@@ -117,7 +116,7 @@ int main(int argc, char* argv[])
 		Laplas.physic.gazeDirection = Laplas.physic.xMoveL + Laplas.physic.xMoveR;
 
 		//Движение по оси X
-		Laplas.xPosition +=  (Laplas.physic.gazeDirection) * Laplas.physic.speed;
+		Laplas.xPosition +=  (Laplas.physic.xMoveL + Laplas.physic.xMoveR) * Laplas.physic.speed;
 
 		//Прыжок
 		if (Laplas.physic.impulse > 0.1)
