@@ -3,20 +3,22 @@
 #define WINDOW_HEIGHT 720
 #define WINDOW_WIDTH 1280
 #define FPS 60
-#define HERO_WIDHT 100
-#define HERO_HEIGHT 100
-#define X_MOVE 0
+#define HERO_WIDHT 40
+#define HERO_HEIGHT 40
+#define X_MOVE_L 0
+#define X_MOVE_R 0
 #define Y_MOVE 0
 #define GAZE_DIRECTION 0
 #define SPEED 10
-#define GRAVITY 20
+#define GRAVITY 10
 #define ACCELERATION 1
 #define IMPULSE 0
 #define ON_BORDER 0
 
+
 struct mainPhysics
 {
-	float xMove, yMove;
+	float xMoveL, xMoveR, yMove;
 	bool gazeDirection;
 	float speed;
 	float gravity;
@@ -27,7 +29,7 @@ struct mainPhysics
 
 struct mainHero
 {
-	float xPosition, yPosition;
+	int xPosition, yPosition;
 	SDL_Rect hitbox;
 	mainPhysics physic;
 };
