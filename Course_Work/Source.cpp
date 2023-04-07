@@ -10,157 +10,12 @@ SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
 
-bool CheckVectorCross(SDL_Point firstStart, SDL_Point firstEnd, SDL_Point secondStart, SDL_Point secondEnd)
-{
-	SDL_Point vektor1 = { firstEnd.x - firstStart.x, firstEnd.y - firstStart.y };
-	SDL_Point vektor2 = { secondEnd.x - secondStart.x, secondEnd.y - secondStart.y };
 
-	SDL_Point prod1 = { vektor1.x * (secondStart.x - firstStart.x), vektor1.y * (secondStart.y - firstStart.y) };
-	SDL_Point prod2 = { vektor1.x * (secondEnd.x - firstStart.x), vektor1.y * (secondEnd.y - firstStart.y) };
-
-	if (vektor1.x == 0 && vektor2.y == 0)
-	{
-		if ((firstStart.y < firstEnd.y && firstEnd.y >= secondEnd.y && firstStart.y <= secondEnd.y) || (firstStart.y > firstEnd.y && firstStart.y >= secondEnd.y && firstEnd.y <= secondEnd.y))
-			return 1;
-	}
-	else if (vektor1.y == 0 && vektor2.x == 0)
-	{
-		if ((firstStart.x < firstEnd.x && firstEnd.x >= secondEnd.x && firstStart.x <= secondEnd.x) || (firstStart.x > firstEnd.x && firstStart.x >= secondEnd.x && firstEnd.x <= secondEnd.x))
-			return 1;
-	}
-
-	if (((prod1.x == prod2.x) && (prod1.y == prod2.y)) || (prod1.x == prod1.y == 0) || (prod2.x ==  prod2.y ))
-		return 0;
-
-	prod1 = { vektor2.x * (firstStart.x - secondStart.x), vektor2.y * (firstStart.y - secondStart.y) };
-	prod2 = { vektor2.x * (firstEnd.x - secondStart.x), vektor2.y * (firstEnd.y - secondStart.y) };
-
-	if (((prod1.x == prod2.x) && (prod1.y == prod2.y)) || (prod1.x == prod1.y ) || (prod2.x ==  prod2.y ))
-		return 0;
-
-	return 1;
-};
-
-
-bool ChechBordersOverlay(mainHero* Laplas, SDL_Rect* item, int type)
-{
-	switch (type)
-	{
-	//прямая x0:0 y1:0
-	case 1:	
-		if (CheckVectorCross({ Laplas->hitbox.x, Laplas->hitbox.y + Laplas->hitbox.h }, { Laplas->xPosition , Laplas->yPosition + Laplas->hitbox.h },
-			{item->x, item->y}, {item->x+item->w, item->y}))
-				return 1;
-		break;
-
-	//прямая x0:0 y0:1
-	case 2:
-		if (CheckVectorCross({ Laplas->hitbox.x + Laplas->hitbox.w, Laplas->hitbox.y }, { Laplas->xPosition + Laplas->hitbox.w, Laplas->yPosition },
-			{ item->x, item->y }, { item->x, item->y + item->h }))
-				return 1;
-		break;
-
-	//прямая x1:0 y1:1
-	case 3:
-		if (CheckVectorCross({ Laplas->hitbox.x, Laplas->hitbox.y }, { Laplas->xPosition, Laplas->yPosition }, 
-			{ item->x + item->w, item->y }, { item->x + item->w, item->y + item->h }))
-				return 1;
-		break;
-
-	//прямая x0:1 y1:1
-	case 4:
-		if(CheckVectorCross({ Laplas->hitbox.x, Laplas->hitbox.y }, { Laplas->xPosition, Laplas->yPosition }, 
-			{ item->x , item->y + item->h }, { item->x + item->w, item->y + item->h }))
-				return 1;
-		break;
-
-	}
-	return 0;
-}
 
 bool CheckBorders(mainHero* Laplas, SDL_Rect* item)
 {
-	//Когда тело стоит и падает
-	if((Laplas->physic.xMoveL + Laplas->physic.xMoveR == 0) && Laplas->yPosition > Laplas->hitbox.y)
-	{
-		if (ChechBordersOverlay(Laplas, item, 1))
-		{
-			Laplas->hitbox.y = item->y - Laplas->hitbox.h;
-			return 0;
-		}
-	}
+	if(Laplas->xPosition)
 
-	//Когда тело стоит и поднимается
-	else if ((Laplas->physic.xMoveL + Laplas->physic.xMoveR == 0) && Laplas->yPosition < Laplas->hitbox.y)
-	{
-		if (ChechBordersOverlay(Laplas, item, 4))
-		{
-			Laplas->hitbox.y = item->y + item->h;
-			return 0;
-		}
-	}
-
-	//Когда тело двигается в право и падает
-	else if ((Laplas->physic.xMoveL + Laplas->physic.xMoveR > 0) && Laplas->yPosition > Laplas->hitbox.y)
-	{
-		if (ChechBordersOverlay(Laplas, item, 1))
-		{
-			Laplas->hitbox.y = item->y - Laplas->hitbox.h;
-			return 0;
-		}
-		if (ChechBordersOverlay(Laplas, item, 2))
-		{
-			Laplas->hitbox.x = item->x;
-			return 0;
-		}
-	}
-
-	//Когда тело двигается в право и поднимается
-	else if ((Laplas->physic.xMoveL + Laplas->physic.xMoveR > 0) && Laplas->yPosition < Laplas->hitbox.y)
-	{
-		if (ChechBordersOverlay(Laplas, item, 4))
-		{
-			Laplas->hitbox.y = item->y + item->h;
-			return 0;
-		}
-
-		if (ChechBordersOverlay(Laplas, item, 2))
-		{
-			Laplas->hitbox.x = item->x;
-			return 0;
-		}
-	}
-
-	//Когда тело двигается в лево и падает
-	else if ((Laplas->physic.xMoveL + Laplas->physic.xMoveR < 0) && Laplas->yPosition > Laplas->hitbox.y)
-	{
-		if (ChechBordersOverlay(Laplas, item, 1))
-		{
-			Laplas->hitbox.y = item->y - Laplas->hitbox.h;
-			return 0;
-		}
-
-		if (ChechBordersOverlay(Laplas, item, 3))
-		{
-			Laplas->hitbox.x = item->x + item->w;
-			return 0;
-		}
-	}
-
-	//Когда тело двигается в лево и поднимается
-	else if ((Laplas->physic.xMoveL + Laplas->physic.xMoveR < 0) && Laplas->yPosition < Laplas->hitbox.y)
-	{
-		if (ChechBordersOverlay(Laplas, item, 3))
-		{
-			Laplas->hitbox.x = item->x + item->w;
-			return 0;
-		}
-		if (ChechBordersOverlay(Laplas, item, 4))
-		{
-			Laplas->hitbox.y = item->y + item->h;
-			return 0;
-		}
-	}
 
 	return 1;
 }
@@ -259,9 +114,10 @@ int main(int argc, char* argv[])
 		//Получение координат
 		Laplas.xPosition = Laplas.hitbox.x;
 		Laplas.yPosition = Laplas.hitbox.y;
+		Laplas.physic.gazeDirection = Laplas.physic.xMoveL + Laplas.physic.xMoveR;
 
 		//Движение по оси X
-		Laplas.xPosition +=  (Laplas.physic.xMoveL + Laplas.physic.xMoveR) * Laplas.physic.speed;
+		Laplas.xPosition +=  (Laplas.physic.gazeDirection) * Laplas.physic.speed;
 
 		//Прыжок
 		if (Laplas.physic.impulse > 0.1)
