@@ -9,16 +9,111 @@ SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
+const double EPS = 1E-9;
 
-#include <utility>
-
-using std::swap;
-using std::max;
-using std::min;
-
-bool CheckBorders(mainHero* Laplas, SDL_Rect* item)
+void swap(int* a, int * b)
 {
+	*a ^= *b ^= *a ^= *b;
+}
+ 
+int max(int a, int b)
+{
+	if (a > b)
+		return a;
+	return b;
+}
 
+int min(int a, int b)
+{
+	if (a < b)
+		return a;
+	return b;
+}
+
+int Det (int a, int b, int c, int d) 
+{
+	return a * d - b * c;
+}
+ 
+bool Between (int a, int b, double c) 
+{
+	return min(a,b) <= c + EPS && c <= max(a,b) + EPS;
+}
+ 
+bool Intersect (int a, int b, int c, int d) 
+{
+	if (a > b)  swap (&a, &b);
+	if (c > d)  swap (&c, &d);
+	return max(a,c) <= min(b,d);
+}
+ 
+bool SegmentOverlay (SDL_Point firstStart, SDL_Point firstEnd, SDL_Point secondStart, SDL_Point secondEnd, SDL_Point* intersect) 
+{
+	int A1 = firstStart.y-firstEnd.y,  B1 = firstEnd.x-firstStart.x,  C1 = -A1*firstStart.x - B1*firstStart.y;
+	int A2 = secondStart.y-secondEnd.y,  B2 = secondEnd.x-secondStart.x,  C2 = -A2*secondStart.x - B2*secondStart.y;
+	int zn = Det (A1, B1, A2, B2);
+	if (zn != 0) {
+		double x = - Det (C1, B1, C2, B2) * 1. / zn;
+		double y = - Det (A1, C1, A2, C2) * 1. / zn;
+		if (Between(firstStart.x, firstEnd.x, x) && Between(firstStart.y, firstEnd.y, y)
+			&& Between(secondStart.x, secondEnd.x, x) && Between(secondStart.y, secondEnd.y, y))
+		{
+			intersect->x = x;
+			intersect->y = y;
+			return 1;
+		}
+		else 
+			return 0;
+	}
+	else
+		return Det (A1, C1, A2, C2) == 0 && Det (B1, C1, B2, C2) == 0
+			&& Intersect (firstStart.x, firstEnd.x, secondStart.x, secondEnd.x)
+			&& Intersect (firstStart.y, firstEnd.y, secondStart.y, secondEnd.y);
+}
+
+
+bool CheckBorders(mainHero* Laplas, SDL_Rect unit)
+{
+	static SDL_Point intersect;
+	//Верхнаяя прямая
+	if (SegmentOverlay({ Laplas->hitbox.x ,Laplas->hitbox.y + Laplas->hitbox.h/2}, { Laplas->position.x, Laplas->position.y+Laplas->hitbox.h / 2 },
+		{ unit.x - Laplas->hitbox.w/2, unit.y }, { unit.x + unit.w + Laplas->hitbox.w / 2, unit.y }, &intersect))
+	{
+		Laplas->hitbox.x = Laplas->position.x;
+		Laplas->hitbox.y = intersect.y - Laplas->hitbox.h/2 - 1;
+		Laplas->physic.onBorder = 1;
+		Laplas->physic.accelerationY = 0.1;
+		return 0;
+	}
+
+	//Правая прямая
+	if (SegmentOverlay({ Laplas->hitbox.x - Laplas->hitbox.w / 2 ,Laplas->hitbox.y }, { Laplas->position.x - Laplas->hitbox.w / 2, Laplas->position.y },
+		{ unit.x + unit.w, unit.y - Laplas->hitbox.h / 2 }, { unit.x + unit.w , unit.y + unit.h + Laplas->hitbox.h / 2 }, &intersect))
+	{
+		Laplas->hitbox.x = intersect.x + Laplas->hitbox.w / 2 + 1;
+		Laplas->hitbox.y = Laplas->position.y;
+		return 0;
+	}
+
+	//Левая прямая
+	if (SegmentOverlay({ Laplas->hitbox.x + Laplas->hitbox.w /2 ,Laplas->hitbox.y  }, { Laplas->position.x + Laplas->hitbox.w /2, Laplas->position.y  },
+		{ unit.x, unit.y - Laplas->hitbox.h/2}, { unit.x , unit.y + unit.h + Laplas->hitbox.h / 2 }, &intersect))
+	{
+		Laplas->hitbox.x = intersect.x - Laplas->hitbox.w/2 -1;
+		Laplas->hitbox.y = Laplas->position.y;
+		return 0;
+	}
+
+	//Нижняя прямая
+	if (SegmentOverlay({ Laplas->hitbox.x ,Laplas->hitbox.y - Laplas->hitbox.h / 2 }, { Laplas->position.x, Laplas->position.y - Laplas->hitbox.h / 2 },
+		{ unit.x - Laplas->hitbox.w / 2, unit.y + unit.h }, { unit.x + unit.w + Laplas->hitbox.w / 2, unit.y + unit.h }, &intersect))
+	{
+		Laplas->hitbox.x = Laplas->position.x;
+		Laplas->hitbox.y = intersect.y + Laplas->hitbox.h / 2 + 1;
+		Laplas->physic.impulse = 0.1;
+		Laplas->physic.accelerationY = 0.1;
+		return 0;
+	}
 
 	return 1;
 }
@@ -44,7 +139,7 @@ int main(int argc, char* argv[])
 	}
 
 	mainHero Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT }, 
-		{X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION, IMPULSE, ON_BORDER} };
+		{X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER} };
 	int temp = 0;
 	int time = 0;
 
@@ -77,11 +172,14 @@ int main(int argc, char* argv[])
 					Laplas.physic.xMoveR = 1;
 					Laplas.physic.gazeDirection = 1;
 					break;
+				case SDL_SCANCODE_LSHIFT:
+					Laplas.physic.accelerationX = 8;
+					break;
 				case SDL_SCANCODE_SPACE:
 					if (Laplas.physic.onBorder)
 					{
 						Laplas.physic.impulse = 0.8;
-						Laplas.physic.acceleration = 0;
+						Laplas.physic.accelerationY = 0;
 					}
 					break;
 				}
@@ -115,52 +213,67 @@ int main(int argc, char* argv[])
 		#pragma region PHYSIC_CHECK
 
 		//Получение координат
-		Laplas.xPosition = Laplas.hitbox.x;
-		Laplas.yPosition = Laplas.hitbox.y;
+		Laplas.position.x = Laplas.hitbox.x;
+		Laplas.position.y = Laplas.hitbox.y;
 		Laplas.physic.gazeDirection = Laplas.physic.xMoveL + Laplas.physic.xMoveR;
 
 		//Движение по оси X
-		Laplas.xPosition +=  (Laplas.physic.xMoveL + Laplas.physic.xMoveR) * Laplas.physic.speed;
+		Laplas.position.x +=  (Laplas.physic.xMoveL + Laplas.physic.xMoveR) * Laplas.physic.speed * Laplas.physic.accelerationX;
+		if (Laplas.physic.accelerationX > 5)
+			Laplas.physic.accelerationX--;
+		else
+			Laplas.physic.accelerationX = 1;
 
 		//Прыжок
 		if (Laplas.physic.impulse > 0.1)
 		{
-			Laplas.yPosition -= 30 * Laplas.physic.impulse;
+			Laplas.position.y -= 30 * Laplas.physic.impulse;
 			if (Laplas.physic.impulse > 0.1)
 				Laplas.physic.impulse -= 0.02;
+			else
+				Laplas.physic.accelerationY = 0.1;
 			Laplas.physic.onBorder = 0;
 		}
 
 		//Гравитация
-		Laplas.yPosition += Laplas.physic.gravity * Laplas.physic.acceleration;
-		if (Laplas.physic.acceleration < 1)
-			Laplas.physic.acceleration += 0.05;
-		//---------------------------------------------Добавить обнуление ускорения
+		Laplas.position.y += Laplas.physic.gravity * Laplas.physic.accelerationY;
+		if (Laplas.physic.accelerationY < 1)
+			Laplas.physic.accelerationY += 0.05;
 
 		//Проверка на наложение хитбоксов
 		check = 1;
 		for (int i = 0;i < bordersCount;i++)
 		{
-			if (!CheckBorders(&Laplas, &bordersHitbox[i]))
+			if (!CheckBorders(&Laplas, bordersHitbox[i]))
 			{
-				Laplas.physic.onBorder = 1;
 				check = 0;
 				break;
 			}
 		}
 		if (check == 1)
 		{
-			Laplas.hitbox.x = Laplas.xPosition;
-			Laplas.hitbox.y = Laplas.yPosition;
+			Laplas.hitbox.x = Laplas.position.x;
+			Laplas.hitbox.y = Laplas.position.y;
+			Laplas.physic.onBorder = 0;
 		}
 
+		//Выход за границы мира
+		if (Laplas.hitbox.x > bordersHitbox[1].w - Laplas.hitbox.w / 2 - 2)
+			Laplas.hitbox.x = bordersHitbox[1].w - Laplas.hitbox.w / 2 - 2;
+		else if (Laplas.hitbox.x < bordersHitbox[0].x + Laplas.hitbox.w / 2 + 2)
+			Laplas.hitbox.x = bordersHitbox[0].x + Laplas.hitbox.w / 2 + 2;
 
+		if (Laplas.hitbox.y > bordersHitbox[0].h - Laplas.hitbox.h / 2 - 2)
+			Laplas.hitbox.y = bordersHitbox[0].h - Laplas.hitbox.h / 2 - 2;
+		else if (Laplas.hitbox.y < bordersHitbox[0].y + Laplas.hitbox.h / 2 + 2)
+			Laplas.hitbox.y = bordersHitbox[0].y + Laplas.hitbox.h / 2 + 2;
 
 		#pragma endregion 
 
 		#pragma region DRAW
 		SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
-		SDL_RenderFillRect(ren, &Laplas.hitbox);
+		SDL_Rect movedLaplas = {Laplas.hitbox.x - Laplas.hitbox.w/2,Laplas.hitbox.y - Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h };
+		SDL_RenderFillRect(ren, &movedLaplas);
 
 
 

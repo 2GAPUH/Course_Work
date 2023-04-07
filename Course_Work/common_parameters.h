@@ -9,9 +9,10 @@
 #define X_MOVE_R 0
 #define Y_MOVE 0
 #define GAZE_DIRECTION 0
-#define SPEED 10
+#define SPEED 7
 #define GRAVITY 10
-#define ACCELERATION 1
+#define ACCELERATION_Y 1
+#define ACCELERATION_X 1
 #define IMPULSE 0
 #define ON_BORDER 0
 
@@ -22,14 +23,15 @@ struct mainPhysics
 	bool gazeDirection;
 	float speed;
 	float gravity;
-	float acceleration;
+	float accelerationY;
+	float accelerationX;
 	float impulse;
 	bool onBorder;
 };
 
 struct mainHero
 {
-	int xPosition, yPosition;
+	SDL_Point position;
 	SDL_Rect hitbox;
 	mainPhysics physic;
 };
