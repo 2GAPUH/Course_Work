@@ -9,26 +9,8 @@ SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
-const double EPS = 1E-9;
 
-void swap(int* a, int * b)
-{
-	*a ^= *b ^= *a ^= *b;
-}
- 
-int max(int a, int b)
-{
-	if (a > b)
-		return a;
-	return b;
-}
 
-int min(int a, int b)
-{
-	if (a < b)
-		return a;
-	return b;
-}
 
 int Det (int a, int b, int c, int d) 
 {
@@ -82,7 +64,7 @@ bool CheckBorders(mainHero* Laplas, SDL_Rect unit)
 		Laplas->hitbox.x = Laplas->position.x;
 		Laplas->hitbox.y = intersect.y - Laplas->hitbox.h/2 - 1;
 		Laplas->physic.onBorder = 1;
-		Laplas->physic.accelerationY = 0.1;
+		//Laplas->physic.accelerationY = 0.1;
 		return 0;
 	}
 
@@ -111,12 +93,13 @@ bool CheckBorders(mainHero* Laplas, SDL_Rect unit)
 		Laplas->hitbox.x = Laplas->position.x;
 		Laplas->hitbox.y = intersect.y + Laplas->hitbox.h / 2 + 1;
 		Laplas->physic.impulse = 0.1;
-		Laplas->physic.accelerationY = 0.1;
+		Laplas->physic.accelerationY = 0.3;
 		return 0;
 	}
 
 	return 1;
 }
+
 
 int main(int argc, char* argv[])
 {
@@ -124,9 +107,18 @@ int main(int argc, char* argv[])
 	FILE* f;
 	SDL_Rect* bordersHitbox;
 	int check = 1;
+	int temp = 0;
+	int time = 0;
+
+	mainHero Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
+				  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
+				  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y} };
 	
 	fopen_s(&f, "Borders.txt", "r");
+
 	fscanf_s(f, "%d", &bordersCount);
+	fscanf_s(f, "%d", &Laplas.hitbox.x);
+	fscanf_s(f, "%d", &Laplas.hitbox.y);
 
 	bordersHitbox = (SDL_Rect*)malloc(sizeof(SDL_Rect) * bordersCount);
 
@@ -138,10 +130,9 @@ int main(int argc, char* argv[])
 		fscanf_s(f, "%d", &bordersHitbox[i].h);
 	}
 
-	mainHero Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT }, 
-		{X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER} };
-	int temp = 0;
-	int time = 0;
+
+	fclose(f);
+
 
 	Init(&win, &ren, &win_surface, WINDOW_HEIGHT, WINDOW_WIDTH);
 
@@ -156,6 +147,15 @@ int main(int argc, char* argv[])
 			{
 			case SDL_QUIT:
 				isRunning = false;
+				break;
+
+			case SDL_WINDOWEVENT:
+				switch (ev.window.event)
+				{
+				case SDL_WINDOWEVENT_RESIZED:
+					SDL_GetWindowSize(win, &window.w, &window.h);
+					SDL_RenderSetScale(ren, window.w / 1. / WINDOW_WIDTH, window.h / 1. / WINDOW_HEIGHT);
+				}
 				break;
 
 			case SDL_KEYDOWN:
@@ -173,7 +173,11 @@ int main(int argc, char* argv[])
 					Laplas.physic.gazeDirection = 1;
 					break;
 				case SDL_SCANCODE_LSHIFT:
-					Laplas.physic.accelerationX = 8;
+					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD && Laplas.physic.gazeDirection != 0)
+					{
+						Laplas.effect.timeCD = clock();
+						Laplas.physic.accelerationX = 8;
+					}
 					break;
 				case SDL_SCANCODE_SPACE:
 					if (Laplas.physic.onBorder)
@@ -204,8 +208,21 @@ int main(int argc, char* argv[])
 					break;
 				}
 				break;
+
+			case SDL_MOUSEBUTTONDOWN:
+				if (ev.button.button == SDL_BUTTON_X2)
+				{
+					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD && Laplas.physic.gazeDirection !=0)
+					{
+						Laplas.effect.timeCD = clock();
+						Laplas.physic.accelerationX = 8;
+					}
+				}
+				break;
+
 			}
-			
+
+
 
 		}
 		#pragma endregion
@@ -217,7 +234,7 @@ int main(int argc, char* argv[])
 		Laplas.position.y = Laplas.hitbox.y;
 		Laplas.physic.gazeDirection = Laplas.physic.xMoveL + Laplas.physic.xMoveR;
 
-		//Движение по оси X
+		//Движение по оси X + рывок
 		Laplas.position.x +=  (Laplas.physic.xMoveL + Laplas.physic.xMoveR) * Laplas.physic.speed * Laplas.physic.accelerationX;
 		if (Laplas.physic.accelerationX > 5)
 			Laplas.physic.accelerationX--;
@@ -268,6 +285,8 @@ int main(int argc, char* argv[])
 		else if (Laplas.hitbox.y < bordersHitbox[0].y + Laplas.hitbox.h / 2 + 2)
 			Laplas.hitbox.y = bordersHitbox[0].y + Laplas.hitbox.h / 2 + 2;
 
+		
+
 		#pragma endregion 
 
 		#pragma region DRAW
@@ -275,12 +294,14 @@ int main(int argc, char* argv[])
 		SDL_Rect movedLaplas = {Laplas.hitbox.x - Laplas.hitbox.w/2,Laplas.hitbox.y - Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h };
 		SDL_RenderFillRect(ren, &movedLaplas);
 
-
-
+		static SDL_Rect rect111;
 		SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 		for (int i = 0;i < bordersCount;i++)
 		{
-			SDL_RenderFillRect(ren, &bordersHitbox[i]);
+			rect111 = bordersHitbox[i];
+			rect111.x -= Laplas.effect.camersScale.x;
+			rect111.y -= Laplas.effect.camersScale.y;
+			SDL_RenderFillRect(ren, &rect111);
 		}
 
 		SDL_RenderPresent(ren);
@@ -302,6 +323,8 @@ int main(int argc, char* argv[])
 				}
 		#pragma endregion 
 	}
+
+	free(bordersHitbox);
 
 	DeInit(0, &win, &ren, &win_surface);
 	
