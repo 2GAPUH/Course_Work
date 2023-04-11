@@ -138,15 +138,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="func.cpp" />
+    <ClCompile Include="physic.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_parameters.h" />
     <ClInclude Include="func.h" />
+    <ClInclude Include="physic.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="barrel1.png" />
     <Image Include="Hentai.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Borders.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

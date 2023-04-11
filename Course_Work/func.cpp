@@ -1,3 +1,4 @@
+#pragma once
 #include <SDL.h>
 #include <SDL_Image.h>
 #include <iostream>
@@ -57,4 +58,24 @@ void Init(SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface, int W
 		system("pause");
 		DeInit(1, win, ren, win_surface);
 	}
+}
+
+
+void swap(int* a, int* b)
+{
+	*a ^= *b ^= *a ^= *b;
+}
+
+int max(int a, int b)
+{
+	if (a > b)
+		return a;
+	return b;
+}
+
+int min(int a, int b)
+{
+	if (a < b)
+		return a;
+	return b;
 }

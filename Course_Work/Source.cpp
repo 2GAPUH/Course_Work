@@ -1,64 +1,88 @@
+#pragma once
 #include <SDL.h>
 #include <SDL_Image.h>
 #include <iostream>
 #include "func.h"
 #include "common_parameters.h"
 #include <math.h>
+#include "Physic.h"
 
 SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
 
-
-bool CheckBorders(SDL_Rect* unit, SDL_Rect* item, int Move)
+void DrawMainHero(mainHero Laplas)
 {
-	if (unit->x > item->x && unit->x < item->x + item->w)
-		if (unit->y > item->y && unit->y < item->y + item->h)
+	SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
+	SDL_Rect movedLaplas = { Laplas.hitbox.x - Laplas.hitbox.w / 2,Laplas.hitbox.y - Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h };
+	SDL_RenderFillRect(ren, &movedLaplas);
+}
+
+void DrawHitbox(int bordersCount, mainBorders levelBorders[])
+{
+	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+	for (int i = 0;i < bordersCount;i++)
+	{
+		SDL_RenderFillRect(ren, &levelBorders[i].bordersHitbox);
+	}
+}
+
+void FPSControl()
+{
+	static int time = 0;
+	while (true)
+	{
+		if (clock() - time >= 1000 / FPS)
 		{
-			unit->y = item->y+item->h;
-			return 0;
+			time = clock();
+			break;
 		}
+		else
+			SDL_Delay(1);
+	}
+}
 
-	if (unit->x > item->x && unit->x < item->x + item->w)
-		if (unit->y + unit->h > item->y && unit->y + unit->h < item->y + item->h)
-		{
+mainBorders* LoadLevel(mainBorders* levelBorders, int *bordersCount, mainHero* Laplas, const char levelName[])
+{
+	FILE* f;
+	fopen_s(&f, levelName, "r");
 
-			unit->y = item->y - unit->h;
+	fscanf_s(f, "%d", bordersCount);
+	fscanf_s(f, "%d", &Laplas->hitbox.x);
+	fscanf_s(f, "%d", &Laplas->hitbox.y);
 
-			return 0;
-		}
+	levelBorders = (mainBorders*)realloc(levelBorders, sizeof(mainBorders) * (* bordersCount));
 
-	if (unit->x + unit->w> item->x && unit->x + unit->w < item->x + item->w)
-		if (unit->y > item->y && unit->y < item->y + item->h)
-		{
+	for (int i = 0;i < *bordersCount;i++)
+	{
+		fscanf_s(f, "%d", &levelBorders[i].type);
+		fscanf_s(f, "%d", &levelBorders[i].bordersHitbox.x);
+		fscanf_s(f, "%d", &levelBorders[i].bordersHitbox.y);
+		fscanf_s(f, "%d", &levelBorders[i].bordersHitbox.w);
+		fscanf_s(f, "%d", &levelBorders[i].bordersHitbox.h);
+	}
 
-			unit->y = item->y + item->h;
-			return 0;
-		}
 
-	if (unit->x + unit->w > item->x && unit->x + unit->w < item->x + item->w)
-		if (unit->y + unit->h > item->y && unit->y + unit->h < item->y + item->h)
-		{
+	fclose(f);
 
-			unit->y = item->y - unit->h;
-
-			return 0;
-		}
-
-	return 1;
+	return levelBorders;
 }
 
 int main(int argc, char* argv[])
 {
-	SDL_Rect borders{ 300, 550, WINDOW_WIDTH - 600, 300 };
-	SDL_Rect borders1{ 100, 350, WINDOW_WIDTH - 800, 100 };
-
-
-	mainHero Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT }, 
-		{X_MOVE, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION, IMPULSE, ON_BORDER} };
+	int bordersCount;
+	mainBorders* levelBorders = NULL;
+	int check = 1;
 	int temp = 0;
-	int time = 0;
+	windowSize window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
+
+	mainHero Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
+				  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
+				  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y} };
+	
+	
+	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders.txt");
 
 	Init(&win, &ren, &win_surface, WINDOW_HEIGHT, WINDOW_WIDTH);
 
@@ -75,6 +99,15 @@ int main(int argc, char* argv[])
 				isRunning = false;
 				break;
 
+			case SDL_WINDOWEVENT:
+				switch (ev.window.event)
+				{
+				case SDL_WINDOWEVENT_RESIZED:
+					SDL_GetWindowSize(win, &window.w, &window.h);
+					SDL_RenderSetScale(ren, window.w / 1. / WINDOW_WIDTH, window.h / 1. / WINDOW_HEIGHT);
+				}
+				break;
+
 			case SDL_KEYDOWN:
 				switch (ev.key.keysym.scancode)
 				{
@@ -82,24 +115,25 @@ int main(int argc, char* argv[])
 					isRunning = false;
 					break;
 				case SDL_SCANCODE_A:
-					Laplas.physic.xMove = -1;
+					Laplas.physic.xMoveL = -1;
 					Laplas.physic.gazeDirection = 0;
 					break;
-				//case SDL_SCANCODE_W:
-				//	Laplas.physic.yMove = -1;
-				//	break;
-				//case SDL_SCANCODE_S:
-				//	Laplas.physic.yMove = 1;
-				//	break;
 				case SDL_SCANCODE_D:
-					Laplas.physic.xMove = 1;
+					Laplas.physic.xMoveR = 1;
 					Laplas.physic.gazeDirection = 1;
+					break;
+				case SDL_SCANCODE_LSHIFT:
+					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD && Laplas.physic.gazeDirection != 0)
+					{
+						Laplas.effect.timeCD = clock();
+						Laplas.physic.accelerationX = 8;
+					}
 					break;
 				case SDL_SCANCODE_SPACE:
 					if (Laplas.physic.onBorder)
 					{
 						Laplas.physic.impulse = 0.8;
-						Laplas.physic.acceleration = 0;
+						Laplas.physic.accelerationY = 0;
 					}
 					break;
 				}
@@ -111,7 +145,7 @@ int main(int argc, char* argv[])
 				switch (ev.key.keysym.scancode)
 				{
 				case SDL_SCANCODE_A:
-					Laplas.physic.xMove = 0;
+					Laplas.physic.xMoveL = 0;
 					break;
 				//case SDL_SCANCODE_W:
 				//	Laplas.physic.yMove = 0;
@@ -120,62 +154,56 @@ int main(int argc, char* argv[])
 				//	Laplas.physic.yMove = 0;
 				//	break;
 				case SDL_SCANCODE_D:
-					Laplas.physic.xMove = 0;
+					Laplas.physic.xMoveR = 0;
 					break;
 				}
 				break;
+
+			case SDL_MOUSEBUTTONDOWN:
+				if (ev.button.button == SDL_BUTTON_X2)
+				{
+					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD && Laplas.physic.gazeDirection !=0)
+					{
+						Laplas.effect.timeCD = clock();
+						Laplas.physic.accelerationX = 8;
+					}
+				}
+				break;
+
 			}
-			
+
+
 
 		}
 		#pragma endregion
 
 		#pragma region PHYSIC_CHECK
 
-		if (Laplas.hitbox.x + (temp = Laplas.physic.xMove * Laplas.physic.speed) >= 0 && Laplas.physic.xMove == -1 )
-			Laplas.hitbox.x += temp;							  
-																  
-		if (Laplas.hitbox.x + (temp = Laplas.physic.xMove * Laplas.physic.speed) + HERO_WIDHT <= WINDOW_WIDTH && Laplas.physic.xMove == 1)
-			Laplas.hitbox.x += temp;							  
-																  
-		if (Laplas.hitbox.y + Laplas.physic.gravity + HERO_HEIGHT <= WINDOW_HEIGHT)
-		{
-			Laplas.hitbox.y += Laplas.physic.gravity * Laplas.physic.acceleration;
-			if (Laplas.physic.acceleration < 1)
-				Laplas.physic.acceleration += 0.05;
-		}
-		else
-		{
-			Laplas.physic.acceleration = 0;
-			Laplas.physic.onBorder = 1;
-		}
+		//Получение координат
+		PhysicGetBase(&Laplas);
+		
 
+		//Движение по оси X + рывок
+		PhysicXmovement(&Laplas);
 
-		if (Laplas.physic.impulse > 0.2)
-		{
-			Laplas.hitbox.y -= 30 * Laplas.physic.impulse;
-			if (Laplas.physic.impulse > 0)
-				Laplas.physic.impulse -= 0.03;
-			Laplas.physic.onBorder = 0;
-		}
-			
-		if(!CheckBorders(&Laplas.hitbox, &borders, Laplas.physic.yMove))
-			Laplas.physic.onBorder = 1;
+		//Прыжок
+		PhysicJump(&Laplas);
 
-		if (!CheckBorders(&Laplas.hitbox, &borders1, Laplas.physic.yMove))
-			Laplas.physic.onBorder = 1;
+		//Гравитация
+		PhysicGravity(&Laplas);
+
+		//Проверка на наложение хитбоксов
+		PhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
+
+		//Выход за границы мира
+		PhysicOutworldCheck(&Laplas, levelBorders);
 
 		#pragma endregion 
 
 		#pragma region DRAW
-		SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
-		SDL_RenderFillRect(ren, &Laplas.hitbox);
+		DrawMainHero(Laplas);
 
-
-
-		SDL_SetRenderDrawColor(ren, 128, 128, 128, 255);
-		SDL_RenderFillRect(ren, &borders);
-		SDL_RenderFillRect(ren, &borders1);
+		DrawHitbox(bordersCount, levelBorders);
 
 		SDL_RenderPresent(ren);
 
@@ -184,18 +212,13 @@ int main(int argc, char* argv[])
 		#pragma endregion 
 
 		#pragma region FPS_DELAY
-				while (true)
-				{
-					if (clock() - time >= 1000/FPS)
-					{
-						time = clock();
-						break;
-					}
-					else
-						SDL_Delay(1);
-				}
+
+		FPSControl();
+
 		#pragma endregion 
 	}
+
+	free(levelBorders);
 
 	DeInit(0, &win, &ren, &win_surface);
 	

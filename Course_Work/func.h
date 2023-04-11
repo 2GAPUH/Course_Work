@@ -5,3 +5,6 @@
 
 void DeInit(int error, SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface);
 void Init(SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface, int WINDOW_HEIGHT, int WINDOW_WIDTH);
+int min(int a, int b);
+int max(int a, int b);
+void swap(int* a, int* b);
