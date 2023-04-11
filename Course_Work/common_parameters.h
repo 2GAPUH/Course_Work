@@ -24,7 +24,7 @@
 struct windowSize
 {
 	int w, h;
-} window;
+};
 
 struct mainPhysics
 {
@@ -50,4 +50,10 @@ struct mainHero
 	SDL_Rect hitbox;
 	mainPhysics physic;
 	statusEffect effect;
+};
+
+struct mainBorders
+{
+	int type;
+	SDL_Rect bordersHitbox;
 };
