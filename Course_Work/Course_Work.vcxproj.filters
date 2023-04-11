@@ -44,11 +44,14 @@
       <Filter>Картинки</Filter>
     </Image>
     <Image Include="barrel1.png">
-      <Filter>Файлы ресурсов</Filter>
+      <Filter>Картинки</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Borders.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="Borders1.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
   </ItemGroup>

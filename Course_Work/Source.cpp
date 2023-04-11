@@ -24,6 +24,10 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[])
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0;i < bordersCount;i++)
 	{
+		if(levelBorders[i].type == 2)
+			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+		else if (levelBorders[i].type == 3)
+			SDL_SetRenderDrawColor(ren, 255, 128, 128, 255);
 		SDL_RenderFillRect(ren, &levelBorders[i].bordersHitbox);
 	}
 }
@@ -68,6 +72,15 @@ mainBorders* LoadLevel(mainBorders* levelBorders, int *bordersCount, mainHero* L
 
 	return levelBorders;
 }
+
+bool PhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
+{
+	if (unit.x > bordersHitbox.x && unit.x < bordersHitbox.x + bordersHitbox.w)
+		if (unit.y > bordersHitbox.y && unit.y < bordersHitbox.y + bordersHitbox.h)
+			return 1;
+	return 0;
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -181,7 +194,6 @@ int main(int argc, char* argv[])
 
 		//Получение координат
 		PhysicGetBase(&Laplas);
-		
 
 		//Движение по оси X + рывок
 		PhysicXmovement(&Laplas);
@@ -197,6 +209,9 @@ int main(int argc, char* argv[])
 
 		//Выход за границы мира
 		PhysicOutworldCheck(&Laplas, levelBorders);
+
+		if (PhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[7].bordersHitbox))
+			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders1.txt");
 
 		#pragma endregion 
 
