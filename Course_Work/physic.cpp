@@ -140,11 +140,12 @@ void PhysicHitboxOverlay(int bordersCount, mainHero* Laplas, mainBorders levelBo
 	int check = 1;
 	for (int i = 0;i < bordersCount;i++)
 	{
-		if (!CheckBorders(Laplas, levelBorders[i].bordersHitbox))
-		{
+		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
+			if(!CheckBorders(Laplas, levelBorders[i].bordersHitbox))
+			{
 			check = 0;
 			break;
-		}
+			}
 	}
 
 	if (check == 1)

@@ -54,5 +54,11 @@
     <Text Include="Borders1.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+    <Text Include="Enemy.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="Enemy1.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
 </Project>

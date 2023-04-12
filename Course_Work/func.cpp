@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_Image.h>
 #include <iostream>
+#include "common_parameters.h"
 
 void DeInit(int error, SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface)
 {
@@ -13,7 +14,7 @@ void DeInit(int error, SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_s
 	exit(error);
 }
 
-void Init(SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface, int WINDOW_HEIGHT, int WINDOW_WIDTH)
+void Init(SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
@@ -78,4 +79,20 @@ int min(int a, int b)
 	if (a < b)
 		return a;
 	return b;
+}
+
+
+void FPSControl()
+{
+	static int time = 0;
+	while (true)
+	{
+		if (clock() - time >= 1000 / FPS)
+		{
+			time = clock();
+			break;
+		}
+		else
+			SDL_Delay(1);
+	}
 }

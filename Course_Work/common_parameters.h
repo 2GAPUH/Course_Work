@@ -57,3 +57,9 @@ struct mainBorders
 	int type;
 	SDL_Rect bordersHitbox;
 };
+
+struct mainEnemys
+{
+	int type;
+	SDL_Rect enemyHitbox;
+};

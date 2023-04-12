@@ -24,28 +24,45 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[])
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0;i < bordersCount;i++)
 	{
-		if(levelBorders[i].type == 2)
+		switch (levelBorders[i].type)
+		{
+		case 1:
 			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-		else if (levelBorders[i].type == 3)
+			break;
+
+		case 2:
+			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+			break;
+
+		case 3:
 			SDL_SetRenderDrawColor(ren, 255, 128, 128, 255);
+			break; 
+
+		case 4:
+			SDL_SetRenderDrawColor(ren, 129, 0, 255, 255);
+			break;
+		}
+
 		SDL_RenderFillRect(ren, &levelBorders[i].bordersHitbox);
 	}
 }
 
-void FPSControl()
+void DrawEnemys(int enemysCount, mainEnemys levelEnemys[])
 {
-	static int time = 0;
-	while (true)
+	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+	for (int i = 0;i < enemysCount;i++)
 	{
-		if (clock() - time >= 1000 / FPS)
+		switch (levelEnemys[i].type)
 		{
-			time = clock();
+		case 1:
+			SDL_SetRenderDrawColor(ren, 129, 0, 255, 255);
 			break;
 		}
-		else
-			SDL_Delay(1);
+
+		SDL_RenderFillRect(ren, &levelEnemys[i].enemyHitbox);
 	}
 }
+
 
 mainBorders* LoadLevel(mainBorders* levelBorders, int *bordersCount, mainHero* Laplas, const char levelName[])
 {
@@ -73,6 +90,30 @@ mainBorders* LoadLevel(mainBorders* levelBorders, int *bordersCount, mainHero* L
 	return levelBorders;
 }
 
+mainEnemys* LoadEnemys(mainEnemys* levelEnemys, int* enemysCount, const char levelName[])
+{
+	FILE* f;
+	fopen_s(&f, levelName, "r");
+
+	fscanf_s(f, "%d", enemysCount);
+
+	levelEnemys = (mainEnemys*)realloc(levelEnemys, sizeof(mainBorders) * (*enemysCount));
+
+	for (int i = 0;i < *enemysCount;i++)
+	{
+		fscanf_s(f, "%d", &levelEnemys[i].type);
+		fscanf_s(f, "%d", &levelEnemys[i].enemyHitbox.x);
+		fscanf_s(f, "%d", &levelEnemys[i].enemyHitbox.y);
+		fscanf_s(f, "%d", &levelEnemys[i].enemyHitbox.w);
+		fscanf_s(f, "%d", &levelEnemys[i].enemyHitbox.h);
+	}
+
+
+	fclose(f);
+
+	return levelEnemys;
+}
+
 bool PhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
 {
 	if (unit.x > bordersHitbox.x && unit.x < bordersHitbox.x + bordersHitbox.w)
@@ -85,7 +126,9 @@ bool PhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
 int main(int argc, char* argv[])
 {
 	int bordersCount;
+	int enemysCount;
 	mainBorders* levelBorders = NULL;
+	mainEnemys* levelEnemys = NULL;
 	int check = 1;
 	int temp = 0;
 	windowSize window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
@@ -96,8 +139,9 @@ int main(int argc, char* argv[])
 	
 	
 	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders.txt");
+	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy.txt");
 
-	Init(&win, &ren, &win_surface, WINDOW_HEIGHT, WINDOW_WIDTH);
+	Init(&win, &ren, &win_surface);
 
 	bool isRunning = true;
 
@@ -203,6 +247,7 @@ int main(int argc, char* argv[])
 
 		//Гравитация
 		PhysicGravity(&Laplas);
+		
 
 		//Проверка на наложение хитбоксов
 		PhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
@@ -219,6 +264,7 @@ int main(int argc, char* argv[])
 		DrawMainHero(Laplas);
 
 		DrawHitbox(bordersCount, levelBorders);
+		DrawEnemys(enemysCount, levelEnemys);
 
 		SDL_RenderPresent(ren);
 
