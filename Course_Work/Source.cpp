@@ -60,7 +60,9 @@ void DrawEnemys(int enemysCount, mainEnemys levelEnemys[])
 			break;
 		}
 
-		SDL_RenderFillRect(ren, &levelEnemys[i].hitbox);
+		SDL_Rect movedEnemy = { levelEnemys[i].hitbox.x - levelEnemys[i].hitbox.w / 2,levelEnemys[i].hitbox.y - levelEnemys[i].hitbox.h / 2, levelEnemys[i].hitbox.w, levelEnemys[i].hitbox.h};
+		SDL_RenderFillRect(ren, &movedEnemy);
+
 	}
 }
 
@@ -98,7 +100,7 @@ mainEnemys* LoadEnemys(mainEnemys* levelEnemys, int* enemysCount, const char lev
 
 	fscanf_s(f, "%d", enemysCount);
 
-	levelEnemys = (mainEnemys*)realloc(levelEnemys, sizeof(mainBorders) * (*enemysCount));
+	levelEnemys = (mainEnemys*)realloc(levelEnemys, sizeof(mainEnemys) * (*enemysCount));
 
 	for (int i = 0;i < *enemysCount;i++)
 	{
@@ -123,26 +125,48 @@ bool HeroPhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
 	return 0;
 }
 
+mainHero InitHero()
+{
+	mainHero Laplas;
+	return Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
+			  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
+			  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y} };
+}
+
+void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
+{
+	for (int i = 0; i < enemysCount;i++)
+	{
+		levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+	}
+}
 
 int main(int argc, char* argv[])
 {
+	Init(&win, &ren, &win_surface);
+
+	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+	SDL_RenderClear(ren);
+
 	int bordersCount;
 	int enemysCount;
 	mainBorders* levelBorders = NULL;
 	mainEnemys* levelEnemys = NULL;
 	int check = 1;
+	mainHero Laplas;
 	int temp = 0;
 	windowSize window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
 
-	mainHero Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
-				  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
-				  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y} };
+	Laplas = InitHero();
 	
-	
+
+
 	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders.txt");
 	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy.txt");
 
-	Init(&win, &ren, &win_surface);
+	InitEnemys(levelEnemys, enemysCount);
+
+	
 
 	bool isRunning = true;
 
@@ -243,27 +267,31 @@ int main(int argc, char* argv[])
 
 		//Движение по оси X + рывок
 		HeroPhysicXmovement(&Laplas);
+		EnemyPhysicXmovement(&levelEnemys[0]);
 
 		//Прыжок
 		HeroPhysicJump(&Laplas);
+		EnemyPhysicJump(&levelEnemys[0]);
 
 		//Гравитация
 		HeroPhysicGravity(&Laplas);
 		EnemyPhysicGravity(&levelEnemys[0]);
-
-		levelEnemys[0].physic.gravity = 10;
-		levelEnemys[0].hitbox.x = levelEnemys[0].position.x;
-		levelEnemys[0].hitbox.y = levelEnemys[0].position.y;
 		
 
 		//Проверка на наложение хитбоксов
 		HeroPhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
+		EnemyPhysicHitboxOverlay(bordersCount, &levelEnemys[0], levelBorders);
 
 		//Выход за границы мира
 		HeroPhysicOutworldCheck(&Laplas, levelBorders);
+		EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
 
 		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[7].bordersHitbox))
+		{
 			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders1.txt");
+			levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
+			InitEnemys(levelEnemys, enemysCount);
+		}
 
 		#pragma endregion 
 

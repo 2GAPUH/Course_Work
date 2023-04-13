@@ -9,7 +9,7 @@
 
 
 
-bool CheckBorders(mainEnemys* Enemy, SDL_Rect unit)
+bool EnemyCheckBorders(mainEnemys* Enemy, SDL_Rect unit)
 {
 	static SDL_Point intersect;
 	//Верхнаяя прямая
@@ -102,7 +102,7 @@ void EnemyPhysicHitboxOverlay(int bordersCount, mainEnemys* Enemy, mainBorders l
 	for (int i = 0;i < bordersCount;i++)
 	{
 		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
-			if(!CheckBorders(Enemy, levelBorders[i].bordersHitbox))
+			if(!EnemyCheckBorders(Enemy, levelBorders[i].bordersHitbox))
 			{
 			check = 0;
 			break;

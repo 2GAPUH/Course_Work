@@ -6,7 +6,7 @@
 #include <math.h>
 
 
-bool CheckBorders(mainEnemys* Enemy, SDL_Rect unit);
+bool EnemyCheckBorders(mainEnemys* Enemy, SDL_Rect unit);
 void EnemyPhysicGetBase(mainEnemys* Enemy);
 void EnemyPhysicXmovement(mainEnemys* Enemy);
 void EnemyPhysicJump(mainEnemys* Enemy);
