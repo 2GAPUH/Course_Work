@@ -5,7 +5,8 @@
 #include "func.h"
 #include "common_parameters.h"
 #include <math.h>
-#include "Physic.h"
+#include "HeroPhysic.h"
+#include "EnemyPhysic.h"
 
 SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
@@ -59,7 +60,7 @@ void DrawEnemys(int enemysCount, mainEnemys levelEnemys[])
 			break;
 		}
 
-		SDL_RenderFillRect(ren, &levelEnemys[i].enemyHitbox);
+		SDL_RenderFillRect(ren, &levelEnemys[i].hitbox);
 	}
 }
 
@@ -102,10 +103,10 @@ mainEnemys* LoadEnemys(mainEnemys* levelEnemys, int* enemysCount, const char lev
 	for (int i = 0;i < *enemysCount;i++)
 	{
 		fscanf_s(f, "%d", &levelEnemys[i].type);
-		fscanf_s(f, "%d", &levelEnemys[i].enemyHitbox.x);
-		fscanf_s(f, "%d", &levelEnemys[i].enemyHitbox.y);
-		fscanf_s(f, "%d", &levelEnemys[i].enemyHitbox.w);
-		fscanf_s(f, "%d", &levelEnemys[i].enemyHitbox.h);
+		fscanf_s(f, "%d", &levelEnemys[i].hitbox.x);
+		fscanf_s(f, "%d", &levelEnemys[i].hitbox.y);
+		fscanf_s(f, "%d", &levelEnemys[i].hitbox.w);
+		fscanf_s(f, "%d", &levelEnemys[i].hitbox.h);
 	}
 
 
@@ -114,7 +115,7 @@ mainEnemys* LoadEnemys(mainEnemys* levelEnemys, int* enemysCount, const char lev
 	return levelEnemys;
 }
 
-bool PhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
+bool HeroPhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
 {
 	if (unit.x > bordersHitbox.x && unit.x < bordersHitbox.x + bordersHitbox.w)
 		if (unit.y > bordersHitbox.y && unit.y < bordersHitbox.y + bordersHitbox.h)
@@ -237,25 +238,31 @@ int main(int argc, char* argv[])
 		#pragma region PHYSIC_CHECK
 
 		//Получение координат
-		PhysicGetBase(&Laplas);
+		HeroPhysicGetBase(&Laplas);
+		EnemyPhysicGetBase(&levelEnemys[0]);
 
 		//Движение по оси X + рывок
-		PhysicXmovement(&Laplas);
+		HeroPhysicXmovement(&Laplas);
 
 		//Прыжок
-		PhysicJump(&Laplas);
+		HeroPhysicJump(&Laplas);
 
 		//Гравитация
-		PhysicGravity(&Laplas);
+		HeroPhysicGravity(&Laplas);
+		EnemyPhysicGravity(&levelEnemys[0]);
+
+		levelEnemys[0].physic.gravity = 10;
+		levelEnemys[0].hitbox.x = levelEnemys[0].position.x;
+		levelEnemys[0].hitbox.y = levelEnemys[0].position.y;
 		
 
 		//Проверка на наложение хитбоксов
-		PhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
+		HeroPhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
 
 		//Выход за границы мира
-		PhysicOutworldCheck(&Laplas, levelBorders);
+		HeroPhysicOutworldCheck(&Laplas, levelBorders);
 
-		if (PhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[7].bordersHitbox))
+		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[7].bordersHitbox))
 			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders1.txt");
 
 		#pragma endregion 
@@ -280,6 +287,7 @@ int main(int argc, char* argv[])
 	}
 
 	free(levelBorders);
+	free(levelEnemys);
 
 	DeInit(0, &win, &ren, &win_surface);
 	

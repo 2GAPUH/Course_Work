@@ -61,5 +61,8 @@ struct mainBorders
 struct mainEnemys
 {
 	int type;
-	SDL_Rect enemyHitbox;
+	SDL_Point position;
+	SDL_Rect hitbox;
+	mainPhysics physic;
+	statusEffect effect;
 };
