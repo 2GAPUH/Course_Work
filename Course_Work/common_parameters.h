@@ -10,7 +10,7 @@
 #define Y_MOVE 0
 #define GAZE_DIRECTION 0
 #define SPEED 9
-#define GRAVITY 15
+#define GRAVITY 10
 #define ACCELERATION_Y 1
 #define ACCELERATION_X 1
 #define IMPULSE 0

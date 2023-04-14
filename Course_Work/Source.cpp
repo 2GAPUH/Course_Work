@@ -16,12 +16,18 @@ SDL_Event ev;
 void DrawMainHero(mainHero Laplas)
 {
 	SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
-	SDL_Rect movedLaplas = { Laplas.hitbox.x - Laplas.hitbox.w / 2,Laplas.hitbox.y - Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h };
+	SDL_Rect movedLaplas = { 640 - Laplas.hitbox.w / 2,360 - Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h };
+	if (640 - Laplas.hitbox.x > 0)
+		movedLaplas.x -= 640 - Laplas.hitbox.x;
+
+	if (360 - Laplas.hitbox.y > 0)
+		movedLaplas.y -= 360 - Laplas.hitbox.y;
 	SDL_RenderFillRect(ren, &movedLaplas);
 }
 
-void DrawHitbox(int bordersCount, mainBorders levelBorders[])
+void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas)
 {
+	SDL_Rect rect123;
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0;i < bordersCount;i++)
 	{
@@ -44,7 +50,17 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[])
 			break;
 		}
 
-		SDL_RenderFillRect(ren, &levelBorders[i].bordersHitbox);
+		rect123 = levelBorders[i].bordersHitbox;
+
+		if (640 - Laplas.hitbox.x < 0)
+			rect123.x += 640 - Laplas.hitbox.x;
+
+
+		if (360 - Laplas.hitbox.y < 0)
+			rect123.y += 360 - Laplas.hitbox.y;
+
+
+		SDL_RenderFillRect(ren, &rect123);
 	}
 }
 
@@ -289,7 +305,7 @@ int main(int argc, char* argv[])
 		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[7].bordersHitbox))
 		{
 			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders1.txt");
-			levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
+			//levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
 			InitEnemys(levelEnemys, enemysCount);
 		}
 
@@ -298,7 +314,7 @@ int main(int argc, char* argv[])
 		#pragma region DRAW
 		DrawMainHero(Laplas);
 
-		DrawHitbox(bordersCount, levelBorders);
+		DrawHitbox(bordersCount, levelBorders, Laplas);
 		DrawEnemys(enemysCount, levelEnemys);
 
 		SDL_RenderPresent(ren);
