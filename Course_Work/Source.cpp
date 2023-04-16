@@ -12,16 +12,24 @@ SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
+int levelWidth = 0, levelHeight = 0;
+
 
 void DrawMainHero(mainHero Laplas)
 {
 	SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
 	SDL_Rect movedLaplas = { 640 - Laplas.hitbox.w / 2,360 - Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h };
-	if (640 - Laplas.hitbox.x > 0)
-		movedLaplas.x -= 640 - Laplas.hitbox.x;
 
-	if (360 - Laplas.hitbox.y > 0)
-		movedLaplas.y -= 360 - Laplas.hitbox.y;
+	if (Laplas.hitbox.x < WINDOW_WIDTH / 2)
+		movedLaplas.x = Laplas.hitbox.x - Laplas.hitbox.w / 2;
+	if(Laplas.hitbox.x > levelWidth - WINDOW_WIDTH / 2)
+		movedLaplas.x = Laplas.hitbox.x - Laplas.hitbox.w / 2 - (levelWidth - WINDOW_WIDTH);
+
+	if (Laplas.hitbox.y < WINDOW_HEIGHT / 2)
+		movedLaplas.y = Laplas.hitbox.y - Laplas.hitbox.h / 2;
+	if (Laplas.hitbox.y > levelHeight - WINDOW_HEIGHT / 2)
+		movedLaplas.y = Laplas.hitbox.y - Laplas.hitbox.h / 2 - (levelHeight - WINDOW_HEIGHT);
+
 	SDL_RenderFillRect(ren, &movedLaplas);
 }
 
@@ -46,19 +54,21 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas)
 			break; 
 
 		case 4:
-			SDL_SetRenderDrawColor(ren, 129, 0, 255, 255);
+			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
 			break;
 		}
 
 		rect123 = levelBorders[i].bordersHitbox;
 
-		if (640 - Laplas.hitbox.x < 0)
-			rect123.x += 640 - Laplas.hitbox.x;
+		if (Laplas.hitbox.x > WINDOW_WIDTH / 2 && Laplas.hitbox.x < levelWidth - WINDOW_WIDTH / 2)
+			rect123.x -= Laplas.hitbox.x - WINDOW_WIDTH / 2;
+		if (Laplas.hitbox.x > levelWidth - WINDOW_WIDTH / 2)
+			rect123.x -= levelWidth - WINDOW_WIDTH;
 
-
-		if (360 - Laplas.hitbox.y < 0)
-			rect123.y += 360 - Laplas.hitbox.y;
-
+		if (Laplas.hitbox.y > WINDOW_HEIGHT / 2 && Laplas.hitbox.y < levelHeight - WINDOW_HEIGHT / 2)
+			rect123.y -= Laplas.hitbox.y - WINDOW_HEIGHT / 2;
+		if (Laplas.hitbox.y > levelHeight - WINDOW_HEIGHT / 2)
+			rect123.y -= levelHeight - WINDOW_HEIGHT;
 
 		SDL_RenderFillRect(ren, &rect123);
 	}
@@ -91,8 +101,12 @@ mainBorders* LoadLevel(mainBorders* levelBorders, int *bordersCount, mainHero* L
 	fscanf_s(f, "%d", bordersCount);
 	fscanf_s(f, "%d", &Laplas->hitbox.x);
 	fscanf_s(f, "%d", &Laplas->hitbox.y);
-
+	fscanf_s(f, "%d", &levelWidth);
+	fscanf_s(f, "%d", &levelHeight);
+	
 	levelBorders = (mainBorders*)realloc(levelBorders, sizeof(mainBorders) * (* bordersCount));
+
+
 
 	for (int i = 0;i < *bordersCount;i++)
 	{
@@ -293,7 +307,6 @@ int main(int argc, char* argv[])
 		HeroPhysicGravity(&Laplas);
 		EnemyPhysicGravity(&levelEnemys[0]);
 		
-
 		//Проверка на наложение хитбоксов
 		HeroPhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
 		EnemyPhysicHitboxOverlay(bordersCount, &levelEnemys[0], levelBorders);
@@ -302,7 +315,7 @@ int main(int argc, char* argv[])
 		HeroPhysicOutworldCheck(&Laplas, levelBorders);
 		EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
 
-		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[7].bordersHitbox))
+		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[8].bordersHitbox))
 		{
 			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders1.txt");
 			//levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
