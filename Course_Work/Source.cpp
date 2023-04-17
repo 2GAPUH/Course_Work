@@ -15,25 +15,25 @@ SDL_Event ev;
 int levelWidth = 0, levelHeight = 0;
 
 
-void DrawMainHero(mainHero Laplas)
+void DrawMainHero(mainHero Laplas, mainWindow window)
 {
 	SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
-	SDL_Rect movedLaplas = { 640 - Laplas.hitbox.w / 2,360 - Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h };
+	SDL_Rect movedLaplas = { window.w/2 - Laplas.hitbox.w / 2,window.h / 2 - Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h };
 
-	if (Laplas.hitbox.x < WINDOW_WIDTH / 2)
+	if (Laplas.hitbox.x < window.w / 2)
 		movedLaplas.x = Laplas.hitbox.x - Laplas.hitbox.w / 2;
-	if(Laplas.hitbox.x > levelWidth - WINDOW_WIDTH / 2)
-		movedLaplas.x = Laplas.hitbox.x - Laplas.hitbox.w / 2 - (levelWidth - WINDOW_WIDTH);
+	if(Laplas.hitbox.x > levelWidth - window.w / 2)
+		movedLaplas.x = Laplas.hitbox.x - Laplas.hitbox.w / 2 - (levelWidth - window.w);
 
-	if (Laplas.hitbox.y < WINDOW_HEIGHT / 2)
+	if (Laplas.hitbox.y < window.h / 2)
 		movedLaplas.y = Laplas.hitbox.y - Laplas.hitbox.h / 2;
-	if (Laplas.hitbox.y > levelHeight - WINDOW_HEIGHT / 2)
-		movedLaplas.y = Laplas.hitbox.y - Laplas.hitbox.h / 2 - (levelHeight - WINDOW_HEIGHT);
+	if (Laplas.hitbox.y > levelHeight - window.h / 2)
+		movedLaplas.y = Laplas.hitbox.y - Laplas.hitbox.h / 2 - (levelHeight - window.h);
 
 	SDL_RenderFillRect(ren, &movedLaplas);
 }
 
-void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas)
+void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window)
 {
 	SDL_Rect rect123;
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
@@ -60,15 +60,15 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas)
 
 		rect123 = levelBorders[i].bordersHitbox;
 
-		if (Laplas.hitbox.x > WINDOW_WIDTH / 2 && Laplas.hitbox.x < levelWidth - WINDOW_WIDTH / 2)
-			rect123.x -= Laplas.hitbox.x - WINDOW_WIDTH / 2;
-		if (Laplas.hitbox.x > levelWidth - WINDOW_WIDTH / 2)
-			rect123.x -= levelWidth - WINDOW_WIDTH;
+		if (Laplas.hitbox.x > window.w / 2 && Laplas.hitbox.x < levelWidth - window.w / 2)
+			rect123.x -= Laplas.hitbox.x - window.w / 2;
+		if (Laplas.hitbox.x > levelWidth - window.w / 2)
+			rect123.x -= levelWidth - window.w;
 
-		if (Laplas.hitbox.y > WINDOW_HEIGHT / 2 && Laplas.hitbox.y < levelHeight - WINDOW_HEIGHT / 2)
-			rect123.y -= Laplas.hitbox.y - WINDOW_HEIGHT / 2;
-		if (Laplas.hitbox.y > levelHeight - WINDOW_HEIGHT / 2)
-			rect123.y -= levelHeight - WINDOW_HEIGHT;
+		if (Laplas.hitbox.y > window.h / 2 && Laplas.hitbox.y < levelHeight - window.h / 2)
+			rect123.y -= Laplas.hitbox.y - window.h / 2;
+		if (Laplas.hitbox.y > levelHeight - window.h / 2)
+			rect123.y -= levelHeight - window.h;
 
 		SDL_RenderFillRect(ren, &rect123);
 	}
@@ -185,7 +185,7 @@ int main(int argc, char* argv[])
 	int check = 1;
 	mainHero Laplas;
 	int temp = 0;
-	windowSize window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
+	mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
 
 	Laplas = InitHero();
 	
@@ -216,7 +216,9 @@ int main(int argc, char* argv[])
 				{
 				case SDL_WINDOWEVENT_RESIZED:
 					SDL_GetWindowSize(win, &window.w, &window.h);
-					SDL_RenderSetScale(ren, window.w / 1. / WINDOW_WIDTH, window.h / 1. / WINDOW_HEIGHT);
+					SDL_RenderSetScale(ren, window.scaleX = window.w / 1. / WINDOW_WIDTH, window.scaleY = window.h / 1. / WINDOW_HEIGHT);
+					window.w /= window.scaleX;
+					window.h /= window.scaleY;
 				}
 				break;
 
@@ -325,9 +327,9 @@ int main(int argc, char* argv[])
 		#pragma endregion 
 
 		#pragma region DRAW
-		DrawMainHero(Laplas);
+		DrawMainHero(Laplas, window);
 
-		DrawHitbox(bordersCount, levelBorders, Laplas);
+		DrawHitbox(bordersCount, levelBorders, Laplas, window);
 		DrawEnemys(enemysCount, levelEnemys);
 
 		SDL_RenderPresent(ren);

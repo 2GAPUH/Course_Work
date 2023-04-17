@@ -21,9 +21,10 @@
 #define CAMERA_SCALE_Y 0
 
 
-struct windowSize
+struct mainWindow
 {
 	int w, h;
+	float scaleX, scaleY;
 };
 
 struct mainPhysics
