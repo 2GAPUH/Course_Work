@@ -88,7 +88,7 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 	}
 }
 
-void DrawEnemys(int enemysCount, mainEnemys levelEnemys[])
+void DrawEnemys(int enemysCount, mainEnemys levelEnemys[], mainHero Laplas, mainWindow window)
 {
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0;i < enemysCount;i++)
@@ -101,11 +101,23 @@ void DrawEnemys(int enemysCount, mainEnemys levelEnemys[])
 		}
 
 		SDL_Rect movedEnemy = { levelEnemys[i].hitbox.x - levelEnemys[i].hitbox.w / 2,levelEnemys[i].hitbox.y - levelEnemys[i].hitbox.h / 2, levelEnemys[i].hitbox.w, levelEnemys[i].hitbox.h};
-		SDL_RenderFillRect(ren, &movedEnemy);
+		
 
+		movedEnemy = levelEnemys[i].hitbox;
+
+		if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= levelWidth - window.w / 2.f)
+			movedEnemy.x -= Laplas.hitbox.x - window.w / 2.f;
+		if (Laplas.hitbox.x > levelWidth - window.w / 2.f)
+			movedEnemy.x -= levelWidth - window.w;
+
+		if (Laplas.hitbox.y >= window.h / 2.f && Laplas.hitbox.y <= levelHeight - window.h / 2.f)
+			movedEnemy.y -= Laplas.hitbox.y - window.h / 2.f;
+		if (Laplas.hitbox.y > levelHeight - window.h / 2.f)
+			movedEnemy.y -= levelHeight - window.h;
+
+		SDL_RenderFillRect(ren, &movedEnemy);
 	}
 }
-
 
 mainBorders* LoadLevel(mainBorders* levelBorders, int *bordersCount, mainHero* Laplas, const char levelName[])
 {
@@ -378,7 +390,7 @@ int main(int argc, char* argv[])
 		DrawMainHero(&Laplas, window);
 
 		DrawHitbox(bordersCount, levelBorders, Laplas, window);
-		DrawEnemys(enemysCount, levelEnemys);
+		DrawEnemys(enemysCount, levelEnemys, Laplas, window);
 		
 
 		SDL_RenderPresent(ren);
