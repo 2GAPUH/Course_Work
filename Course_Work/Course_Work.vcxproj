@@ -137,21 +137,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EnemyPhysic.cpp" />
     <ClCompile Include="func.cpp" />
-    <ClCompile Include="physic.cpp" />
+    <ClCompile Include="HeroPhysic.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_parameters.h" />
+    <ClInclude Include="EnemyPhysic.h" />
     <ClInclude Include="func.h" />
-    <ClInclude Include="physic.h" />
+    <ClInclude Include="HeroPhysic.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="barrel1.png" />
+    <Image Include="bobr.png" />
     <Image Include="Hentai.jpg" />
+    <Image Include="mainHero26x22.png" />
+    <Image Include="StoneBlock.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Borders.txt" />
+    <Text Include="Borders1.txt" />
+    <Text Include="Enemy.txt" />
+    <Text Include="Enemy1.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
