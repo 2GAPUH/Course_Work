@@ -24,7 +24,7 @@ void Init(SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface)
 	}
 
 	int res;
-	if (res = IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) == 0)
+	if ((res = IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG)) == 0)
 	{
 		printf_s("Couldn't init SDL_Image! Error: %s\n", SDL_GetError());
 		system("pause");

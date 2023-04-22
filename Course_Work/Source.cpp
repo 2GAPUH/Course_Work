@@ -15,22 +15,36 @@ SDL_Event ev;
 int levelWidth = 0, levelHeight = 0;
 
 
-void DrawMainHero(mainHero Laplas, mainWindow window)
+void DrawMainHero(mainHero* Laplas, mainWindow window)
 {
 	SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
-	SDL_Rect movedLaplas = { window.w/2 - Laplas.hitbox.w / 2,window.h / 2 - Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h };
+	SDL_Rect movedLaplas = { window.w/2.f - Laplas->hitbox.w / 2.f,window.h / 2.f - Laplas->hitbox.h / 2.f, Laplas->hitbox.w, Laplas->hitbox.h };
 
-	if (Laplas.hitbox.x < window.w / 2)
-		movedLaplas.x = Laplas.hitbox.x - Laplas.hitbox.w / 2;
-	if(Laplas.hitbox.x > levelWidth - window.w / 2)
-		movedLaplas.x = Laplas.hitbox.x - Laplas.hitbox.w / 2 - (levelWidth - window.w);
+	if (Laplas->hitbox.x <= window.w / 2.f)
+		movedLaplas.x = Laplas->hitbox.x - Laplas->hitbox.w / 2.f;
+	if(Laplas->hitbox.x > levelWidth - window.w / 2.f)
+		movedLaplas.x = Laplas->hitbox.x - Laplas->hitbox.w / 2.f - (levelWidth - window.w);
 
-	if (Laplas.hitbox.y < window.h / 2)
-		movedLaplas.y = Laplas.hitbox.y - Laplas.hitbox.h / 2;
-	if (Laplas.hitbox.y > levelHeight - window.h / 2)
-		movedLaplas.y = Laplas.hitbox.y - Laplas.hitbox.h / 2 - (levelHeight - window.h);
+	if (Laplas->hitbox.y <= window.h / 2.f)
+		movedLaplas.y = Laplas->hitbox.y - Laplas->hitbox.h / 2.f;
+	if (Laplas->hitbox.y > levelHeight - window.h / 2.f)
+		movedLaplas.y = Laplas->hitbox.y - Laplas->hitbox.h / 2.f - (levelHeight - window.h);
 
-	SDL_RenderFillRect(ren, &movedLaplas);
+	//SDL_RenderFillRect(ren, &movedLaplas);
+	if(Laplas->physic.gazeDirection > 0)
+		SDL_RenderCopyEx(ren, Laplas->render.texture, &Laplas->render.frame, &movedLaplas, 0, 0, SDL_FLIP_HORIZONTAL);
+	else if(Laplas->physic.gazeDirection < 0)
+		SDL_RenderCopyEx(ren, Laplas->render.texture, &Laplas->render.frame, &movedLaplas, 0, 0, SDL_FLIP_NONE);
+
+
+	if ((Laplas->physic.xMoveL || Laplas->physic.xMoveR) && (SDL_GetTicks() - Laplas->render.frameTime > 1000/30))
+	{
+		Laplas->render.frame.x += Laplas->render.textureSize.w / 6;
+		Laplas->render.frameTime = SDL_GetTicks();
+	}
+
+	if (Laplas->render.frame.x >= Laplas->render.textureSize.w || (!Laplas->physic.xMoveL && !Laplas->physic.xMoveR))
+		Laplas->render.frame.x = 0;
 }
 
 void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window)
@@ -60,14 +74,14 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 
 		rect123 = levelBorders[i].bordersHitbox;
 
-		if (Laplas.hitbox.x > window.w / 2 && Laplas.hitbox.x < levelWidth - window.w / 2)
-			rect123.x -= Laplas.hitbox.x - window.w / 2;
-		if (Laplas.hitbox.x > levelWidth - window.w / 2)
+		if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= levelWidth - window.w / 2.f)
+			rect123.x -= Laplas.hitbox.x - window.w / 2.f;
+		if (Laplas.hitbox.x > levelWidth - window.w / 2.f)
 			rect123.x -= levelWidth - window.w;
 
-		if (Laplas.hitbox.y > window.h / 2 && Laplas.hitbox.y < levelHeight - window.h / 2)
-			rect123.y -= Laplas.hitbox.y - window.h / 2;
-		if (Laplas.hitbox.y > levelHeight - window.h / 2)
+		if (Laplas.hitbox.y >= window.h / 2.f && Laplas.hitbox.y <= levelHeight - window.h / 2.f)
+			rect123.y -= Laplas.hitbox.y - window.h / 2.f;
+		if (Laplas.hitbox.y > levelHeight - window.h / 2.f)
 			rect123.y -= levelHeight - window.h;
 
 		SDL_RenderFillRect(ren, &rect123);
@@ -160,7 +174,7 @@ mainHero InitHero()
 	mainHero Laplas;
 	return Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
 			  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
-			  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y} };
+			  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL};
 }
 
 void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
@@ -178,6 +192,9 @@ int main(int argc, char* argv[])
 	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 	SDL_RenderClear(ren);
 
+	mainRenderer backGround;
+	mainRenderer stoneBlock;
+
 	int bordersCount;
 	int enemysCount;
 	mainBorders* levelBorders = NULL;
@@ -189,6 +206,38 @@ int main(int argc, char* argv[])
 
 	Laplas = InitHero();
 	
+#pragma region MAIN_HERO TEXTURE
+	SDL_Surface* surface = NULL;
+	if((surface = IMG_Load("bobr.png")) == NULL)
+	{
+		printf_s("Can't load image 'bobr.png'");
+		system("pause");
+	}
+
+	Laplas.render.texture = SDL_CreateTextureFromSurface(ren, surface);
+	Laplas.render.textureSize.w = surface->w;
+	Laplas.render.textureSize.h = surface->h;
+	Laplas.render.frame.w = surface->w / 6;
+	Laplas.render.frame.h = surface->h;
+	SDL_FreeSurface(surface);
+#pragma endregion
+
+#pragma region BACKGROUND TEXTURE
+	surface = NULL;
+	if ((surface = IMG_Load("BackGroundCave.png")) == NULL)
+	{
+		printf_s("Can't load image 'BackGroundCave.png'");
+		system("pause");
+	}
+
+	backGround.texture = SDL_CreateTextureFromSurface(ren, surface);
+	backGround.textureSize.w = surface->w;
+	backGround.textureSize.h = surface->h;
+	backGround.frame.w = surface->w;
+	backGround.frame.h = surface->h;
+	SDL_FreeSurface(surface);
+#pragma endregion
+
 
 
 	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders.txt");
@@ -230,14 +279,12 @@ int main(int argc, char* argv[])
 					break;
 				case SDL_SCANCODE_A:
 					Laplas.physic.xMoveL = -1;
-					Laplas.physic.gazeDirection = 0;
 					break;
 				case SDL_SCANCODE_D:
 					Laplas.physic.xMoveR = 1;
-					Laplas.physic.gazeDirection = 1;
 					break;
 				case SDL_SCANCODE_LSHIFT:
-					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD && Laplas.physic.gazeDirection != 0)
+					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD )
 					{
 						Laplas.effect.timeCD = clock();
 						Laplas.physic.accelerationX = 8;
@@ -276,7 +323,7 @@ int main(int argc, char* argv[])
 			case SDL_MOUSEBUTTONDOWN:
 				if (ev.button.button == SDL_BUTTON_X2)
 				{
-					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD && Laplas.physic.gazeDirection !=0)
+					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD)
 					{
 						Laplas.effect.timeCD = clock();
 						Laplas.physic.accelerationX = 8;
@@ -327,14 +374,18 @@ int main(int argc, char* argv[])
 		#pragma endregion 
 
 		#pragma region DRAW
-		DrawMainHero(Laplas, window);
+		SDL_RenderCopy(ren, backGround.texture, NULL, NULL);
+		DrawMainHero(&Laplas, window);
 
 		DrawHitbox(bordersCount, levelBorders, Laplas, window);
 		DrawEnemys(enemysCount, levelEnemys);
+		
 
 		SDL_RenderPresent(ren);
 
-		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+
+
+		SDL_SetRenderDrawColor(ren, 200, 200, 200, 255);
 		SDL_RenderClear(ren);
 		#pragma endregion 
 

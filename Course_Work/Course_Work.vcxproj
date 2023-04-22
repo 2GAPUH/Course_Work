@@ -150,7 +150,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="barrel1.png" />
+    <Image Include="bobr.png" />
     <Image Include="Hentai.jpg" />
+    <Image Include="mainHero26x22.png" />
+    <Image Include="StoneBlock.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Borders.txt" />

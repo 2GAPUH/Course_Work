@@ -3,13 +3,13 @@
 #define WINDOW_HEIGHT 720
 #define WINDOW_WIDTH 1280
 #define FPS 60
-#define HERO_WIDHT 40
-#define HERO_HEIGHT 40
+#define HERO_WIDHT 105
+#define HERO_HEIGHT 60
 #define X_MOVE_L 0
 #define X_MOVE_R 0
 #define Y_MOVE 0
-#define GAZE_DIRECTION 0
-#define SPEED 9
+#define GAZE_DIRECTION 1
+#define SPEED 5
 #define GRAVITY 10
 #define ACCELERATION_Y 1
 #define ACCELERATION_X 1
@@ -30,7 +30,7 @@ struct mainWindow
 struct mainPhysics
 {
 	float xMoveL, xMoveR, yMove;
-	bool gazeDirection;
+	int gazeDirection;
 	float speed;
 	float gravity;
 	float accelerationY;
@@ -45,12 +45,21 @@ struct statusEffect
 	SDL_Point camersScale;
 };
 
+struct mainRenderer
+{
+	SDL_Texture* texture;
+	SDL_Rect textureSize;
+	SDL_Rect frame;
+	int frameTime;
+};
+
 struct mainHero
 {
 	SDL_Point position;
 	SDL_Rect hitbox;
 	mainPhysics physic;
 	statusEffect effect;
+	mainRenderer render;
 };
 
 struct mainBorders

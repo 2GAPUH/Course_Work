@@ -52,6 +52,15 @@
     <Image Include="barrel1.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="mainHero26x22.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="bobr.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="StoneBlock.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Borders.txt">

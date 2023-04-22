@@ -58,7 +58,10 @@ void HeroPhysicGetBase(mainHero* Laplas)
 {
 	Laplas->position.x = Laplas->hitbox.x;
 	Laplas->position.y = Laplas->hitbox.y;
-	Laplas->physic.gazeDirection = Laplas->physic.xMoveL + Laplas->physic.xMoveR;
+	if (Laplas->physic.xMoveL)
+		Laplas->physic.gazeDirection = -1;
+	if (Laplas->physic.xMoveR)
+		Laplas->physic.gazeDirection = 1;
 }
 
 //Движение по оси X + рывок
