@@ -157,10 +157,11 @@
     <Image Include="StoneBlock.png" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Borders.txt" />
-    <Text Include="Borders1.txt" />
+    <Text Include="Borders01.txt" />
+    <Text Include="Borders02.txt" />
     <Text Include="Enemy.txt" />
     <Text Include="Enemy1.txt" />
+    <Text Include="Level.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

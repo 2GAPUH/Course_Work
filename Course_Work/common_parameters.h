@@ -9,7 +9,7 @@
 #define X_MOVE_R 0
 #define Y_MOVE 0
 #define GAZE_DIRECTION 1
-#define SPEED 5
+#define SPEED 8
 #define GRAVITY 10
 #define ACCELERATION_Y 1
 #define ACCELERATION_X 1
@@ -25,6 +25,11 @@ struct mainWindow
 {
 	int w, h;
 	float scaleX, scaleY;
+};
+
+struct mainRoom
+{
+	int roomNum = NULL;
 };
 
 struct mainPhysics
@@ -60,6 +65,7 @@ struct mainHero
 	mainPhysics physic;
 	statusEffect effect;
 	mainRenderer render;
+	SDL_Point currentRoom;
 };
 
 struct mainBorders

@@ -122,7 +122,11 @@ void DrawEnemys(int enemysCount, mainEnemys levelEnemys[], mainHero Laplas, main
 mainBorders* LoadLevel(mainBorders* levelBorders, int *bordersCount, mainHero* Laplas, const char levelName[])
 {
 	FILE* f;
-	fopen_s(&f, levelName, "r");
+	if(fopen_s(&f, levelName, "r") != 0)
+	{ 
+		printf_s("Can't open %s", levelName);
+		system("pause");
+	}
 
 	fscanf_s(f, "%d", bordersCount);
 	fscanf_s(f, "%d", &Laplas->hitbox.x);
@@ -186,7 +190,7 @@ mainHero InitHero()
 	mainHero Laplas;
 	return Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
 			  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
-			  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL};
+			  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL, {1, 5} };
 }
 
 void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
@@ -197,12 +201,39 @@ void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
 	}
 }
 
+void GetMapFromFile(const char fileName[],mainRoom*** map, SDL_Point& mapSize)
+{
+	FILE* f;
+	if (fopen_s(&f, fileName, "r") != 0)
+	{
+		printf_s("Can't load '%s'", fileName);
+		exit(0);
+	}
+
+	fscanf_s(f, "%d %d", &mapSize.x, &mapSize.y);
+
+	*map = (mainRoom**)malloc(sizeof(mainRoom*) * mapSize.y);
+	for (int i = 0;i < mapSize.y;i++)
+	{
+		(*map)[i] = (mainRoom*)malloc(sizeof(mainRoom) * mapSize.x);
+	}
+
+	for (int i = 0;i < mapSize.y; i++)
+		for (int j = 0;j < mapSize.x; j++)
+		{
+			fscanf_s(f, "%d", &(*map)[i][j].roomNum);
+		}
+
+	fclose(f);
+}
+
 int main(int argc, char* argv[])
 {
 	Init(&win, &ren, &win_surface);
 
 	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 	SDL_RenderClear(ren);
+	char levelName[20] = "Borders01.txt";
 
 	mainRenderer backGround;
 	mainRenderer stoneBlock;
@@ -215,9 +246,15 @@ int main(int argc, char* argv[])
 	mainHero Laplas;
 	int temp = 0;
 	mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
+	SDL_Point mapSize = { NULL, NULL };
+	mainRoom** map = NULL;
 
 	Laplas = InitHero();
 	
+	GetMapFromFile("Level.txt", &map, mapSize);
+
+
+
 #pragma region MAIN_HERO TEXTURE
 	SDL_Surface* surface = NULL;
 	if((surface = IMG_Load("bobr.png")) == NULL)
@@ -252,7 +289,7 @@ int main(int argc, char* argv[])
 
 
 
-	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders.txt");
+	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, levelName);
 	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy.txt");
 
 	InitEnemys(levelEnemys, enemysCount);
@@ -376,12 +413,56 @@ int main(int argc, char* argv[])
 		HeroPhysicOutworldCheck(&Laplas, levelBorders);
 		EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
 
-		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[8].bordersHitbox))
-		{
-			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders1.txt");
-			//levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
-			InitEnemys(levelEnemys, enemysCount);
-		}
+		for (int i = 0, tmp1 = 0, tmp2 = 0; i < bordersCount; i++)
+			if (levelBorders[i].type == 3)
+			{
+				if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[i].bordersHitbox))
+				{
+					switch(tmp1)
+					{ 
+					case 0:
+						tmp2 = map[Laplas.currentRoom.y - 1][Laplas.currentRoom.x].roomNum;
+						if (tmp2 != 0 && tmp2 != -1)
+						{
+							Laplas.currentRoom.y -= 1;
+						}
+						break;
+					case 1:
+						tmp2 = map[Laplas.currentRoom.y][Laplas.currentRoom.x-1].roomNum;
+						if (tmp2 != 0 && tmp2 != -1)
+						{
+							Laplas.currentRoom.x -= 1;
+						}
+						break;
+					case 2:
+						tmp2 = map[Laplas.currentRoom.y][Laplas.currentRoom.x+1].roomNum;
+						if (tmp2 != 0 && tmp2 != -1)
+						{
+							Laplas.currentRoom.x += 1;
+						}
+						break;
+					case 3:
+						tmp2 = map[Laplas.currentRoom.y + 1][Laplas.currentRoom.x].roomNum;
+						if (tmp2 != 0 && tmp2 != -1)
+						{
+							Laplas.currentRoom.y += 1;
+						}
+						break;
+					}
+					if (tmp2 != 0 && tmp2 != -1)
+					{
+						levelName[7] = tmp2 / 10 + '0';
+						levelName[8] = tmp2 % 10 + '0';
+
+						levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, levelName);
+						//levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
+						InitEnemys(levelEnemys, enemysCount);
+					}
+			
+				}
+				tmp1++;
+
+			}
 
 		#pragma endregion 
 
@@ -410,6 +491,11 @@ int main(int argc, char* argv[])
 
 	free(levelBorders);
 	free(levelEnemys);
+	for (int i = 0; i < mapSize.y; i++)
+		free(map[i]);
+	free(map);
+
+
 
 	DeInit(0, &win, &ren, &win_surface);
 	

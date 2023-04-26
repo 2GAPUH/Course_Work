@@ -106,7 +106,6 @@ void HeroPhysicHitboxOverlay(int bordersCount, mainHero* Laplas, mainBorders lev
 			if(!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
 			{
 			check = 0;
-			break;
 			}
 	}
 

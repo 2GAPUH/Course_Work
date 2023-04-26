@@ -66,16 +66,19 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Borders.txt">
+    <Text Include="Borders01.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
-    <Text Include="Borders1.txt">
+    <Text Include="Borders02.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
     <Text Include="Enemy.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
     <Text Include="Enemy1.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="Level.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
   </ItemGroup>
