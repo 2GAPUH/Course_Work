@@ -186,7 +186,8 @@ mainHero InitHero()
 	mainHero Laplas;
 	return Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
 			  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
-			  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL};
+			  {DASH_CD, NULL, ATACK_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL,
+			  NULL, {NULL, NULL }};
 }
 
 void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
@@ -296,9 +297,9 @@ int main(int argc, char* argv[])
 					Laplas.physic.xMoveR = 1;
 					break;
 				case SDL_SCANCODE_LSHIFT:
-					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD )
+					if (clock() - Laplas.effect.timeDashCD > Laplas.effect.dashCD )
 					{
-						Laplas.effect.timeCD = clock();
+						Laplas.effect.timeDashCD = clock();
 						Laplas.physic.accelerationX = 8;
 					}
 					break;
@@ -335,14 +336,25 @@ int main(int argc, char* argv[])
 			case SDL_MOUSEBUTTONDOWN:
 				if (ev.button.button == SDL_BUTTON_X2)
 				{
-					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD)
+					if (clock() - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
 					{
-						Laplas.effect.timeCD = clock();
+						Laplas.effect.timeDashCD = clock();
 						Laplas.physic.accelerationX = 8;
 					}
 				}
 				break;
 
+
+			case SDL_MOUSEBUTTONUP:
+				if (ev.button.button == SDL_BUTTON_LEFT)
+				{
+					if (clock() - Laplas.effect.timeAtackCD > Laplas.effect.atackCD)
+					{
+						Laplas.effect.timeAtackCD = clock();
+						Laplas.battle.commonAtack = 1;
+					}
+				}
+				break;
 			}
 
 
@@ -382,6 +394,19 @@ int main(int argc, char* argv[])
 			//levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
 			InitEnemys(levelEnemys, enemysCount);
 		}
+
+		#pragma endregion 
+
+		#pragma region BATTLE
+
+		//if (Laplas.battle.commonAtack == 1)
+		//{
+		//	Laplas.battle.commonAtackCentere.x = Laplas.position.x;
+		//	Laplas.battle.commonAtackCentere.y = Laplas.position.y;
+		//	if( (Laplas.position.x - levelEnemys->position.x) * (Laplas.position.x - levelEnemys->position.x) +
+		//		(Laplas.position.y - levelEnemys->position.y) * (Laplas.position.y - levelEnemys->position.y) > 
+		//		()
+		//}
 
 		#pragma endregion 
 

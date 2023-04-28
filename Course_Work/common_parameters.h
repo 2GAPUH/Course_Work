@@ -17,6 +17,7 @@
 #define ON_BORDER 0
 #define EPS 1E-9
 #define DASH_CD 700
+#define ATACK_CD 1000
 #define CAMERA_SCALE_X 0
 #define CAMERA_SCALE_Y 0
 
@@ -41,7 +42,8 @@ struct mainPhysics
 
 struct statusEffect
 {
-	int dashCD, timeCD;
+	int dashCD, timeDashCD;
+	int atackCD, timeAtackCD;
 	SDL_Point camersScale;
 };
 
@@ -53,6 +55,12 @@ struct mainRenderer
 	int frameTime;
 };
 
+struct mainBattle
+{
+	bool commonAtack;
+	SDL_Point commonAtackCentere;
+};
+
 struct mainHero
 {
 	SDL_Point position;
@@ -60,6 +68,7 @@ struct mainHero
 	mainPhysics physic;
 	statusEffect effect;
 	mainRenderer render;
+	mainBattle battle;
 };
 
 struct mainBorders
