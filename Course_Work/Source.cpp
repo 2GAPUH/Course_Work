@@ -418,6 +418,7 @@ int main(int argc, char* argv[])
 			{
 				if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[i].bordersHitbox))
 				{
+
 					switch(tmp1)
 					{ 
 					case 0:
@@ -463,6 +464,8 @@ int main(int argc, char* argv[])
 				tmp1++;
 
 			}
+
+
 
 		#pragma endregion 
 
