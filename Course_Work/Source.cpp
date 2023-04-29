@@ -366,27 +366,27 @@ int main(int argc, char* argv[])
 
 		//Получение координат
 		HeroPhysicGetBase(&Laplas);
-		EnemyPhysicGetBase(&levelEnemys[0]);
+		//EnemyPhysicGetBase(&levelEnemys[0]);
 
 		//Движение по оси X + рывок
 		HeroPhysicXmovement(&Laplas);
-		EnemyPhysicXmovement(&levelEnemys[0]);
+		//EnemyPhysicXmovement(&levelEnemys[0]);
 
 		//Прыжок
 		HeroPhysicJump(&Laplas);
-		EnemyPhysicJump(&levelEnemys[0]);
+		//EnemyPhysicJump(&levelEnemys[0]);
 
 		//Гравитация
 		HeroPhysicGravity(&Laplas);
-		EnemyPhysicGravity(&levelEnemys[0]);
+		//EnemyPhysicGravity(&levelEnemys[0]);
 		
 		//Проверка на наложение хитбоксов
 		HeroPhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
-		EnemyPhysicHitboxOverlay(bordersCount, &levelEnemys[0], levelBorders);
+		//EnemyPhysicHitboxOverlay(bordersCount, &levelEnemys[0], levelBorders);
 
 		//Выход за границы мира
 		HeroPhysicOutworldCheck(&Laplas, levelBorders);
-		EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
+		//EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
 
 		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[8].bordersHitbox))
 		{
