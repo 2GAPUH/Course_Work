@@ -64,6 +64,9 @@
     <Image Include="BackGroundCave.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="cobblestone40x40.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Borders.txt">

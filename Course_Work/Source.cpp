@@ -47,31 +47,12 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 		Laplas->render.frame.x = 0;
 }
 
-void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window)
+void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window, mainRenderer cobbleStone)
 {
 	SDL_Rect rect123;
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0;i < bordersCount;i++)
 	{
-		switch (levelBorders[i].type)
-		{
-		case 1:
-			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-			break;
-
-		case 2:
-			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-			break;
-
-		case 3:
-			SDL_SetRenderDrawColor(ren, 255, 128, 128, 255);
-			break; 
-
-		case 4:
-			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
-			break;
-		}
-
 		rect123 = levelBorders[i].bordersHitbox;
 
 		if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= levelWidth - window.w / 2.f)
@@ -84,7 +65,43 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 		if (Laplas.hitbox.y > levelHeight - window.h / 2.f)
 			rect123.y -= levelHeight - window.h;
 
-		SDL_RenderFillRect(ren, &rect123);
+		switch (levelBorders[i].type)
+		{
+		case 1:
+			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
+
+		case 2:
+			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			SDL_Rect rect1 = cobbleStone.textureSize;
+			rect1.x = rect123.x;
+			rect1.y = rect123.y;
+			for (int j = rect123.x; j < rect123.w; j+= cobbleStone.textureSize.w)
+			{
+				rect1.x += cobbleStone.textureSize.w;
+				SDL_RenderCopy(ren, cobbleStone.texture, NULL, &rect1);
+			}
+			//for (int j = 0; j < rect123.h; j += cobbleStone.textureSize.y)
+			//	for (int i = 0; i < rect123.w; i += cobbleStone.textureSize.w)
+			//	{
+			//		rect1.x += i;
+			//		rect1.y += j;
+			//		SDL_RenderCopy(ren, cobbleStone.texture, NULL, &rect1);
+			//	}
+			break;
+
+		case 3:
+			SDL_SetRenderDrawColor(ren, 255, 128, 128, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
+
+		case 4:
+			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
+		}
 	}
 }
 
@@ -206,6 +223,7 @@ int main(int argc, char* argv[])
 	SDL_RenderClear(ren);
 
 	mainRenderer backGround;
+	mainRenderer cobbleStone;
 	mainRenderer stoneBlock;
 
 	int bordersCount;
@@ -248,6 +266,26 @@ int main(int argc, char* argv[])
 	backGround.textureSize.h = surface->h;
 	backGround.frame.w = surface->w;
 	backGround.frame.h = surface->h;
+	SDL_FreeSurface(surface);
+#pragma endregion
+
+#pragma region COBBLESTONE TEXTURE
+	surface = NULL;
+	if ((surface = IMG_Load("cobblestone40x40.png")) == NULL)
+	{
+		printf_s("Can't load image 'cobblestone40x40.png'");
+		system("pause");
+	}
+
+	cobbleStone.texture = SDL_CreateTextureFromSurface(ren, surface);
+	
+	cobbleStone.textureSize.x = NULL;
+	cobbleStone.textureSize.y = NULL;
+	cobbleStone.textureSize.w = surface->w;
+	cobbleStone.textureSize.h = surface->h;
+
+	cobbleStone.frame.w = surface->w;
+	cobbleStone.frame.h = surface->h;
 	SDL_FreeSurface(surface);
 #pragma endregion
 
@@ -414,7 +452,7 @@ int main(int argc, char* argv[])
 		SDL_RenderCopy(ren, backGround.texture, NULL, NULL);
 		DrawMainHero(&Laplas, window);
 
-		DrawHitbox(bordersCount, levelBorders, Laplas, window);
+		DrawHitbox(bordersCount, levelBorders, Laplas, window, cobbleStone);
 		DrawEnemys(enemysCount, levelEnemys, Laplas, window);
 		
 
