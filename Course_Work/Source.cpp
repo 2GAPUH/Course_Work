@@ -222,7 +222,7 @@ mainHero InitHero()
 	return Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
 			  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
 			  {DASH_CD, NULL, ATACK_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL,
-			  NULL, {NULL, NULL }};
+			  NULL, {NULL, NULL }, {HERO_DAMAGE, HERO_HP, ALIVE} };
 }
 
 void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
@@ -230,6 +230,8 @@ void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
 	for (int i = 0; i < enemysCount;i++)
 	{
 		levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+		levelEnemys[i].effect.underAtack = NULL;
+		levelEnemys[i].status = { HERO_DAMAGE, HERO_HP , ALIVE};
 	}
 }
 
@@ -406,7 +408,8 @@ int main(int argc, char* argv[])
 			case SDL_MOUSEBUTTONUP:
 				if (ev.button.button == SDL_BUTTON_LEFT)
 				{
-					if (clock() - Laplas.effect.timeAtackCD > Laplas.effect.atackCD)
+					
+					if (clock() - Laplas.effect.timeAtackCD > Laplas.effect.atackCD && Laplas.battle.commonAtack == 0)
 					{
 						Laplas.effect.timeAtackCD = clock();
 						Laplas.battle.commonAtack = 1;
@@ -428,11 +431,9 @@ int main(int argc, char* argv[])
 
 		//Движение по оси X + рывок
 		HeroPhysicXmovement(&Laplas);
-		EnemyPhysicXmovement(&levelEnemys[0]);
 
 		//Прыжок
 		HeroPhysicJump(&Laplas);
-		EnemyPhysicJump(&levelEnemys[0]);
 
 		//Гравитация
 		HeroPhysicGravity(&Laplas);
@@ -446,13 +447,16 @@ int main(int argc, char* argv[])
 		HeroPhysicOutworldCheck(&Laplas, levelBorders);
 		EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
 
-		if (levelEnemys[0].hitbox.x < Laplas.hitbox.x)
+		if (levelEnemys[0].status.alive)
 		{
-			levelEnemys[0].hitbox.x += levelEnemys[0].physic.speed;
-		}
-		else if (levelEnemys[0].hitbox.x > Laplas.hitbox.x)
-		{
-			levelEnemys[0].hitbox.x -= levelEnemys[0].physic.speed;
+			if (levelEnemys[0].hitbox.x < Laplas.hitbox.x)
+			{
+				levelEnemys[0].hitbox.x += levelEnemys[0].physic.speed;
+			}
+			else if (levelEnemys[0].hitbox.x > Laplas.hitbox.x)
+			{
+				levelEnemys[0].hitbox.x -= levelEnemys[0].physic.speed;
+			}
 		}
 
 		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[8].bordersHitbox))
@@ -466,14 +470,25 @@ int main(int argc, char* argv[])
 
 		#pragma region BATTLE
 
-		//if (Laplas.battle.commonAtack == 1)
-		//{
-		//	Laplas.battle.commonAtackCentere.x = Laplas.position.x;
-		//	Laplas.battle.commonAtackCentere.y = Laplas.position.y;
-		//	if( (Laplas.position.x - levelEnemys->position.x) * (Laplas.position.x - levelEnemys->position.x) +
-		//		(Laplas.position.y - levelEnemys->position.y) * (Laplas.position.y - levelEnemys->position.y) > 
-		//		()
-		//}
+		if (Laplas.battle.commonAtack)
+		{
+			if (Laplas.effect.timeAtackCD + Laplas.effect.atackCD < clock())
+			{
+				Laplas.battle.commonAtack = 0;
+				levelEnemys[0].effect.underAtack = 0;
+			}
+
+			if (levelEnemys[0].status.alive && !levelEnemys[0].effect.underAtack && HeroCheckBorders(&Laplas, levelEnemys[0].hitbox))
+			{
+				levelEnemys[0].effect.underAtack = 1;
+				levelEnemys[0].status.HP -= Laplas.status.DMG;
+				if (levelEnemys[0].status.HP <= 0)
+				{
+					levelEnemys[0].status.alive = 0;
+				}
+			}
+
+		}
 
 		#pragma endregion 
 

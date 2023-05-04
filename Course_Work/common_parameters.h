@@ -20,12 +20,21 @@
 #define ATACK_CD 1000
 #define CAMERA_SCALE_X 0
 #define CAMERA_SCALE_Y 0
-
+#define HERO_DAMAGE 40
+#define HERO_HP 100
+#define ALIVE 1
 
 struct mainWindow
 {
 	int w, h;
 	float scaleX, scaleY;
+};
+
+struct mainStatistic
+{
+	int DMG;
+	int HP;
+	bool alive;
 };
 
 struct mainPhysics
@@ -45,6 +54,7 @@ struct statusEffect
 	int dashCD, timeDashCD;
 	int atackCD, timeAtackCD;
 	SDL_Point camersScale;
+	bool underAtack;
 };
 
 struct mainRenderer
@@ -69,6 +79,7 @@ struct mainHero
 	statusEffect effect;
 	mainRenderer render;
 	mainBattle battle;
+	mainStatistic status;
 };
 
 struct mainBorders
@@ -84,4 +95,5 @@ struct mainEnemys
 	SDL_Rect hitbox;
 	mainPhysics physic;
 	statusEffect effect;
+	mainStatistic status;
 };

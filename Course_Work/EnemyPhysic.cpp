@@ -58,9 +58,12 @@ bool EnemyCheckBorders(mainEnemys* Enemy, SDL_Rect unit)
 //Получение координат
 void EnemyPhysicGetBase(mainEnemys* Enemy)
 {
-	Enemy->position.x = Enemy->hitbox.x;
-	Enemy->position.y = Enemy->hitbox.y;
-	Enemy->physic.gazeDirection = Enemy->physic.xMoveL + Enemy->physic.xMoveR;
+	if (Enemy->status.alive)
+	{
+		Enemy->position.x = Enemy->hitbox.x;
+		Enemy->position.y = Enemy->hitbox.y;
+		Enemy->physic.gazeDirection = Enemy->physic.xMoveL + Enemy->physic.xMoveR;
+	}
 }
 
 //Движение по оси X + рывок
@@ -90,43 +93,52 @@ void EnemyPhysicJump(mainEnemys* Enemy)
 //Гравитация
 void EnemyPhysicGravity(mainEnemys* Enemy)
 {
-	Enemy->position.y += Enemy->physic.gravity * Enemy->physic.accelerationY;
-	if (Enemy->physic.accelerationY < 1)
-		Enemy->physic.accelerationY += 0.05;
+	if (Enemy->status.alive)
+	{
+		Enemy->position.y += Enemy->physic.gravity * Enemy->physic.accelerationY;
+		if (Enemy->physic.accelerationY < 1)
+			Enemy->physic.accelerationY += 0.05;
+	}
 }
 
 //Проверка на наложение хитбоксов
 void EnemyPhysicHitboxOverlay(int bordersCount, mainEnemys* Enemy, mainBorders levelBorders[])
 {
-	int check = 1;
-	for (int i = 0;i < bordersCount;i++)
+	if (Enemy->status.alive)
 	{
-		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
-			if(!EnemyCheckBorders(Enemy, levelBorders[i].bordersHitbox))
-			{
-			check = 0;
-			break;
-			}
-	}
+		int check = 1;
+		for (int i = 0;i < bordersCount;i++)
+		{
+			if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
+				if (!EnemyCheckBorders(Enemy, levelBorders[i].bordersHitbox))
+				{
+					check = 0;
+					break;
+				}
+		}
 
-	if (check == 1)
-	{
-		Enemy->hitbox.x = Enemy->position.x;
-		Enemy->hitbox.y = Enemy->position.y;
-		Enemy->physic.onBorder = 0;
+		if (check == 1)
+		{
+			Enemy->hitbox.x = Enemy->position.x;
+			Enemy->hitbox.y = Enemy->position.y;
+			Enemy->physic.onBorder = 0;
+		}
 	}
 }
 
 //Выход за границы мира
 void EnemyPhysicOutworldCheck(mainEnemys* Enemy, mainBorders levelBorders[])
 {
-	if (Enemy->hitbox.x > levelBorders[1].bordersHitbox.w - Enemy->hitbox.w / 2 - 2)
-		Enemy->hitbox.x = levelBorders[1].bordersHitbox.w - Enemy->hitbox.w / 2 - 2;
-	else if (Enemy->hitbox.x < levelBorders[0].bordersHitbox.x + Enemy->hitbox.w / 2 + 2)
-		Enemy->hitbox.x = levelBorders[0].bordersHitbox.x + Enemy->hitbox.w / 2 + 2;
+	if (Enemy->status.alive)
+	{
+		if (Enemy->hitbox.x > levelBorders[1].bordersHitbox.w - Enemy->hitbox.w / 2 - 2)
+			Enemy->hitbox.x = levelBorders[1].bordersHitbox.w - Enemy->hitbox.w / 2 - 2;
+		else if (Enemy->hitbox.x < levelBorders[0].bordersHitbox.x + Enemy->hitbox.w / 2 + 2)
+			Enemy->hitbox.x = levelBorders[0].bordersHitbox.x + Enemy->hitbox.w / 2 + 2;
 
-	if (Enemy->hitbox.y > levelBorders[0].bordersHitbox.h - Enemy->hitbox.h / 2 - 2)
-		Enemy->hitbox.y = levelBorders[0].bordersHitbox.h - Enemy->hitbox.h / 2 - 2;
-	else if (Enemy->hitbox.y < levelBorders[0].bordersHitbox.y + Enemy->hitbox.h / 2 + 2)
-		Enemy->hitbox.y = levelBorders[0].bordersHitbox.y + Enemy->hitbox.h / 2 + 2;
+		if (Enemy->hitbox.y > levelBorders[0].bordersHitbox.h - Enemy->hitbox.h / 2 - 2)
+			Enemy->hitbox.y = levelBorders[0].bordersHitbox.h - Enemy->hitbox.h / 2 - 2;
+		else if (Enemy->hitbox.y < levelBorders[0].bordersHitbox.y + Enemy->hitbox.h / 2 + 2)
+			Enemy->hitbox.y = levelBorders[0].bordersHitbox.y + Enemy->hitbox.h / 2 + 2;
+	}
 }
