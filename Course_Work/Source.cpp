@@ -37,13 +37,13 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 		SDL_RenderCopyEx(ren, Laplas->render.texture, &Laplas->render.frame, &movedLaplas, 0, 0, SDL_FLIP_NONE);
 
 
-	if ((Laplas->physic.xMoveL || Laplas->physic.xMoveR) && (SDL_GetTicks() - Laplas->render.frameTime > 1000/30))
+	if ((Laplas->physic.xMoveL || Laplas->physic.xMoveR) && (SDL_GetTicks() - Laplas->render.frameTime > 1000/30) && (Laplas->physic.xMoveL + Laplas->physic.xMoveR != 0))
 	{
 		Laplas->render.frame.x += Laplas->render.textureSize.w / 6;
 		Laplas->render.frameTime = SDL_GetTicks();
 	}
 
-	if (Laplas->render.frame.x >= Laplas->render.textureSize.w || (!Laplas->physic.xMoveL && !Laplas->physic.xMoveR))
+	if (Laplas->render.frame.x >= Laplas->render.textureSize.w || (!Laplas->physic.xMoveL && !Laplas->physic.xMoveR) || (Laplas->physic.xMoveL + Laplas->physic.xMoveR == 0))
 		Laplas->render.frame.x = 0;
 }
 
@@ -247,6 +247,7 @@ int main(int argc, char* argv[])
 	mainRenderer backGround;
 	mainRenderer cobbleStone;
 	mainRenderer stoneBlock;
+	mainRenderer hpBar;
 
 	int bordersCount;
 	int enemysCount;
@@ -260,58 +261,77 @@ int main(int argc, char* argv[])
 
 	Laplas = InitHero();
 	
-#pragma region MAIN_HERO TEXTURE
-	SDL_Surface* surface = NULL;
-	if((surface = IMG_Load("bobr.png")) == NULL)
-	{
-		printf_s("Can't load image 'bobr.png'");
-		system("pause");
-	}
+	#pragma region MAIN_HERO TEXTURE
+		SDL_Surface* surface = NULL;
+		if((surface = IMG_Load("bobr.png")) == NULL)
+		{
+			printf_s("Can't load image 'bobr.png'");
+			system("pause");
+		}
 
-	Laplas.render.texture = SDL_CreateTextureFromSurface(ren, surface);
-	Laplas.render.textureSize.w = surface->w;
-	Laplas.render.textureSize.h = surface->h;
-	Laplas.render.frame.w = surface->w / 6;
-	Laplas.render.frame.h = surface->h;
-	SDL_FreeSurface(surface);
-#pragma endregion
+		Laplas.render.texture = SDL_CreateTextureFromSurface(ren, surface);
+		Laplas.render.textureSize.w = surface->w;
+		Laplas.render.textureSize.h = surface->h;
+		Laplas.render.frame.w = surface->w / 6;
+		Laplas.render.frame.h = surface->h;
+		SDL_FreeSurface(surface);
+	#pragma endregion
 
-#pragma region BACKGROUND TEXTURE
-	surface = NULL;
-	if ((surface = IMG_Load("BackGroundCave.png")) == NULL)
-	{
-		printf_s("Can't load image 'BackGroundCave.png'");
-		system("pause");
-	}
+	#pragma region BACKGROUND TEXTURE
+		surface = NULL;
+		if ((surface = IMG_Load("BackGroundCave.png")) == NULL)
+		{
+			printf_s("Can't load image 'BackGroundCave.png'");
+			system("pause");
+		}
 
-	backGround.texture = SDL_CreateTextureFromSurface(ren, surface);
-	backGround.textureSize.w = surface->w;
-	backGround.textureSize.h = surface->h;
-	backGround.frame.w = surface->w;
-	backGround.frame.h = surface->h;
-	SDL_FreeSurface(surface);
-#pragma endregion
+		backGround.texture = SDL_CreateTextureFromSurface(ren, surface);
+		backGround.textureSize.w = surface->w;
+		backGround.textureSize.h = surface->h;
+		backGround.frame.w = surface->w;
+		backGround.frame.h = surface->h;
+		SDL_FreeSurface(surface);
+	#pragma endregion
 
-#pragma region COBBLESTONE TEXTURE
-	surface = NULL;
-	if ((surface = IMG_Load("cobblestone40x40.png")) == NULL)
-	{
-		printf_s("Can't load image 'cobblestone40x40.png'");
-		system("pause");
-	}
+	#pragma region COBBLESTONE TEXTURE
+		surface = NULL;
+		if ((surface = IMG_Load("cobblestone40x40.png")) == NULL)
+		{
+			printf_s("Can't load image 'cobblestone40x40.png'");
+			system("pause");
+		}
 
-	cobbleStone.texture = SDL_CreateTextureFromSurface(ren, surface);
+		cobbleStone.texture = SDL_CreateTextureFromSurface(ren, surface);
 	
-	cobbleStone.textureSize.x = NULL;
-	cobbleStone.textureSize.y = NULL;
-	cobbleStone.textureSize.w = surface->w * 2.5;
-	cobbleStone.textureSize.h = surface->h * 2.5;
+		cobbleStone.textureSize.x = NULL;
+		cobbleStone.textureSize.y = NULL;
+		cobbleStone.textureSize.w = surface->w * 2.5;
+		cobbleStone.textureSize.h = surface->h * 2.5;
 
-	cobbleStone.frame.w = surface->w * 2.5;
-	cobbleStone.frame.h = surface->h * 2.5;
-	SDL_FreeSurface(surface);
-#pragma endregion
+		cobbleStone.frame.w = surface->w * 2.5;
+		cobbleStone.frame.h = surface->h * 2.5;
+		SDL_FreeSurface(surface);
+	#pragma endregion
 
+	#pragma region HP_BAR TEXTURE
+		surface = NULL;
+		if ((surface = IMG_Load("hpBar.png")) == NULL)
+		{
+			printf_s("Can't load image 'hpBar.png'");
+			system("pause");
+		}
+
+		hpBar.texture = SDL_CreateTextureFromSurface(ren, surface);
+
+		hpBar.textureSize.x = NULL;
+		hpBar.textureSize.y = NULL;
+		hpBar.textureSize.w = surface->w * 0.5;
+		hpBar.textureSize.h = surface->h * 0.5;
+
+		hpBar.frame.w = surface->w * 0.5;
+		hpBar.frame.h = surface->h * 0.5;
+		SDL_FreeSurface(surface);
+	#pragma endregion
 
 
 	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders.txt");
@@ -508,6 +528,16 @@ int main(int argc, char* argv[])
 
 		DrawHitbox(bordersCount, levelBorders, Laplas, window, cobbleStone);
 		DrawEnemys(enemysCount, levelEnemys, Laplas, window);
+		
+
+		
+		//SDL_Rect tempRect = hpBar.textureSize;
+		////tempRect.h /= 2;
+		//SDL_Rect tempRect2 = { 0, 0, hpBar.textureSize.w, hpBar.textureSize.h/2 };
+		//
+		//
+
+		//SDL_RenderCopy(ren, hpBar.texture, &tempRect2, &tempRect);
 		
 
 		SDL_RenderPresent(ren);

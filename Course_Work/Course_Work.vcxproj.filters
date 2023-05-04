@@ -70,6 +70,9 @@
     <Image Include="cobblestone20x20.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="hpBar.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Borders.txt">

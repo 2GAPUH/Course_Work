@@ -155,6 +155,7 @@
     <Image Include="cobblestone20x20.png" />
     <Image Include="cobblestone40x40.png" />
     <Image Include="Hentai.jpg" />
+    <Image Include="hpBar.png" />
     <Image Include="mainHero26x22.png" />
     <Image Include="StoneBlock.png" />
   </ItemGroup>
