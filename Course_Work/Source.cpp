@@ -29,7 +29,7 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 		movedLaplas.y = Laplas->hitbox.y - Laplas->hitbox.h / 2.f;
 	if (Laplas->hitbox.y > levelHeight - window.h / 2.f)
 		movedLaplas.y = Laplas->hitbox.y - Laplas->hitbox.h / 2.f - (levelHeight - window.h);
-
+	SDL_Point p = { 100, -100 };
 	//SDL_RenderFillRect(ren, &movedLaplas);
 	if(Laplas->physic.gazeDirection > 0)
 		SDL_RenderCopyEx(ren, Laplas->render.texture, &Laplas->render.frame, &movedLaplas, 0, 0, SDL_FLIP_HORIZONTAL);
@@ -235,7 +235,16 @@ void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
 	}
 }
 
-
+//SDL_Texture* resizeTexture(SDL_Renderer* renderer, SDL_Texture* texture, int newWidth, int newHeight)
+//{
+//	SDL_Surface* surface = SDL_CreateRGBSurface(0, newWidth, newHeight, 32, 0, 0, 0, 0);
+//	SDL_Texture* newTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, newWidth, newHeight);
+//	SDL_BlitScaled(texture, NULL, surface, NULL);
+//	SDL_UpdateTexture(newTexture, NULL, surface->pixels, surface->pitch);
+//	SDL_FreeSurface(surface);
+//	SDL_DestroyTexture(texture);
+//	return newTexture;
+//}
 
 int main(int argc, char* argv[])
 {
@@ -320,7 +329,7 @@ int main(int argc, char* argv[])
 			printf_s("Can't load image 'hpBar.png'");
 			system("pause");
 		}
-
+			
 		hpBar.texture = SDL_CreateTextureFromSurface(ren, surface);
 
 		hpBar.textureSize.x = NULL;
