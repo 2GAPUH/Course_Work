@@ -255,7 +255,8 @@ int main(int argc, char* argv[])
 	int check = 1;
 	mainHero Laplas;
 	int temp = 0;
-	mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
+	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
+	SDL_Point mouseClick = { NULL, NULL };
 
 	Laplas = InitHero();
 	
@@ -341,6 +342,8 @@ int main(int argc, char* argv[])
 					SDL_RenderSetScale(ren, window.scaleX = window.w / 1. / WINDOW_WIDTH, window.scaleY = window.h / 1. / WINDOW_HEIGHT);
 					window.w /= window.scaleX;
 					window.h /= window.scaleY;
+				
+					break;
 				}
 				break;
 
@@ -414,6 +417,13 @@ int main(int argc, char* argv[])
 						Laplas.effect.timeAtackCD = clock();
 						Laplas.battle.commonAtack = 1;
 					}
+				}
+				if (ev.button.button == SDL_BUTTON_RIGHT)
+				{
+					SDL_Rect rrr = {window.w*window.scaleX - 100, window.h*window.scaleY - 100, 100, 100};
+					SDL_GetMouseState(&mouseClick.x, &mouseClick.y);
+					if (SDL_PointInRect(&mouseClick, &rrr))
+						printf_s("click\n");
 				}
 				break;
 			}
