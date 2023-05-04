@@ -50,6 +50,8 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window, mainRenderer cobbleStone)
 {
 	SDL_Rect rect123;
+	SDL_Rect dopRect = {NULL, NULL, NULL, NULL};
+	bool check = 1;
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0;i < bordersCount;i++)
 	{
@@ -76,21 +78,37 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 			SDL_RenderFillRect(ren, &rect123);
 			SDL_Rect rect1 = cobbleStone.textureSize;
-			rect1.x = rect123.x;
-			rect1.y = rect123.y;
-			for (int j = rect123.x; j < rect123.w; j+= cobbleStone.textureSize.w)
-			{
-				rect1.x += cobbleStone.textureSize.w;
-				SDL_RenderCopy(ren, cobbleStone.texture, NULL, &rect1);
-			}
-			//for (int j = 0; j < rect123.h; j += cobbleStone.textureSize.y)
-			//	for (int i = 0; i < rect123.w; i += cobbleStone.textureSize.w)
-			//	{
-			//		rect1.x += i;
-			//		rect1.y += j;
-			//		SDL_RenderCopy(ren, cobbleStone.texture, NULL, &rect1);
-			//	}
-			break;
+			dopRect = cobbleStone.textureSize;
+
+			for (int i = rect123.y; i < rect123.y + rect123.h; i+= rect1.h)
+				for (int j = rect123.x; j < rect123.x + rect123.w; j+= rect1.w)
+				{
+					if (j + rect1.w > rect123.x + rect123.w)
+					{
+						rect1.w = rect123.x + rect123.w - j;
+						dopRect.w = rect1.w;
+						check = 1;
+					}
+					if (j + rect1.h > rect123.y + rect123.h)
+					{
+						rect1.h = rect123.y + rect123.h - i;
+						dopRect.h = rect1.h;
+						check = 1;
+					}
+					rect1.x = j;
+					rect1.y = i;
+					SDL_RenderCopy(ren, cobbleStone.texture, &dopRect, &rect1);
+					if (check)
+					{
+						rect1.h = cobbleStone.textureSize.h;
+						rect1.w = cobbleStone.textureSize.w;
+						dopRect.h = cobbleStone.textureSize.h;
+						dopRect.w = cobbleStone.textureSize.w;
+						check = 0;
+					}
+
+				}
+				break;
 
 		case 3:
 			SDL_SetRenderDrawColor(ren, 255, 128, 128, 255);
@@ -120,7 +138,7 @@ void DrawEnemys(int enemysCount, mainEnemys levelEnemys[], mainHero Laplas, main
 		SDL_Rect movedEnemy = { levelEnemys[i].hitbox.x - levelEnemys[i].hitbox.w / 2,levelEnemys[i].hitbox.y - levelEnemys[i].hitbox.h / 2, levelEnemys[i].hitbox.w, levelEnemys[i].hitbox.h};
 		
 
-		movedEnemy = levelEnemys[i].hitbox;
+		//movedEnemy = levelEnemys[i].hitbox;
 
 		if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= levelWidth - window.w / 2.f)
 			movedEnemy.x -= Laplas.hitbox.x - window.w / 2.f;
@@ -215,6 +233,8 @@ void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
 	}
 }
 
+
+
 int main(int argc, char* argv[])
 {
 	Init(&win, &ren, &win_surface);
@@ -281,11 +301,11 @@ int main(int argc, char* argv[])
 	
 	cobbleStone.textureSize.x = NULL;
 	cobbleStone.textureSize.y = NULL;
-	cobbleStone.textureSize.w = surface->w;
-	cobbleStone.textureSize.h = surface->h;
+	cobbleStone.textureSize.w = surface->w * 2.5;
+	cobbleStone.textureSize.h = surface->h * 2.5;
 
-	cobbleStone.frame.w = surface->w;
-	cobbleStone.frame.h = surface->h;
+	cobbleStone.frame.w = surface->w * 2.5;
+	cobbleStone.frame.h = surface->h * 2.5;
 	SDL_FreeSurface(surface);
 #pragma endregion
 
@@ -404,32 +424,41 @@ int main(int argc, char* argv[])
 
 		//Получение координат
 		HeroPhysicGetBase(&Laplas);
-		//EnemyPhysicGetBase(&levelEnemys[0]);
+		EnemyPhysicGetBase(&levelEnemys[0]);
 
 		//Движение по оси X + рывок
 		HeroPhysicXmovement(&Laplas);
-		//EnemyPhysicXmovement(&levelEnemys[0]);
+		EnemyPhysicXmovement(&levelEnemys[0]);
 
 		//Прыжок
 		HeroPhysicJump(&Laplas);
-		//EnemyPhysicJump(&levelEnemys[0]);
+		EnemyPhysicJump(&levelEnemys[0]);
 
 		//Гравитация
 		HeroPhysicGravity(&Laplas);
-		//EnemyPhysicGravity(&levelEnemys[0]);
+		EnemyPhysicGravity(&levelEnemys[0]);
 		
 		//Проверка на наложение хитбоксов
 		HeroPhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
-		//EnemyPhysicHitboxOverlay(bordersCount, &levelEnemys[0], levelBorders);
+		EnemyPhysicHitboxOverlay(bordersCount, &levelEnemys[0], levelBorders);
 
 		//Выход за границы мира
 		HeroPhysicOutworldCheck(&Laplas, levelBorders);
-		//EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
+		EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
+
+		if (levelEnemys[0].hitbox.x < Laplas.hitbox.x)
+		{
+			levelEnemys[0].hitbox.x += levelEnemys[0].physic.speed;
+		}
+		else if (levelEnemys[0].hitbox.x > Laplas.hitbox.x)
+		{
+			levelEnemys[0].hitbox.x -= levelEnemys[0].physic.speed;
+		}
 
 		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[8].bordersHitbox))
 		{
 			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders1.txt");
-			//levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
+			levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
 			InitEnemys(levelEnemys, enemysCount);
 		}
 
