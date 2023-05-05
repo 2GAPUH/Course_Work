@@ -24,6 +24,7 @@
 #define HERO_HP 100
 #define ALIVE 1
 #define TIMER_SIZE 50
+#define PRESSED_S 0
 
 struct mainWindow
 {
@@ -48,6 +49,7 @@ struct mainPhysics
 	float accelerationX;
 	float impulse;
 	bool onBorder;
+	bool pressed_S;
 };
 
 struct statusEffect

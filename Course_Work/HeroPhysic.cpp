@@ -102,7 +102,7 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 	int check = 1;
 	for (int i = 0;i < *bordersCount;i++)
 	{
-		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
+		if (levelBorders[i].type == 1 || levelBorders[i].type == 2 || (levelBorders[i].type == 4 && !Laplas->physic.pressed_S ))
 			if(!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
 			{
 			check = 0;

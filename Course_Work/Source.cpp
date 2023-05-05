@@ -224,7 +224,7 @@ mainHero InitHero()
 {
 	mainHero Laplas;
 	return Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
-			  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
+			  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER, PRESSED_S},
 			  {DASH_CD, NULL, ATACK_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL,
 			  NULL, {NULL, NULL }, {HERO_DAMAGE, HERO_HP, ALIVE} };
 }
@@ -437,12 +437,19 @@ int main(int argc, char* argv[])
 				case SDL_SCANCODE_ESCAPE:
 					isRunning = false;
 					break;
+
 				case SDL_SCANCODE_A:
 					Laplas.physic.xMoveL = -1;
 					break;
+
 				case SDL_SCANCODE_D:
 					Laplas.physic.xMoveR = 1;
 					break;
+
+				case SDL_SCANCODE_S:
+					Laplas.physic.pressed_S = 1;
+					break;
+
 				case SDL_SCANCODE_LSHIFT:
 					if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD )
 					{
@@ -450,6 +457,7 @@ int main(int argc, char* argv[])
 						Laplas.physic.accelerationX = 8;
 					}
 					break;
+
 				case SDL_SCANCODE_SPACE:
 					if (Laplas.physic.onBorder)
 					{
@@ -468,15 +476,15 @@ int main(int argc, char* argv[])
 				case SDL_SCANCODE_A:
 					Laplas.physic.xMoveL = 0;
 					break;
-				//case SDL_SCANCODE_W:
-				//	Laplas.physic.yMove = 0;
-				//	break;
-				//case SDL_SCANCODE_S:
-				//	Laplas.physic.yMove = 0;
-				//	break;
+
+				case SDL_SCANCODE_S:
+					Laplas.physic.pressed_S = 0;
+					break;
+
 				case SDL_SCANCODE_D:
 					Laplas.physic.xMoveR = 0;
 					break;
+
 				}
 				break;
 
