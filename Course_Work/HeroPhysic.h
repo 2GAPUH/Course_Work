@@ -7,7 +7,7 @@
 
 
 void HeroPhysicOutworldCheck(mainHero* Laplas, mainBorders levelBorders[]);
-void HeroPhysicHitboxOverlay(int bordersCount, mainHero* Laplas, mainBorders levelBorders[]);
+void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[]);
 void HeroPhysicGravity(mainHero* Laplas);
 void HeroPhysicJump(mainHero* Laplas);
 void HeroPhysicXmovement(mainHero* Laplas);

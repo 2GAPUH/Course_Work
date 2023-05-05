@@ -97,10 +97,10 @@ void HeroPhysicGravity(mainHero* Laplas)
 }
 
 //Проверка на наложение хитбоксов
-void HeroPhysicHitboxOverlay(int bordersCount, mainHero* Laplas, mainBorders levelBorders[])
+void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[])
 {
 	int check = 1;
-	for (int i = 0;i < bordersCount;i++)
+	for (int i = 0;i < *bordersCount;i++)
 	{
 		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
 			if(!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))

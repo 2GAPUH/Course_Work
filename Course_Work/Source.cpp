@@ -466,7 +466,7 @@ int main(int argc, char* argv[])
 
 		//Получение координат
 		HeroPhysicGetBase(&Laplas);
-		EnemyPhysicGetBase(&levelEnemys[0]);
+		EnemyPhysicGetBase(levelEnemys, &enemysCount);
 
 		//Движение по оси X + рывок
 		HeroPhysicXmovement(&Laplas);
@@ -476,25 +476,28 @@ int main(int argc, char* argv[])
 
 		//Гравитация
 		HeroPhysicGravity(&Laplas);
-		EnemyPhysicGravity(&levelEnemys[0]);
+		EnemyPhysicGravity(levelEnemys, &enemysCount);
 		
 		//Проверка на наложение хитбоксов
-		HeroPhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
-		EnemyPhysicHitboxOverlay(bordersCount, &levelEnemys[0], levelBorders);
+		HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders);
+		EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders);
 
 		//Выход за границы мира
 		HeroPhysicOutworldCheck(&Laplas, levelBorders);
-		EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
+		EnemyPhysicOutworldCheck(&enemysCount, levelEnemys, levelBorders);
 
-		if (levelEnemys[0].status.alive)
+		for (int i = 0; i < enemysCount; i++)
 		{
-			if (levelEnemys[0].hitbox.x < Laplas.hitbox.x)
+			if (levelEnemys[i].status.alive)
 			{
-				levelEnemys[0].hitbox.x += levelEnemys[0].physic.speed;
-			}
-			else if (levelEnemys[0].hitbox.x > Laplas.hitbox.x)
-			{
-				levelEnemys[0].hitbox.x -= levelEnemys[0].physic.speed;
+				if (levelEnemys[i].hitbox.x < Laplas.hitbox.x)
+				{
+					levelEnemys[i].hitbox.x += levelEnemys[i].physic.speed;
+				}
+				else if (levelEnemys[i].hitbox.x > Laplas.hitbox.x)
+				{
+					levelEnemys[i].hitbox.x -= levelEnemys[i].physic.speed;
+				}
 			}
 		}
 
@@ -509,25 +512,29 @@ int main(int argc, char* argv[])
 
 		#pragma region BATTLE
 
-		if (Laplas.battle.commonAtack)
+		for (int i = 0; i < enemysCount; i++)
 		{
-			if (Laplas.effect.timeAtackCD + Laplas.effect.atackCD < clock())
+			if (Laplas.battle.commonAtack)
 			{
-				Laplas.battle.commonAtack = 0;
-				levelEnemys[0].effect.underAtack = 0;
-			}
-
-			if (levelEnemys[0].status.alive && !levelEnemys[0].effect.underAtack && HeroCheckBorders(&Laplas, levelEnemys[0].hitbox))
-			{
-				levelEnemys[0].effect.underAtack = 1;
-				levelEnemys[0].status.HP -= Laplas.status.DMG;
-				if (levelEnemys[0].status.HP <= 0)
+				if (Laplas.effect.timeAtackCD + Laplas.effect.atackCD < clock())
 				{
-					levelEnemys[0].status.alive = 0;
+					Laplas.battle.commonAtack = 0;
+					levelEnemys[i].effect.underAtack = 0;
 				}
-			}
 
+				if (levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && HeroCheckBorders(&Laplas, levelEnemys[i].hitbox))
+				{
+					levelEnemys[i].effect.underAtack = 1;
+					levelEnemys[i].status.HP -= Laplas.status.DMG;
+					if (levelEnemys[i].status.HP <= 0)
+					{
+						levelEnemys[i].status.alive = 0;
+					}
+				}
+
+			}
 		}
+
 
 		#pragma endregion 
 
