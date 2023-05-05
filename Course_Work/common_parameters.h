@@ -17,14 +17,24 @@
 #define ON_BORDER 0
 #define EPS 1E-9
 #define DASH_CD 700
+#define ATACK_CD 1000
 #define CAMERA_SCALE_X 0
 #define CAMERA_SCALE_Y 0
-
+#define HERO_DAMAGE 40
+#define HERO_HP 100
+#define ALIVE 1
 
 struct mainWindow
 {
 	int w, h;
 	float scaleX, scaleY;
+};
+
+struct mainStatistic
+{
+	int DMG;
+	int HP;
+	bool alive;
 };
 
 struct mainPhysics
@@ -41,8 +51,10 @@ struct mainPhysics
 
 struct statusEffect
 {
-	int dashCD, timeCD;
+	int dashCD, timeDashCD;
+	int atackCD, timeAtackCD;
 	SDL_Point camersScale;
+	bool underAtack;
 };
 
 struct mainRenderer
@@ -53,6 +65,12 @@ struct mainRenderer
 	int frameTime;
 };
 
+struct mainBattle
+{
+	bool commonAtack;
+	SDL_Point commonAtackCentere;
+};
+
 struct mainHero
 {
 	SDL_Point position;
@@ -60,6 +78,8 @@ struct mainHero
 	mainPhysics physic;
 	statusEffect effect;
 	mainRenderer render;
+	mainBattle battle;
+	mainStatistic status;
 };
 
 struct mainBorders
@@ -75,4 +95,5 @@ struct mainEnemys
 	SDL_Rect hitbox;
 	mainPhysics physic;
 	statusEffect effect;
+	mainStatistic status;
 };

@@ -61,6 +61,18 @@
     <Image Include="StoneBlock.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="BackGroundCave.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="cobblestone40x40.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="cobblestone20x20.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="hpBar.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Borders.txt">

@@ -149,9 +149,13 @@
     <ClInclude Include="HeroPhysic.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="BackGroundCave.png" />
     <Image Include="barrel1.png" />
     <Image Include="bobr.png" />
+    <Image Include="cobblestone20x20.png" />
+    <Image Include="cobblestone40x40.png" />
     <Image Include="Hentai.jpg" />
+    <Image Include="hpBar.png" />
     <Image Include="mainHero26x22.png" />
     <Image Include="StoneBlock.png" />
   </ItemGroup>

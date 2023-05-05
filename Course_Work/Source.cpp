@@ -29,7 +29,7 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 		movedLaplas.y = Laplas->hitbox.y - Laplas->hitbox.h / 2.f;
 	if (Laplas->hitbox.y > levelHeight - window.h / 2.f)
 		movedLaplas.y = Laplas->hitbox.y - Laplas->hitbox.h / 2.f - (levelHeight - window.h);
-
+	SDL_Point p = { 100, -100 };
 	//SDL_RenderFillRect(ren, &movedLaplas);
 	if(Laplas->physic.gazeDirection > 0)
 		SDL_RenderCopyEx(ren, Laplas->render.texture, &Laplas->render.frame, &movedLaplas, 0, 0, SDL_FLIP_HORIZONTAL);
@@ -37,41 +37,24 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 		SDL_RenderCopyEx(ren, Laplas->render.texture, &Laplas->render.frame, &movedLaplas, 0, 0, SDL_FLIP_NONE);
 
 
-	if ((Laplas->physic.xMoveL || Laplas->physic.xMoveR) && (SDL_GetTicks() - Laplas->render.frameTime > 1000/30))
+	if ((Laplas->physic.xMoveL || Laplas->physic.xMoveR) && (SDL_GetTicks() - Laplas->render.frameTime > 1000/30) && (Laplas->physic.xMoveL + Laplas->physic.xMoveR != 0))
 	{
 		Laplas->render.frame.x += Laplas->render.textureSize.w / 6;
 		Laplas->render.frameTime = SDL_GetTicks();
 	}
 
-	if (Laplas->render.frame.x >= Laplas->render.textureSize.w || (!Laplas->physic.xMoveL && !Laplas->physic.xMoveR))
+	if (Laplas->render.frame.x >= Laplas->render.textureSize.w || (!Laplas->physic.xMoveL && !Laplas->physic.xMoveR) || (Laplas->physic.xMoveL + Laplas->physic.xMoveR == 0))
 		Laplas->render.frame.x = 0;
 }
 
-void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window)
+void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window, mainRenderer cobbleStone)
 {
 	SDL_Rect rect123;
+	SDL_Rect dopRect = {NULL, NULL, NULL, NULL};
+	bool check = 1;
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0;i < bordersCount;i++)
 	{
-		switch (levelBorders[i].type)
-		{
-		case 1:
-			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-			break;
-
-		case 2:
-			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-			break;
-
-		case 3:
-			SDL_SetRenderDrawColor(ren, 255, 128, 128, 255);
-			break; 
-
-		case 4:
-			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
-			break;
-		}
-
 		rect123 = levelBorders[i].bordersHitbox;
 
 		if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= levelWidth - window.w / 2.f)
@@ -84,11 +67,63 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 		if (Laplas.hitbox.y > levelHeight - window.h / 2.f)
 			rect123.y -= levelHeight - window.h;
 
-		SDL_RenderFillRect(ren, &rect123);
+		switch (levelBorders[i].type)
+		{
+		case 1:
+			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
+
+		case 2:
+			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			SDL_Rect rect1 = cobbleStone.textureSize;
+			dopRect = cobbleStone.textureSize;
+
+			for (int i = rect123.y; i < rect123.y + rect123.h; i+= rect1.h)
+				for (int j = rect123.x; j < rect123.x + rect123.w; j+= rect1.w)
+				{
+					if (j + rect1.w > rect123.x + rect123.w)
+					{
+						rect1.w = rect123.x + rect123.w - j;
+						dopRect.w = rect1.w;
+						check = 1;
+					}
+					if (j + rect1.h > rect123.y + rect123.h)
+					{
+						rect1.h = rect123.y + rect123.h - i;
+						dopRect.h = rect1.h;
+						check = 1;
+					}
+					rect1.x = j;
+					rect1.y = i;
+					SDL_RenderCopy(ren, cobbleStone.texture, &dopRect, &rect1);
+					if (check)
+					{
+						rect1.h = cobbleStone.textureSize.h;
+						rect1.w = cobbleStone.textureSize.w;
+						dopRect.h = cobbleStone.textureSize.h;
+						dopRect.w = cobbleStone.textureSize.w;
+						check = 0;
+					}
+
+				}
+				break;
+
+		case 3:
+			SDL_SetRenderDrawColor(ren, 255, 128, 128, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
+
+		case 4:
+			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
+		}
 	}
 }
 
-void DrawEnemys(int enemysCount, mainEnemys levelEnemys[])
+void DrawEnemys(int enemysCount, mainEnemys levelEnemys[], mainHero Laplas, mainWindow window)
 {
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0;i < enemysCount;i++)
@@ -101,11 +136,23 @@ void DrawEnemys(int enemysCount, mainEnemys levelEnemys[])
 		}
 
 		SDL_Rect movedEnemy = { levelEnemys[i].hitbox.x - levelEnemys[i].hitbox.w / 2,levelEnemys[i].hitbox.y - levelEnemys[i].hitbox.h / 2, levelEnemys[i].hitbox.w, levelEnemys[i].hitbox.h};
-		SDL_RenderFillRect(ren, &movedEnemy);
+		
 
+		//movedEnemy = levelEnemys[i].hitbox;
+
+		if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= levelWidth - window.w / 2.f)
+			movedEnemy.x -= Laplas.hitbox.x - window.w / 2.f;
+		if (Laplas.hitbox.x > levelWidth - window.w / 2.f)
+			movedEnemy.x -= levelWidth - window.w;
+
+		if (Laplas.hitbox.y >= window.h / 2.f && Laplas.hitbox.y <= levelHeight - window.h / 2.f)
+			movedEnemy.y -= Laplas.hitbox.y - window.h / 2.f;
+		if (Laplas.hitbox.y > levelHeight - window.h / 2.f)
+			movedEnemy.y -= levelHeight - window.h;
+
+		SDL_RenderFillRect(ren, &movedEnemy);
 	}
 }
-
 
 mainBorders* LoadLevel(mainBorders* levelBorders, int *bordersCount, mainHero* Laplas, const char levelName[])
 {
@@ -174,7 +221,8 @@ mainHero InitHero()
 	mainHero Laplas;
 	return Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
 			  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
-			  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL};
+			  {DASH_CD, NULL, ATACK_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL,
+			  NULL, {NULL, NULL }, {HERO_DAMAGE, HERO_HP, ALIVE} };
 }
 
 void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
@@ -182,8 +230,21 @@ void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
 	for (int i = 0; i < enemysCount;i++)
 	{
 		levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+		levelEnemys[i].effect.underAtack = NULL;
+		levelEnemys[i].status = { HERO_DAMAGE, HERO_HP , ALIVE};
 	}
 }
+
+//SDL_Texture* resizeTexture(SDL_Renderer* renderer, SDL_Texture* texture, int newWidth, int newHeight)
+//{
+//	SDL_Surface* surface = SDL_CreateRGBSurface(0, newWidth, newHeight, 32, 0, 0, 0, 0);
+//	SDL_Texture* newTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, newWidth, newHeight);
+//	SDL_BlitScaled(texture, NULL, surface, NULL);
+//	SDL_UpdateTexture(newTexture, NULL, surface->pixels, surface->pitch);
+//	SDL_FreeSurface(surface);
+//	SDL_DestroyTexture(texture);
+//	return newTexture;
+//}
 
 int main(int argc, char* argv[])
 {
@@ -193,7 +254,9 @@ int main(int argc, char* argv[])
 	SDL_RenderClear(ren);
 
 	mainRenderer backGround;
+	mainRenderer cobbleStone;
 	mainRenderer stoneBlock;
+	mainRenderer hpBar;
 
 	int bordersCount;
 	int enemysCount;
@@ -202,42 +265,82 @@ int main(int argc, char* argv[])
 	int check = 1;
 	mainHero Laplas;
 	int temp = 0;
-	mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
+	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
+	SDL_Point mouseClick = { NULL, NULL };
 
 	Laplas = InitHero();
 	
-#pragma region MAIN_HERO TEXTURE
-	SDL_Surface* surface = NULL;
-	if((surface = IMG_Load("bobr.png")) == NULL)
-	{
-		printf_s("Can't load image 'bobr.png'");
-		system("pause");
-	}
+	#pragma region MAIN_HERO TEXTURE
+		SDL_Surface* surface = NULL;
+		if((surface = IMG_Load("bobr.png")) == NULL)
+		{
+			printf_s("Can't load image 'bobr.png'");
+			system("pause");
+		}
 
-	Laplas.render.texture = SDL_CreateTextureFromSurface(ren, surface);
-	Laplas.render.textureSize.w = surface->w;
-	Laplas.render.textureSize.h = surface->h;
-	Laplas.render.frame.w = surface->w / 6;
-	Laplas.render.frame.h = surface->h;
-	SDL_FreeSurface(surface);
-#pragma endregion
+		Laplas.render.texture = SDL_CreateTextureFromSurface(ren, surface);
+		Laplas.render.textureSize.w = surface->w;
+		Laplas.render.textureSize.h = surface->h;
+		Laplas.render.frame.w = surface->w / 6;
+		Laplas.render.frame.h = surface->h;
+		SDL_FreeSurface(surface);
+	#pragma endregion
 
-#pragma region BACKGROUND TEXTURE
-	surface = NULL;
-	if ((surface = IMG_Load("BackGroundCave.png")) == NULL)
-	{
-		printf_s("Can't load image 'BackGroundCave.png'");
-		system("pause");
-	}
+	#pragma region BACKGROUND TEXTURE
+		surface = NULL;
+		if ((surface = IMG_Load("BackGroundCave.png")) == NULL)
+		{
+			printf_s("Can't load image 'BackGroundCave.png'");
+			system("pause");
+		}
 
-	backGround.texture = SDL_CreateTextureFromSurface(ren, surface);
-	backGround.textureSize.w = surface->w;
-	backGround.textureSize.h = surface->h;
-	backGround.frame.w = surface->w;
-	backGround.frame.h = surface->h;
-	SDL_FreeSurface(surface);
-#pragma endregion
+		backGround.texture = SDL_CreateTextureFromSurface(ren, surface);
+		backGround.textureSize.w = surface->w;
+		backGround.textureSize.h = surface->h;
+		backGround.frame.w = surface->w;
+		backGround.frame.h = surface->h;
+		SDL_FreeSurface(surface);
+	#pragma endregion
 
+	#pragma region COBBLESTONE TEXTURE
+		surface = NULL;
+		if ((surface = IMG_Load("cobblestone40x40.png")) == NULL)
+		{
+			printf_s("Can't load image 'cobblestone40x40.png'");
+			system("pause");
+		}
+
+		cobbleStone.texture = SDL_CreateTextureFromSurface(ren, surface);
+	
+		cobbleStone.textureSize.x = NULL;
+		cobbleStone.textureSize.y = NULL;
+		cobbleStone.textureSize.w = surface->w * 2.5;
+		cobbleStone.textureSize.h = surface->h * 2.5;
+
+		cobbleStone.frame.w = surface->w * 2.5;
+		cobbleStone.frame.h = surface->h * 2.5;
+		SDL_FreeSurface(surface);
+	#pragma endregion
+
+	#pragma region HP_BAR TEXTURE
+		surface = NULL;
+		if ((surface = IMG_Load("hpBar.png")) == NULL)
+		{
+			printf_s("Can't load image 'hpBar.png'");
+			system("pause");
+		}
+			
+		hpBar.texture = SDL_CreateTextureFromSurface(ren, surface);
+
+		hpBar.textureSize.x = NULL;
+		hpBar.textureSize.y = NULL;
+		hpBar.textureSize.w = surface->w * 0.5;
+		hpBar.textureSize.h = surface->h * 0.5;
+
+		hpBar.frame.w = surface->w * 0.5;
+		hpBar.frame.h = surface->h * 0.5;
+		SDL_FreeSurface(surface);
+	#pragma endregion
 
 
 	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders.txt");
@@ -268,6 +371,8 @@ int main(int argc, char* argv[])
 					SDL_RenderSetScale(ren, window.scaleX = window.w / 1. / WINDOW_WIDTH, window.scaleY = window.h / 1. / WINDOW_HEIGHT);
 					window.w /= window.scaleX;
 					window.h /= window.scaleY;
+				
+					break;
 				}
 				break;
 
@@ -284,9 +389,9 @@ int main(int argc, char* argv[])
 					Laplas.physic.xMoveR = 1;
 					break;
 				case SDL_SCANCODE_LSHIFT:
-					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD )
+					if (clock() - Laplas.effect.timeDashCD > Laplas.effect.dashCD )
 					{
-						Laplas.effect.timeCD = clock();
+						Laplas.effect.timeDashCD = clock();
 						Laplas.physic.accelerationX = 8;
 					}
 					break;
@@ -323,14 +428,33 @@ int main(int argc, char* argv[])
 			case SDL_MOUSEBUTTONDOWN:
 				if (ev.button.button == SDL_BUTTON_X2)
 				{
-					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD)
+					if (clock() - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
 					{
-						Laplas.effect.timeCD = clock();
+						Laplas.effect.timeDashCD = clock();
 						Laplas.physic.accelerationX = 8;
 					}
 				}
 				break;
 
+
+			case SDL_MOUSEBUTTONUP:
+				if (ev.button.button == SDL_BUTTON_LEFT)
+				{
+					
+					if (clock() - Laplas.effect.timeAtackCD > Laplas.effect.atackCD && Laplas.battle.commonAtack == 0)
+					{
+						Laplas.effect.timeAtackCD = clock();
+						Laplas.battle.commonAtack = 1;
+					}
+				}
+				if (ev.button.button == SDL_BUTTON_RIGHT)
+				{
+					SDL_Rect rrr = {window.w*window.scaleX - 100, window.h*window.scaleY - 100, 100, 100};
+					SDL_GetMouseState(&mouseClick.x, &mouseClick.y);
+					if (SDL_PointInRect(&mouseClick, &rrr))
+						printf_s("click\n");
+				}
+				break;
 			}
 
 
@@ -346,11 +470,9 @@ int main(int argc, char* argv[])
 
 		//Движение по оси X + рывок
 		HeroPhysicXmovement(&Laplas);
-		EnemyPhysicXmovement(&levelEnemys[0]);
 
 		//Прыжок
 		HeroPhysicJump(&Laplas);
-		EnemyPhysicJump(&levelEnemys[0]);
 
 		//Гравитация
 		HeroPhysicGravity(&Laplas);
@@ -364,11 +486,47 @@ int main(int argc, char* argv[])
 		HeroPhysicOutworldCheck(&Laplas, levelBorders);
 		EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
 
+		if (levelEnemys[0].status.alive)
+		{
+			if (levelEnemys[0].hitbox.x < Laplas.hitbox.x)
+			{
+				levelEnemys[0].hitbox.x += levelEnemys[0].physic.speed;
+			}
+			else if (levelEnemys[0].hitbox.x > Laplas.hitbox.x)
+			{
+				levelEnemys[0].hitbox.x -= levelEnemys[0].physic.speed;
+			}
+		}
+
 		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[8].bordersHitbox))
 		{
 			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders1.txt");
-			//levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
+			levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
 			InitEnemys(levelEnemys, enemysCount);
+		}
+
+		#pragma endregion 
+
+		#pragma region BATTLE
+
+		if (Laplas.battle.commonAtack)
+		{
+			if (Laplas.effect.timeAtackCD + Laplas.effect.atackCD < clock())
+			{
+				Laplas.battle.commonAtack = 0;
+				levelEnemys[0].effect.underAtack = 0;
+			}
+
+			if (levelEnemys[0].status.alive && !levelEnemys[0].effect.underAtack && HeroCheckBorders(&Laplas, levelEnemys[0].hitbox))
+			{
+				levelEnemys[0].effect.underAtack = 1;
+				levelEnemys[0].status.HP -= Laplas.status.DMG;
+				if (levelEnemys[0].status.HP <= 0)
+				{
+					levelEnemys[0].status.alive = 0;
+				}
+			}
+
 		}
 
 		#pragma endregion 
@@ -377,8 +535,18 @@ int main(int argc, char* argv[])
 		SDL_RenderCopy(ren, backGround.texture, NULL, NULL);
 		DrawMainHero(&Laplas, window);
 
-		DrawHitbox(bordersCount, levelBorders, Laplas, window);
-		DrawEnemys(enemysCount, levelEnemys);
+		DrawHitbox(bordersCount, levelBorders, Laplas, window, cobbleStone);
+		DrawEnemys(enemysCount, levelEnemys, Laplas, window);
+		
+
+		
+		//SDL_Rect tempRect = hpBar.textureSize;
+		////tempRect.h /= 2;
+		//SDL_Rect tempRect2 = { 0, 0, hpBar.textureSize.w, hpBar.textureSize.h/2 };
+		//
+		//
+
+		//SDL_RenderCopy(ren, hpBar.texture, &tempRect2, &tempRect);
 		
 
 		SDL_RenderPresent(ren);

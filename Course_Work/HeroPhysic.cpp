@@ -108,6 +108,7 @@ void HeroPhysicHitboxOverlay(int bordersCount, mainHero* Laplas, mainBorders lev
 			check = 0;
 			break;
 			}
+		
 	}
 
 	if (check == 1)
