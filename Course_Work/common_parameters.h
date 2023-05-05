@@ -17,12 +17,13 @@
 #define ON_BORDER 0
 #define EPS 1E-9
 #define DASH_CD 700
-#define ATACK_CD 1000
+#define ATACK_CD 700
 #define CAMERA_SCALE_X 0
 #define CAMERA_SCALE_Y 0
 #define HERO_DAMAGE 40
 #define HERO_HP 100
 #define ALIVE 1
+#define TIMER_SIZE 50
 
 struct mainWindow
 {

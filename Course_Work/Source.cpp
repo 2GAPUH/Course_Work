@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_Image.h>
+#include <SDL_ttf.h>
 #include <iostream>
 #include "func.h"
 #include "common_parameters.h"
@@ -250,6 +251,16 @@ bool CheckAtackHitbox(SDL_Rect* hero, SDL_Rect* enemy)
 		return 0;
 }
 
+void PrintText(const char str[], TTF_Font* font, SDL_Color fg)
+{
+	SDL_Surface* surface = TTF_RenderText_Blended(font, str, fg);
+	SDL_Rect rect = { 0, 0, surface->w, surface->h };
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(ren, surface);
+	SDL_FreeSurface(surface);
+	SDL_RenderCopy(ren, texture, NULL, &rect);
+	SDL_DestroyTexture(texture);
+}
+
 //SDL_Texture* resizeTexture(SDL_Renderer* renderer, SDL_Texture* texture, int newWidth, int newHeight)
 //{
 //	SDL_Surface* surface = SDL_CreateRGBSurface(0, newWidth, newHeight, 32, 0, 0, 0, 0);
@@ -270,8 +281,9 @@ int main(int argc, char* argv[])
 
 	mainRenderer backGround;
 	mainRenderer cobbleStone;
-	mainRenderer stoneBlock;
 	mainRenderer hpBar;
+	mainRenderer timer;
+	TTF_Font* fontNovem = NULL;
 
 	int bordersCount;
 	int enemysCount;
@@ -283,12 +295,13 @@ int main(int argc, char* argv[])
 	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
 	SDL_Point mouseClick = { NULL, NULL };
 	int deltaTime = clock();
+	char timer_text[10] = "00:00";
 
 	Laplas = InitHero();
 	
 	#pragma region MAIN_HERO TEXTURE
 		SDL_Surface* surface = NULL;
-		if((surface = IMG_Load("bobr.png")) == NULL)
+		if((surface = IMG_Load("Textures/bobr.png")) == NULL)
 		{
 			printf_s("Can't load image 'bobr.png'");
 			system("pause");
@@ -304,7 +317,7 @@ int main(int argc, char* argv[])
 
 	#pragma region BACKGROUND TEXTURE
 		surface = NULL;
-		if ((surface = IMG_Load("BackGroundCave.png")) == NULL)
+		if ((surface = IMG_Load("Textures/BackGroundCave.png")) == NULL)
 		{
 			printf_s("Can't load image 'BackGroundCave.png'");
 			system("pause");
@@ -319,48 +332,68 @@ int main(int argc, char* argv[])
 	#pragma endregion
 
 	#pragma region COBBLESTONE TEXTURE
-		surface = NULL;
-		if ((surface = IMG_Load("cobblestone40x40.png")) == NULL)
-		{
-			printf_s("Can't load image 'cobblestone40x40.png'");
-			system("pause");
-		}
+	surface = NULL;
+	if ((surface = IMG_Load("Textures/cobblestone40x40.png")) == NULL)
+	{
+		printf_s("Can't load image 'cobblestone40x40.png'");
+		system("pause");
+	}
 
-		cobbleStone.texture = SDL_CreateTextureFromSurface(ren, surface);
+	cobbleStone.texture = SDL_CreateTextureFromSurface(ren, surface);
 	
-		cobbleStone.textureSize.x = NULL;
-		cobbleStone.textureSize.y = NULL;
-		cobbleStone.textureSize.w = surface->w * 2.5;
-		cobbleStone.textureSize.h = surface->h * 2.5;
+	cobbleStone.textureSize.x = NULL;
+	cobbleStone.textureSize.y = NULL;
+	cobbleStone.textureSize.w = surface->w * 2.5;
+	cobbleStone.textureSize.h = surface->h * 2.5;
 
-		cobbleStone.frame.w = surface->w * 2.5;
-		cobbleStone.frame.h = surface->h * 2.5;
-		SDL_FreeSurface(surface);
+	cobbleStone.frame.w = surface->w * 2.5;
+	cobbleStone.frame.h = surface->h * 2.5;
+	SDL_FreeSurface(surface);
 	#pragma endregion
 
 	#pragma region HP_BAR TEXTURE
-		surface = NULL;
-		if ((surface = IMG_Load("hpBar.png")) == NULL)
-		{
-			printf_s("Can't load image 'hpBar.png'");
-			system("pause");
-		}
+	surface = NULL;
+	if ((surface = IMG_Load("Textures/hpBar.png")) == NULL)
+	{
+		printf_s("Can't load image 'hpBar.png'");
+		system("pause");
+	}
 			
-		hpBar.texture = SDL_CreateTextureFromSurface(ren, surface);
+	hpBar.texture = SDL_CreateTextureFromSurface(ren, surface);
 
-		hpBar.textureSize.x = NULL;
-		hpBar.textureSize.y = NULL;
-		hpBar.textureSize.w = surface->w * 0.5;
-		hpBar.textureSize.h = surface->h * 0.5;
+	hpBar.textureSize.x = NULL;
+	hpBar.textureSize.y = NULL;
+	hpBar.textureSize.w = surface->w * 0.5;
+	hpBar.textureSize.h = surface->h * 0.5;
 
-		hpBar.frame.w = surface->w * 0.5;
-		hpBar.frame.h = surface->h * 0.5;
-		SDL_FreeSurface(surface);
+	hpBar.frame.w = surface->w * 0.5;
+	hpBar.frame.h = surface->h * 0.5;
+	SDL_FreeSurface(surface);
 	#pragma endregion
 
+	#pragma region TIMER_TEXTURE
 
-	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders.txt");
-	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy.txt");
+	surface = NULL;
+	if ((fontNovem = TTF_OpenFont("Fonts\\novem.ttf", TIMER_SIZE)) == NULL)
+	{
+		printf_s("Can't open 'novem.ttf'\n");
+		system("pause");
+	}
+
+	surface = TTF_RenderText_Blended(fontNovem, timer_text, { 100, 100, 100, 255 });
+
+	timer.texture = SDL_CreateTextureFromSurface(ren, surface);
+	timer.textureSize.w = surface->w;
+	timer.textureSize.h = surface->h;
+	timer.textureSize.x = NULL;
+	timer.textureSize.y = NULL;
+
+	SDL_FreeSurface(surface);
+
+	#pragma endregion
+
+	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders.txt");
+	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy.txt");
 
 	InitEnemys(levelEnemys, enemysCount);
 
@@ -520,8 +553,8 @@ int main(int argc, char* argv[])
 
 		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[8].bordersHitbox))
 		{
-			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders1.txt");
-			levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
+			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders1.txt");
+			levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy1.txt");
 			InitEnemys(levelEnemys, enemysCount);
 		}
 
@@ -565,8 +598,11 @@ int main(int argc, char* argv[])
 		DrawHitbox(bordersCount, levelBorders, Laplas, window, cobbleStone);
 		DrawEnemys(enemysCount, levelEnemys, Laplas, window);
 		
-
+		sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, deltaTime / 1000 % 60);
+		PrintText(timer_text, fontNovem, { 100, 100, 100, 255});
 		
+
+
 		//SDL_Rect tempRect = hpBar.textureSize;
 		////tempRect.h /= 2;
 		//SDL_Rect tempRect2 = { 0, 0, hpBar.textureSize.w, hpBar.textureSize.h/2 };
@@ -593,6 +629,14 @@ int main(int argc, char* argv[])
 
 	free(levelBorders);
 	free(levelEnemys);
+	TTF_CloseFont(fontNovem);
+
+	SDL_DestroyTexture(backGround.texture);
+	SDL_DestroyTexture(cobbleStone.texture);
+	SDL_DestroyTexture(hpBar.texture);
+	SDL_DestroyTexture(timer.texture);
+	SDL_DestroyTexture(Laplas.render.texture);
+
 
 	DeInit(0, &win, &ren, &win_surface);
 	

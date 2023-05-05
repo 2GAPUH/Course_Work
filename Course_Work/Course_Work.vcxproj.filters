@@ -46,46 +46,45 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Hentai.jpg">
+    <Image Include="Textures\BackGroundCave.png">
       <Filter>Картинки</Filter>
     </Image>
-    <Image Include="barrel1.png">
+    <Image Include="Textures\barrel1.png">
       <Filter>Картинки</Filter>
     </Image>
-    <Image Include="mainHero26x22.png">
+    <Image Include="Textures\bobr.png">
       <Filter>Картинки</Filter>
     </Image>
-    <Image Include="bobr.png">
+    <Image Include="Textures\cobblestone40x40.png">
       <Filter>Картинки</Filter>
     </Image>
-    <Image Include="StoneBlock.png">
+    <Image Include="Textures\cobblestone20x20.png">
       <Filter>Картинки</Filter>
     </Image>
-    <Image Include="BackGroundCave.png">
+    <Image Include="Textures\hpBar.png">
       <Filter>Картинки</Filter>
     </Image>
-    <Image Include="cobblestone40x40.png">
-      <Filter>Картинки</Filter>
-    </Image>
-    <Image Include="cobblestone20x20.png">
-      <Filter>Картинки</Filter>
-    </Image>
-    <Image Include="hpBar.png">
+    <Image Include="Textures\mainHero26x22.png">
       <Filter>Картинки</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Borders.txt">
+    <Text Include="Enemys\Enemy.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
-    <Text Include="Borders1.txt">
+    <Text Include="Enemys\Enemy1.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
-    <Text Include="Enemy.txt">
+    <Text Include="Levels\Borders.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
-    <Text Include="Enemy1.txt">
+    <Text Include="Levels\Borders1.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Fonts\novem.ttf">
+      <Filter>Файлы ресурсов</Filter>
+    </Font>
   </ItemGroup>
 </Project>
