@@ -56,15 +56,15 @@ bool EnemyCheckBorders(mainEnemys* Enemy, SDL_Rect unit)
 }
 
 //Получение координат
-void EnemyPhysicGetBase(mainEnemys levelEnemys[], int* enemysCount)
+void EnemyPhysicGetBase(mainEnemys Enemy[], int* enemysCount)
 {
 	for (int i = 0; i < *enemysCount;i++)
 	{
-		if (levelEnemys[i].status.alive)
+		if (Enemy[i].status.alive)
 		{
-			levelEnemys[i].position.x = levelEnemys[i].hitbox.x;
-			levelEnemys[i].position.y = levelEnemys[i].hitbox.y;
-			levelEnemys[i].physic.gazeDirection = levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR;
+			Enemy[i].position.x = Enemy[i].hitbox.x;
+			Enemy[i].position.y = Enemy[i].hitbox.y;
+			Enemy[i].physic.gazeDirection = Enemy[i].physic.xMoveL + Enemy[i].physic.xMoveR;
 		}
 	}
 }

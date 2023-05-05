@@ -133,6 +133,9 @@ void DrawEnemys(int enemysCount, mainEnemys levelEnemys[], mainHero Laplas, main
 		case 1:
 			SDL_SetRenderDrawColor(ren, 129, 0, 255, 255);
 			break;
+		case 2:
+			SDL_SetRenderDrawColor(ren, 0, 129, 255, 255);
+			break;
 		}
 
 		SDL_Rect movedEnemy = { levelEnemys[i].hitbox.x - levelEnemys[i].hitbox.w / 2,levelEnemys[i].hitbox.y - levelEnemys[i].hitbox.h / 2, levelEnemys[i].hitbox.w, levelEnemys[i].hitbox.h};
@@ -235,6 +238,18 @@ void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
 	}
 }
 
+bool CheckAtackHitbox(SDL_Rect* hero, SDL_Rect* enemy)
+{
+	// Вычисляем расстояние между центрами окружностей
+	float distance = sqrt((hero->x - enemy->x) * (hero->x - enemy->x) + (hero->y - enemy->y) * (hero->y - enemy->y));
+
+	// Если расстояние меньше или равно сумме радиусов, то окружности пересекаются
+	if (distance <= (hero->w + hero->h) / 4 + (enemy->w + enemy->h) / 4)
+		return 1;
+	else
+		return 0;
+}
+
 //SDL_Texture* resizeTexture(SDL_Renderer* renderer, SDL_Texture* texture, int newWidth, int newHeight)
 //{
 //	SDL_Surface* surface = SDL_CreateRGBSurface(0, newWidth, newHeight, 32, 0, 0, 0, 0);
@@ -267,6 +282,7 @@ int main(int argc, char* argv[])
 	int temp = 0;
 	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
 	SDL_Point mouseClick = { NULL, NULL };
+	int deltaTime = clock();
 
 	Laplas = InitHero();
 	
@@ -354,6 +370,8 @@ int main(int argc, char* argv[])
 
 	while (isRunning)
 	{
+		deltaTime = clock();
+
 		#pragma region BUTTON_CHECK
 		while (SDL_PollEvent(&ev))
 		{
@@ -389,9 +407,9 @@ int main(int argc, char* argv[])
 					Laplas.physic.xMoveR = 1;
 					break;
 				case SDL_SCANCODE_LSHIFT:
-					if (clock() - Laplas.effect.timeDashCD > Laplas.effect.dashCD )
+					if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD )
 					{
-						Laplas.effect.timeDashCD = clock();
+						Laplas.effect.timeDashCD = deltaTime;
 						Laplas.physic.accelerationX = 8;
 					}
 					break;
@@ -428,9 +446,9 @@ int main(int argc, char* argv[])
 			case SDL_MOUSEBUTTONDOWN:
 				if (ev.button.button == SDL_BUTTON_X2)
 				{
-					if (clock() - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
+					if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
 					{
-						Laplas.effect.timeDashCD = clock();
+						Laplas.effect.timeDashCD = deltaTime;
 						Laplas.physic.accelerationX = 8;
 					}
 				}
@@ -440,14 +458,13 @@ int main(int argc, char* argv[])
 			case SDL_MOUSEBUTTONUP:
 				if (ev.button.button == SDL_BUTTON_LEFT)
 				{
-					
-					if (clock() - Laplas.effect.timeAtackCD > Laplas.effect.atackCD && Laplas.battle.commonAtack == 0)
+					if (Laplas.battle.commonAtack == 0)
 					{
-						Laplas.effect.timeAtackCD = clock();
+						Laplas.effect.timeAtackCD = deltaTime;
 						Laplas.battle.commonAtack = 1;
 					}
 				}
-				if (ev.button.button == SDL_BUTTON_RIGHT)
+				else if (ev.button.button == SDL_BUTTON_RIGHT)
 				{
 					SDL_Rect rrr = {window.w*window.scaleX - 100, window.h*window.scaleY - 100, 100, 100};
 					SDL_GetMouseState(&mouseClick.x, &mouseClick.y);
@@ -512,28 +529,31 @@ int main(int argc, char* argv[])
 
 		#pragma region BATTLE
 
+		if (Laplas.battle.commonAtack && Laplas.effect.timeAtackCD + Laplas.effect.atackCD > deltaTime)
+		{
+			//анимация
+		}
+		else
+		{
+			Laplas.battle.commonAtack = 0;
+			for (int i = 0;i < enemysCount; i++)
+				levelEnemys[i].effect.underAtack = 0;
+		}
+
 		for (int i = 0; i < enemysCount; i++)
 		{
-			if (Laplas.battle.commonAtack)
+			if (Laplas.battle.commonAtack && levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas.hitbox, &levelEnemys[i].hitbox))
 			{
-				if (Laplas.effect.timeAtackCD + Laplas.effect.atackCD < clock())
+				levelEnemys[i].effect.underAtack = 1;
+				levelEnemys[i].status.HP -= Laplas.status.DMG;
+				if (levelEnemys[i].status.HP <= 0)
 				{
-					Laplas.battle.commonAtack = 0;
-					levelEnemys[i].effect.underAtack = 0;
+					levelEnemys[i].status.alive = 0;
 				}
-
-				if (levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && HeroCheckBorders(&Laplas, levelEnemys[i].hitbox))
-				{
-					levelEnemys[i].effect.underAtack = 1;
-					levelEnemys[i].status.HP -= Laplas.status.DMG;
-					if (levelEnemys[i].status.HP <= 0)
-					{
-						levelEnemys[i].status.alive = 0;
-					}
-				}
-
 			}
 		}
+
+		
 
 
 		#pragma endregion 
