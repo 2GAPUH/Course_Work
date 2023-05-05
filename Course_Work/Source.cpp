@@ -251,14 +251,17 @@ bool CheckAtackHitbox(SDL_Rect* hero, SDL_Rect* enemy)
 		return 0;
 }
 
-void PrintText(const char str[], TTF_Font* font, SDL_Color fg)
+mainRenderer CreateTextureFromText(const char str[], TTF_Font* font, SDL_Color fg)
 {
 	SDL_Surface* surface = TTF_RenderText_Blended(font, str, fg);
-	SDL_Rect rect = { 0, 0, surface->w, surface->h };
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(ren, surface);
+	mainRenderer texture;
+	texture.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture.textureSize.w = surface->w;
+	texture.textureSize.h = surface->h;
+	texture.textureSize.x = NULL;
+	texture.textureSize.y = NULL;
 	SDL_FreeSurface(surface);
-	SDL_RenderCopy(ren, texture, NULL, &rect);
-	SDL_DestroyTexture(texture);
+	return texture;
 }
 
 //SDL_Texture* resizeTexture(SDL_Renderer* renderer, SDL_Texture* texture, int newWidth, int newHeight)
@@ -296,6 +299,7 @@ int main(int argc, char* argv[])
 	SDL_Point mouseClick = { NULL, NULL };
 	int deltaTime = clock();
 	char timer_text[10] = "00:00";
+	int lastTime = 0;
 
 	Laplas = InitHero();
 	
@@ -598,10 +602,16 @@ int main(int argc, char* argv[])
 		DrawHitbox(bordersCount, levelBorders, Laplas, window, cobbleStone);
 		DrawEnemys(enemysCount, levelEnemys, Laplas, window);
 		
-		sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, deltaTime / 1000 % 60);
-		PrintText(timer_text, fontNovem, { 100, 100, 100, 255});
-		
+		if (lastTime != deltaTime / 1000 % 60)
+		{
+			lastTime = deltaTime / 1000 % 60;
+			sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, lastTime);
+			SDL_DestroyTexture(timer.texture);
+			timer = CreateTextureFromText(timer_text, fontNovem, { 100, 100, 100, 255 });
+		}
 
+		
+		SDL_RenderCopy(ren, timer.texture, NULL, &timer.textureSize);
 
 		//SDL_Rect tempRect = hpBar.textureSize;
 		////tempRect.h /= 2;
