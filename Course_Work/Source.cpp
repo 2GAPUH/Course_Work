@@ -258,7 +258,7 @@ mainRenderer CreateTextureFromText(const char str[], TTF_Font* font, SDL_Color f
 	texture.texture = SDL_CreateTextureFromSurface(ren, surface);
 	texture.textureSize.w = surface->w;
 	texture.textureSize.h = surface->h;
-	texture.textureSize.x = NULL;
+	texture.textureSize.x = WINDOW_WIDTH - surface->w;
 	texture.textureSize.y = NULL;
 	SDL_FreeSurface(surface);
 	return texture;
@@ -389,7 +389,7 @@ int main(int argc, char* argv[])
 	timer.texture = SDL_CreateTextureFromSurface(ren, surface);
 	timer.textureSize.w = surface->w;
 	timer.textureSize.h = surface->h;
-	timer.textureSize.x = NULL;
+	timer.textureSize.x = WINDOW_WIDTH - surface->w;
 	timer.textureSize.y = NULL;
 
 	SDL_FreeSurface(surface);
