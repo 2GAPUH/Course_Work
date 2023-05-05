@@ -120,14 +120,21 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
 			SDL_RenderFillRect(ren, &rect123);
 			break;
+
+		case 5:
+			SDL_SetRenderDrawColor(ren, 120, 0, 120, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
 		}
 	}
 }
 
-void DrawEnemys(int enemysCount, mainEnemys levelEnemys[], mainHero Laplas, mainWindow window)
+
+
+void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, mainWindow window)
 {
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-	for (int i = 0;i < enemysCount;i++)
+	for (int i = 0;i < *enemysCount;i++)
 	{
 		switch (levelEnemys[i].type)
 		{
@@ -140,21 +147,35 @@ void DrawEnemys(int enemysCount, mainEnemys levelEnemys[], mainHero Laplas, main
 		}
 
 		SDL_Rect movedEnemy = { levelEnemys[i].hitbox.x - levelEnemys[i].hitbox.w / 2,levelEnemys[i].hitbox.y - levelEnemys[i].hitbox.h / 2, levelEnemys[i].hitbox.w, levelEnemys[i].hitbox.h};
-		
 
-		//movedEnemy = levelEnemys[i].hitbox;
-
-		if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= levelWidth - window.w / 2.f)
-			movedEnemy.x -= Laplas.hitbox.x - window.w / 2.f;
-		if (Laplas.hitbox.x > levelWidth - window.w / 2.f)
+		if (Laplas->hitbox.x >= window.w / 2.f && Laplas->hitbox.x <= levelWidth - window.w / 2.f)
+			movedEnemy.x -= Laplas->hitbox.x - window.w / 2.f;
+		if (Laplas->hitbox.x > levelWidth - window.w / 2.f)
 			movedEnemy.x -= levelWidth - window.w;
 
-		if (Laplas.hitbox.y >= window.h / 2.f && Laplas.hitbox.y <= levelHeight - window.h / 2.f)
-			movedEnemy.y -= Laplas.hitbox.y - window.h / 2.f;
-		if (Laplas.hitbox.y > levelHeight - window.h / 2.f)
+		if (Laplas->hitbox.y >= window.h / 2.f && Laplas->hitbox.y <= levelHeight - window.h / 2.f)
+			movedEnemy.y -= Laplas->hitbox.y - window.h / 2.f;
+		if (Laplas->hitbox.y > levelHeight - window.h / 2.f)
 			movedEnemy.y -= levelHeight - window.h;
-
+		
 		SDL_RenderFillRect(ren, &movedEnemy);
+
+		if (levelEnemys[i].physic.gazeDirection > 0)
+			SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);
+		else if (levelEnemys[i].physic.gazeDirection < 0)
+			SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+
+
+		if ((levelEnemys[i].physic.xMoveL || levelEnemys[i].physic.xMoveR) && (SDL_GetTicks() - levelEnemys[i].render.frameTime > 1000 / 30) && (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR != 0))
+		{
+			levelEnemys[i].render.frame.x += levelEnemys[i].render.textureSize.w / 6;
+			levelEnemys[i].render.frameTime = SDL_GetTicks();
+		}
+
+		if (levelEnemys[i].render.frame.x >= levelEnemys[i].render.textureSize.w || (!levelEnemys[i].physic.xMoveL && !levelEnemys[i].physic.xMoveR) || (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR == 0))
+			levelEnemys[i].render.frame.x = 0;
+
+		
 	}
 }
 
@@ -200,12 +221,14 @@ mainEnemys* LoadEnemys(mainEnemys* levelEnemys, int* enemysCount, const char lev
 	for (int i = 0;i < *enemysCount;i++)
 	{
 		fscanf_s(f, "%d", &levelEnemys[i].type);
+
 		fscanf_s(f, "%d", &levelEnemys[i].hitbox.x);
 		fscanf_s(f, "%d", &levelEnemys[i].hitbox.y);
 		fscanf_s(f, "%d", &levelEnemys[i].hitbox.w);
 		fscanf_s(f, "%d", &levelEnemys[i].hitbox.h);
 	}
 
+	
 
 	fclose(f);
 
@@ -223,19 +246,38 @@ bool HeroPhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
 mainHero InitHero()
 {
 	mainHero Laplas;
-	return Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
-			  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER, PRESSED_S},
-			  {DASH_CD, NULL, ATACK_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL,
-			  NULL, {NULL, NULL }, {HERO_DAMAGE, HERO_HP, ALIVE} };
+	Laplas.position = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
+	Laplas.hitbox = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT };
+	Laplas.physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER, PRESSED_S };
+	Laplas.effect = { DASH_CD, NULL, ATACK_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y };
+	Laplas.render = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
+	Laplas.battle = { NULL, { NULL, NULL } };
+	Laplas.status = { HERO_DAMAGE, HERO_HP, ALIVE };
+
+	return Laplas;
 }
 
-void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
+void InitEnemys(mainEnemys levelEnemys[], int enemysCount, mainRenderer* texture_beaver)
 {
 	for (int i = 0; i < enemysCount;i++)
 	{
-		levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
-		levelEnemys[i].effect.underAtack = NULL;
-		levelEnemys[i].status = { HERO_DAMAGE, HERO_HP , ALIVE};
+		if (levelEnemys[i].type == 1)
+		{
+			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+			levelEnemys[i].effect.underAtack = NULL;
+			levelEnemys[i].status = { BEAVER_DMG, BEAVER_HP , ALIVE };
+			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
+			levelEnemys[i].render = *texture_beaver;
+		}
+
+		else if (levelEnemys[i].type == 2)
+		{
+			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+			levelEnemys[i].effect.underAtack = NULL;
+			levelEnemys[i].status = { BEAVER_DMG, BEAVER_HP , ALIVE };
+			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
+			levelEnemys[i].render = *texture_beaver;
+		}
 	}
 }
 
@@ -282,14 +324,15 @@ int main(int argc, char* argv[])
 	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 	SDL_RenderClear(ren);
 
-	mainRenderer backGround;
-	mainRenderer cobbleStone;
-	mainRenderer hpBar;
-	mainRenderer timer;
+	mainRenderer texture_backGround;
+	mainRenderer texture_cobbleStone;
+	mainRenderer texture_hpBar;
+	mainRenderer texture_timer;
+	mainRenderer texture_beaver;
 	TTF_Font* fontNovem = NULL;
 
 	int bordersCount;
-	int enemysCount;
+	int enemysCount = NULL;
 	mainBorders* levelBorders = NULL;
 	mainEnemys* levelEnemys = NULL;
 	int check = 1;
@@ -304,19 +347,39 @@ int main(int argc, char* argv[])
 	Laplas = InitHero();
 	
 	#pragma region MAIN_HERO TEXTURE
-		SDL_Surface* surface = NULL;
-		if((surface = IMG_Load("Textures/bobr.png")) == NULL)
-		{
-			printf_s("Can't load image 'bobr.png'");
-			system("pause");
-		}
+	SDL_Surface* surface = NULL;
+	if((surface = IMG_Load("Textures/bobr.png")) == NULL)
+	{
+		printf_s("Can't load image 'bobr.png'");
+		system("pause");
+	}
 
-		Laplas.render.texture = SDL_CreateTextureFromSurface(ren, surface);
-		Laplas.render.textureSize.w = surface->w;
-		Laplas.render.textureSize.h = surface->h;
-		Laplas.render.frame.w = surface->w / 6;
-		Laplas.render.frame.h = surface->h;
-		SDL_FreeSurface(surface);
+	Laplas.render.texture = SDL_CreateTextureFromSurface(ren, surface);
+	Laplas.render.textureSize.w = surface->w;
+	Laplas.render.textureSize.h = surface->h;
+	Laplas.render.frame.w = surface->w / 6;
+	Laplas.render.frame.h = surface->h;
+	SDL_FreeSurface(surface);
+	#pragma endregion
+
+	#pragma region BEAVER TEXTURE
+	surface = NULL;
+	if ((surface = IMG_Load("Textures/bobr.png")) == NULL)
+	{
+		printf_s("Can't load image 'bobr.png'");
+		system("pause");
+	}
+
+	texture_beaver.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture_beaver.textureSize.w = surface->w;
+	texture_beaver.textureSize.h = surface->h;
+	texture_beaver.textureSize.x = NULL;
+	texture_beaver.textureSize.y = NULL;
+	texture_beaver.frame.w = surface->w / 6;
+	texture_beaver.frame.h = surface->h;
+	texture_beaver.frame.x = NULL;
+	texture_beaver.frame.y = NULL;
+	SDL_FreeSurface(surface);
 	#pragma endregion
 
 	#pragma region BACKGROUND TEXTURE
@@ -327,11 +390,11 @@ int main(int argc, char* argv[])
 			system("pause");
 		}
 
-		backGround.texture = SDL_CreateTextureFromSurface(ren, surface);
-		backGround.textureSize.w = surface->w;
-		backGround.textureSize.h = surface->h;
-		backGround.frame.w = surface->w;
-		backGround.frame.h = surface->h;
+		texture_backGround.texture = SDL_CreateTextureFromSurface(ren, surface);
+		texture_backGround.textureSize.w = surface->w;
+		texture_backGround.textureSize.h = surface->h;
+		texture_backGround.frame.w = surface->w;
+		texture_backGround.frame.h = surface->h;
 		SDL_FreeSurface(surface);
 	#pragma endregion
 
@@ -343,15 +406,15 @@ int main(int argc, char* argv[])
 		system("pause");
 	}
 
-	cobbleStone.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture_cobbleStone.texture = SDL_CreateTextureFromSurface(ren, surface);
 	
-	cobbleStone.textureSize.x = NULL;
-	cobbleStone.textureSize.y = NULL;
-	cobbleStone.textureSize.w = surface->w * 2.5;
-	cobbleStone.textureSize.h = surface->h * 2.5;
+	texture_cobbleStone.textureSize.x = NULL;
+	texture_cobbleStone.textureSize.y = NULL;
+	texture_cobbleStone.textureSize.w = surface->w * 2.5;
+	texture_cobbleStone.textureSize.h = surface->h * 2.5;
 
-	cobbleStone.frame.w = surface->w * 2.5;
-	cobbleStone.frame.h = surface->h * 2.5;
+	texture_cobbleStone.frame.w = surface->w * 2.5;
+	texture_cobbleStone.frame.h = surface->h * 2.5;
 	SDL_FreeSurface(surface);
 	#pragma endregion
 
@@ -363,15 +426,15 @@ int main(int argc, char* argv[])
 		system("pause");
 	}
 			
-	hpBar.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture_hpBar.texture = SDL_CreateTextureFromSurface(ren, surface);
 
-	hpBar.textureSize.x = NULL;
-	hpBar.textureSize.y = NULL;
-	hpBar.textureSize.w = surface->w * 0.5;
-	hpBar.textureSize.h = surface->h * 0.5;
+	texture_hpBar.textureSize.x = NULL;
+	texture_hpBar.textureSize.y = NULL;
+	texture_hpBar.textureSize.w = surface->w * 0.5;
+	texture_hpBar.textureSize.h = surface->h * 0.5;
 
-	hpBar.frame.w = surface->w * 0.5;
-	hpBar.frame.h = surface->h * 0.5;
+	texture_hpBar.frame.w = surface->w * 0.5;
+	texture_hpBar.frame.h = surface->h * 0.5;
 	SDL_FreeSurface(surface);
 	#pragma endregion
 
@@ -386,11 +449,11 @@ int main(int argc, char* argv[])
 
 	surface = TTF_RenderText_Blended(fontNovem, timer_text, { 100, 100, 100, 255 });
 
-	timer.texture = SDL_CreateTextureFromSurface(ren, surface);
-	timer.textureSize.w = surface->w;
-	timer.textureSize.h = surface->h;
-	timer.textureSize.x = WINDOW_WIDTH - surface->w;
-	timer.textureSize.y = NULL;
+	texture_timer.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture_timer.textureSize.w = surface->w;
+	texture_timer.textureSize.h = surface->h;
+	texture_timer.textureSize.x = WINDOW_WIDTH - surface->w;
+	texture_timer.textureSize.y = NULL;
 
 	SDL_FreeSurface(surface);
 
@@ -399,7 +462,7 @@ int main(int argc, char* argv[])
 	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders.txt");
 	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy.txt");
 
-	InitEnemys(levelEnemys, enemysCount);
+	InitEnemys(levelEnemys, enemysCount, &texture_beaver);
 
 	
 
@@ -555,19 +618,23 @@ int main(int argc, char* argv[])
 				if (levelEnemys[i].hitbox.x < Laplas.hitbox.x)
 				{
 					levelEnemys[i].hitbox.x += levelEnemys[i].physic.speed;
+					levelEnemys[i].physic.xMoveR = 1;
+					levelEnemys[i].physic.xMoveL = 0;
 				}
 				else if (levelEnemys[i].hitbox.x > Laplas.hitbox.x)
 				{
 					levelEnemys[i].hitbox.x -= levelEnemys[i].physic.speed;
+					levelEnemys[i].physic.xMoveR = 0;
+					levelEnemys[i].physic.xMoveL = -1;
 				}
 			}
 		}
 
-		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[8].bordersHitbox))
+		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[9].bordersHitbox))
 		{
 			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders1.txt");
 			levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy1.txt");
-			InitEnemys(levelEnemys, enemysCount);
+			InitEnemys(levelEnemys, enemysCount, &texture_beaver);
 		}
 
 		#pragma endregion 
@@ -604,22 +671,22 @@ int main(int argc, char* argv[])
 		#pragma endregion 
 
 		#pragma region DRAW
-		SDL_RenderCopy(ren, backGround.texture, NULL, NULL);
-		DrawMainHero(&Laplas, window);
+		SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
+		
 
-		DrawHitbox(bordersCount, levelBorders, Laplas, window, cobbleStone);
-		DrawEnemys(enemysCount, levelEnemys, Laplas, window);
+		DrawHitbox(bordersCount, levelBorders, Laplas, window, texture_cobbleStone);
+		DrawEnemys(&enemysCount, levelEnemys, &Laplas, window);
 		
 		if (lastTime != deltaTime / 1000 % 60)
 		{
 			lastTime = deltaTime / 1000 % 60;
 			sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, lastTime);
-			SDL_DestroyTexture(timer.texture);
-			timer = CreateTextureFromText(timer_text, fontNovem, { 100, 100, 100, 255 });
+			SDL_DestroyTexture(texture_timer.texture);
+			texture_timer = CreateTextureFromText(timer_text, fontNovem, { 100, 100, 100, 255 });
 		}
 
 		
-		SDL_RenderCopy(ren, timer.texture, NULL, &timer.textureSize);
+		SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
 
 		//SDL_Rect tempRect = hpBar.textureSize;
 		////tempRect.h /= 2;
@@ -629,7 +696,7 @@ int main(int argc, char* argv[])
 
 		//SDL_RenderCopy(ren, hpBar.texture, &tempRect2, &tempRect);
 		
-
+		DrawMainHero(&Laplas, window);
 		SDL_RenderPresent(ren);
 
 
@@ -649,12 +716,13 @@ int main(int argc, char* argv[])
 	free(levelEnemys);
 	TTF_CloseFont(fontNovem);
 
-	SDL_DestroyTexture(backGround.texture);
-	SDL_DestroyTexture(cobbleStone.texture);
-	SDL_DestroyTexture(hpBar.texture);
-	SDL_DestroyTexture(timer.texture);
+	SDL_DestroyTexture(texture_backGround.texture);
+	SDL_DestroyTexture(texture_cobbleStone.texture);
+	SDL_DestroyTexture(texture_hpBar.texture);
+	SDL_DestroyTexture(texture_timer.texture);
+	SDL_DestroyTexture(texture_beaver.texture);
 	SDL_DestroyTexture(Laplas.render.texture);
-
+	
 
 	DeInit(0, &win, &ren, &win_surface);
 	

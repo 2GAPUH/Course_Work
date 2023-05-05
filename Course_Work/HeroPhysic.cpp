@@ -109,6 +109,12 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 			break;
 			}
 		
+		if(levelBorders[i].type == 5)
+			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+			{
+				Laplas->physic.impulse = 1;
+				break;
+			}
 	}
 
 	if (check == 1)

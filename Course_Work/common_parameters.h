@@ -9,7 +9,7 @@
 #define X_MOVE_R 0
 #define Y_MOVE 0
 #define GAZE_DIRECTION 1
-#define SPEED 5
+#define SPEED 7
 #define GRAVITY 10
 #define ACCELERATION_Y 1
 #define ACCELERATION_X 1
@@ -25,6 +25,15 @@
 #define ALIVE 1
 #define TIMER_SIZE 50
 #define PRESSED_S 0
+
+#pragma region BEAVER_STATS
+
+#define BEAVER_HP 100
+#define BEAVER_DMG 10
+#define BEAVER_SPEED 5
+#define BEAVER_ATACK_CD 1500
+
+#pragma endregion
 
 struct mainWindow
 {
@@ -99,4 +108,5 @@ struct mainEnemys
 	mainPhysics physic;
 	statusEffect effect;
 	mainStatistic status;
+	mainRenderer render;
 };
