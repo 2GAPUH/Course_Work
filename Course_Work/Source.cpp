@@ -1,11 +1,11 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_Image.h>
+#include <SDL_ttf.h>
 #include <iostream>
 #include "func.h"
 #include "common_parameters.h"
 #include <math.h>
-#include <time.h>
 #include "HeroPhysic.h"
 #include "EnemyPhysic.h"
 
@@ -30,7 +30,7 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 		movedLaplas.y = Laplas->hitbox.y - Laplas->hitbox.h / 2.f;
 	if (Laplas->hitbox.y > levelHeight - window.h / 2.f)
 		movedLaplas.y = Laplas->hitbox.y - Laplas->hitbox.h / 2.f - (levelHeight - window.h);
-
+	SDL_Point p = { 100, -100 };
 	//SDL_RenderFillRect(ren, &movedLaplas);
 	if(Laplas->physic.gazeDirection > 0)
 		SDL_RenderCopyEx(ren, Laplas->render.texture, &Laplas->render.frame, &movedLaplas, 0, 0, SDL_FLIP_HORIZONTAL);
@@ -38,41 +38,24 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 		SDL_RenderCopyEx(ren, Laplas->render.texture, &Laplas->render.frame, &movedLaplas, 0, 0, SDL_FLIP_NONE);
 
 
-	if ((Laplas->physic.xMoveL || Laplas->physic.xMoveR) && (SDL_GetTicks() - Laplas->render.frameTime > 1000/30))
+	if ((Laplas->physic.xMoveL || Laplas->physic.xMoveR) && (SDL_GetTicks() - Laplas->render.frameTime > 1000/30) && (Laplas->physic.xMoveL + Laplas->physic.xMoveR != 0))
 	{
 		Laplas->render.frame.x += Laplas->render.textureSize.w / 6;
 		Laplas->render.frameTime = SDL_GetTicks();
 	}
 
-	if (Laplas->render.frame.x >= Laplas->render.textureSize.w || (!Laplas->physic.xMoveL && !Laplas->physic.xMoveR))
+	if (Laplas->render.frame.x >= Laplas->render.textureSize.w || (!Laplas->physic.xMoveL && !Laplas->physic.xMoveR) || (Laplas->physic.xMoveL + Laplas->physic.xMoveR == 0))
 		Laplas->render.frame.x = 0;
 }
 
-void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window)
+void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window, mainRenderer cobbleStone)
 {
 	SDL_Rect rect123;
+	SDL_Rect dopRect = {NULL, NULL, NULL, NULL};
+	bool check = 1;
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0;i < bordersCount;i++)
 	{
-		switch (levelBorders[i].type)
-		{
-		case 1:
-			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-			break;
-
-		case 2:
-			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-			break;
-
-		case 3:
-			SDL_SetRenderDrawColor(ren, 255, 128, 128, 255);
-			break; 
-
-		case 4:
-			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
-			break;
-		}
-
 		rect123 = levelBorders[i].bordersHitbox;
 
 		if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= levelWidth - window.w / 2.f)
@@ -85,38 +68,114 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 		if (Laplas.hitbox.y > levelHeight - window.h / 2.f)
 			rect123.y -= levelHeight - window.h;
 
-		SDL_RenderFillRect(ren, &rect123);
+		switch (levelBorders[i].type)
+		{
+		case 1:
+			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
+
+		case 2:
+			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			SDL_Rect rect1 = cobbleStone.textureSize;
+			dopRect = cobbleStone.textureSize;
+
+			for (int i = rect123.y; i < rect123.y + rect123.h; i+= rect1.h)
+				for (int j = rect123.x; j < rect123.x + rect123.w; j+= rect1.w)
+				{
+					if (j + rect1.w > rect123.x + rect123.w)
+					{
+						rect1.w = rect123.x + rect123.w - j;
+						dopRect.w = rect1.w;
+						check = 1;
+					}
+					if (j + rect1.h > rect123.y + rect123.h)
+					{
+						rect1.h = rect123.y + rect123.h - i;
+						dopRect.h = rect1.h;
+						check = 1;
+					}
+					rect1.x = j;
+					rect1.y = i;
+					SDL_RenderCopy(ren, cobbleStone.texture, &dopRect, &rect1);
+					if (check)
+					{
+						rect1.h = cobbleStone.textureSize.h;
+						rect1.w = cobbleStone.textureSize.w;
+						dopRect.h = cobbleStone.textureSize.h;
+						dopRect.w = cobbleStone.textureSize.w;
+						check = 0;
+					}
+
+				}
+				break;
+
+		case 3:
+			SDL_SetRenderDrawColor(ren, 255, 128, 128, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
+
+		case 4:
+			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
+
+		case 5:
+			SDL_SetRenderDrawColor(ren, 120, 0, 120, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			break;
+		}
 	}
 }
 
-void DrawEnemys(int enemysCount, mainEnemys levelEnemys[], mainHero Laplas, mainWindow window)
+
+
+void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, mainWindow window)
 {
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-	for (int i = 0;i < enemysCount;i++)
+	for (int i = 0;i < *enemysCount;i++)
 	{
 		switch (levelEnemys[i].type)
 		{
 		case 1:
 			SDL_SetRenderDrawColor(ren, 129, 0, 255, 255);
 			break;
+		case 2:
+			SDL_SetRenderDrawColor(ren, 0, 129, 255, 255);
+			break;
 		}
 
 		SDL_Rect movedEnemy = { levelEnemys[i].hitbox.x - levelEnemys[i].hitbox.w / 2,levelEnemys[i].hitbox.y - levelEnemys[i].hitbox.h / 2, levelEnemys[i].hitbox.w, levelEnemys[i].hitbox.h};
-		
 
-		movedEnemy = levelEnemys[i].hitbox;
-
-		if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= levelWidth - window.w / 2.f)
-			movedEnemy.x -= Laplas.hitbox.x - window.w / 2.f;
-		if (Laplas.hitbox.x > levelWidth - window.w / 2.f)
+		if (Laplas->hitbox.x >= window.w / 2.f && Laplas->hitbox.x <= levelWidth - window.w / 2.f)
+			movedEnemy.x -= Laplas->hitbox.x - window.w / 2.f;
+		if (Laplas->hitbox.x > levelWidth - window.w / 2.f)
 			movedEnemy.x -= levelWidth - window.w;
 
-		if (Laplas.hitbox.y >= window.h / 2.f && Laplas.hitbox.y <= levelHeight - window.h / 2.f)
-			movedEnemy.y -= Laplas.hitbox.y - window.h / 2.f;
-		if (Laplas.hitbox.y > levelHeight - window.h / 2.f)
+		if (Laplas->hitbox.y >= window.h / 2.f && Laplas->hitbox.y <= levelHeight - window.h / 2.f)
+			movedEnemy.y -= Laplas->hitbox.y - window.h / 2.f;
+		if (Laplas->hitbox.y > levelHeight - window.h / 2.f)
 			movedEnemy.y -= levelHeight - window.h;
-
+		
 		SDL_RenderFillRect(ren, &movedEnemy);
+
+		if (levelEnemys[i].physic.gazeDirection > 0)
+			SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);
+		else if (levelEnemys[i].physic.gazeDirection < 0)
+			SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+
+
+		if ((levelEnemys[i].physic.xMoveL || levelEnemys[i].physic.xMoveR) && (SDL_GetTicks() - levelEnemys[i].render.frameTime > 1000 / 30) && (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR != 0))
+		{
+			levelEnemys[i].render.frame.x += levelEnemys[i].render.textureSize.w / 6;
+			levelEnemys[i].render.frameTime = SDL_GetTicks();
+		}
+
+		if (levelEnemys[i].render.frame.x >= levelEnemys[i].render.textureSize.w || (!levelEnemys[i].physic.xMoveL && !levelEnemys[i].physic.xMoveR) || (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR == 0))
+			levelEnemys[i].render.frame.x = 0;
+
+		
 	}
 }
 
@@ -162,12 +221,14 @@ mainEnemys* LoadEnemys(mainEnemys* levelEnemys, int* enemysCount, const char lev
 	for (int i = 0;i < *enemysCount;i++)
 	{
 		fscanf_s(f, "%d", &levelEnemys[i].type);
+
 		fscanf_s(f, "%d", &levelEnemys[i].hitbox.x);
 		fscanf_s(f, "%d", &levelEnemys[i].hitbox.y);
 		fscanf_s(f, "%d", &levelEnemys[i].hitbox.w);
 		fscanf_s(f, "%d", &levelEnemys[i].hitbox.h);
 	}
 
+	
 
 	fclose(f);
 
@@ -185,25 +246,109 @@ bool HeroPhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
 mainHero InitHero()
 {
 	mainHero Laplas;
-	return Laplas = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT },
-			  {X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER},
-			  {DASH_CD, CAMERA_SCALE_X, CAMERA_SCALE_Y}, NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL};
+	Laplas.position = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
+	Laplas.hitbox = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT };
+	Laplas.physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER, PRESSED_S };
+	Laplas.effect = { DASH_CD, NULL, ATACK_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y };
+	Laplas.render = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
+	Laplas.battle = { NULL, { NULL, NULL } };
+	Laplas.status = { HERO_DAMAGE, HERO_HP, ALIVE };
+
+	return Laplas;
 }
 
-void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
+void InitEnemys(mainEnemys levelEnemys[], int enemysCount, mainRenderer* texture_beaver)
 {
 	for (int i = 0; i < enemysCount;i++)
 	{
-		levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+		if (levelEnemys[i].type == 1)
+		{
+			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+			levelEnemys[i].effect.underAtack = NULL;
+			levelEnemys[i].status = { BEAVER_DMG, BEAVER_HP , ALIVE };
+			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
+			levelEnemys[i].render = *texture_beaver;
+		}
+
+		else if (levelEnemys[i].type == 2)
+		{
+			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+			levelEnemys[i].effect.underAtack = NULL;
+			levelEnemys[i].status = { BEAVER_DMG, BEAVER_HP , ALIVE };
+			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
+			levelEnemys[i].render = *texture_beaver;
+		}
 	}
 }
 
-void game(mainRenderer backGround, mainRenderer stoneBlock, int bordersCount, int enemysCount, mainBorders* levelBorders, mainEnemys* levelEnemys, int check, mainHero Laplas, int temp, mainWindow window) {
-	
+bool CheckAtackHitbox(SDL_Rect* hero, SDL_Rect* enemy)
+{
+	// Вычисляем расстояние между центрами окружностей
+	float distance = sqrt((hero->x - enemy->x) * (hero->x - enemy->x) + (hero->y - enemy->y) * (hero->y - enemy->y));
 
-#pragma region MAIN_HERO TEXTURE
+	// Если расстояние меньше или равно сумме радиусов, то окружности пересекаются
+	if (distance <= (hero->w + hero->h) / 4 + (enemy->w + enemy->h) / 4)
+		return 1;
+	else
+		return 0;
+}
+
+mainRenderer CreateTextureFromText(const char str[], TTF_Font* font, SDL_Color fg)
+{
+	SDL_Surface* surface = TTF_RenderText_Blended(font, str, fg);
+	mainRenderer texture;
+	texture.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture.textureSize.w = surface->w;
+	texture.textureSize.h = surface->h;
+	texture.textureSize.x = WINDOW_WIDTH - surface->w;
+	texture.textureSize.y = NULL;
+	SDL_FreeSurface(surface);
+	return texture;
+}
+
+//SDL_Texture* resizeTexture(SDL_Renderer* renderer, SDL_Texture* texture, int newWidth, int newHeight)
+//{
+//	SDL_Surface* surface = SDL_CreateRGBSurface(0, newWidth, newHeight, 32, 0, 0, 0, 0);
+//	SDL_Texture* newTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, newWidth, newHeight);
+//	SDL_BlitScaled(texture, NULL, surface, NULL);
+//	SDL_UpdateTexture(newTexture, NULL, surface->pixels, surface->pitch);
+//	SDL_FreeSurface(surface);
+//	SDL_DestroyTexture(texture);
+//	return newTexture;
+//}
+
+int main(int argc, char* argv[])
+{
+	Init(&win, &ren, &win_surface);
+
+	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+	SDL_RenderClear(ren);
+
+	mainRenderer texture_backGround;
+	mainRenderer texture_cobbleStone;
+	mainRenderer texture_hpBar;
+	mainRenderer texture_timer;
+	mainRenderer texture_beaver;
+	TTF_Font* fontNovem = NULL;
+
+	int bordersCount;
+	int enemysCount = NULL;
+	mainBorders* levelBorders = NULL;
+	mainEnemys* levelEnemys = NULL;
+	int check = 1;
+	mainHero Laplas;
+	int temp = 0;
+	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
+	SDL_Point mouseClick = { NULL, NULL };
+	int deltaTime = clock();
+	char timer_text[10] = "00:00";
+	int lastTime = 0;
+
+	Laplas = InitHero();
+	
+	#pragma region MAIN_HERO TEXTURE
 	SDL_Surface* surface = NULL;
-	if ((surface = IMG_Load("bobr.png")) == NULL)
+	if((surface = IMG_Load("Textures/bobr.png")) == NULL)
 	{
 		printf_s("Can't load image 'bobr.png'");
 		system("pause");
@@ -215,38 +360,119 @@ void game(mainRenderer backGround, mainRenderer stoneBlock, int bordersCount, in
 	Laplas.render.frame.w = surface->w / 6;
 	Laplas.render.frame.h = surface->h;
 	SDL_FreeSurface(surface);
-#pragma endregion
+	#pragma endregion
 
-#pragma region BACKGROUND TEXTURE
+	#pragma region BEAVER TEXTURE
 	surface = NULL;
-	if ((surface = IMG_Load("BackGroundCave.png")) == NULL)
+	if ((surface = IMG_Load("Textures/bobr.png")) == NULL)
 	{
-		printf_s("Can't load image 'BackGroundCave.png'");
+		printf_s("Can't load image 'bobr.png'");
 		system("pause");
 	}
 
-	backGround.texture = SDL_CreateTextureFromSurface(ren, surface);
-	backGround.textureSize.w = surface->w;
-	backGround.textureSize.h = surface->h;
-	backGround.frame.w = surface->w;
-	backGround.frame.h = surface->h;
+	texture_beaver.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture_beaver.textureSize.w = surface->w;
+	texture_beaver.textureSize.h = surface->h;
+	texture_beaver.textureSize.x = NULL;
+	texture_beaver.textureSize.y = NULL;
+	texture_beaver.frame.w = surface->w / 6;
+	texture_beaver.frame.h = surface->h;
+	texture_beaver.frame.x = NULL;
+	texture_beaver.frame.y = NULL;
 	SDL_FreeSurface(surface);
-#pragma endregion
+	#pragma endregion
 
+	#pragma region BACKGROUND TEXTURE
+		surface = NULL;
+		if ((surface = IMG_Load("Textures/BackGroundCave.png")) == NULL)
+		{
+			printf_s("Can't load image 'BackGroundCave.png'");
+			system("pause");
+		}
 
+		texture_backGround.texture = SDL_CreateTextureFromSurface(ren, surface);
+		texture_backGround.textureSize.w = surface->w;
+		texture_backGround.textureSize.h = surface->h;
+		texture_backGround.frame.w = surface->w;
+		texture_backGround.frame.h = surface->h;
+		SDL_FreeSurface(surface);
+	#pragma endregion
 
-	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders.txt");
-	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy.txt");
+	#pragma region COBBLESTONE TEXTURE
+	surface = NULL;
+	if ((surface = IMG_Load("Textures/cobblestone40x40.png")) == NULL)
+	{
+		printf_s("Can't load image 'cobblestone40x40.png'");
+		system("pause");
+	}
 
-	InitEnemys(levelEnemys, enemysCount);
+	texture_cobbleStone.texture = SDL_CreateTextureFromSurface(ren, surface);
+	
+	texture_cobbleStone.textureSize.x = NULL;
+	texture_cobbleStone.textureSize.y = NULL;
+	texture_cobbleStone.textureSize.w = surface->w * 2.5;
+	texture_cobbleStone.textureSize.h = surface->h * 2.5;
 
+	texture_cobbleStone.frame.w = surface->w * 2.5;
+	texture_cobbleStone.frame.h = surface->h * 2.5;
+	SDL_FreeSurface(surface);
+	#pragma endregion
 
+	#pragma region HP_BAR TEXTURE
+	surface = NULL;
+	if ((surface = IMG_Load("Textures/hpBar.png")) == NULL)
+	{
+		printf_s("Can't load image 'hpBar.png'");
+		system("pause");
+	}
+			
+	texture_hpBar.texture = SDL_CreateTextureFromSurface(ren, surface);
+
+	texture_hpBar.textureSize.x = NULL;
+	texture_hpBar.textureSize.y = NULL;
+	texture_hpBar.textureSize.w = surface->w * 0.5;
+	texture_hpBar.textureSize.h = surface->h * 0.5;
+
+	texture_hpBar.frame.w = surface->w * 0.5;
+	texture_hpBar.frame.h = surface->h * 0.5;
+	SDL_FreeSurface(surface);
+	#pragma endregion
+
+	#pragma region TIMER_TEXTURE
+
+	surface = NULL;
+	if ((fontNovem = TTF_OpenFont("Fonts\\novem.ttf", TIMER_SIZE)) == NULL)
+	{
+		printf_s("Can't open 'novem.ttf'\n");
+		system("pause");
+	}
+
+	surface = TTF_RenderText_Blended(fontNovem, timer_text, { 100, 100, 100, 255 });
+
+	texture_timer.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture_timer.textureSize.w = surface->w;
+	texture_timer.textureSize.h = surface->h;
+	texture_timer.textureSize.x = WINDOW_WIDTH - surface->w;
+	texture_timer.textureSize.y = NULL;
+
+	SDL_FreeSurface(surface);
+
+	#pragma endregion
+
+	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders.txt");
+	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy.txt");
+
+	InitEnemys(levelEnemys, enemysCount, &texture_beaver);
+
+	
 
 	bool isRunning = true;
 
 	while (isRunning)
 	{
-#pragma region BUTTON_CHECK
+		deltaTime = clock();
+
+		#pragma region BUTTON_CHECK
 		while (SDL_PollEvent(&ev))
 		{
 			switch (ev.type)
@@ -263,6 +489,8 @@ void game(mainRenderer backGround, mainRenderer stoneBlock, int bordersCount, in
 					SDL_RenderSetScale(ren, window.scaleX = window.w / 1. / WINDOW_WIDTH, window.scaleY = window.h / 1. / WINDOW_HEIGHT);
 					window.w /= window.scaleX;
 					window.h /= window.scaleY;
+				
+					break;
 				}
 				break;
 
@@ -272,19 +500,27 @@ void game(mainRenderer backGround, mainRenderer stoneBlock, int bordersCount, in
 				case SDL_SCANCODE_ESCAPE:
 					isRunning = false;
 					break;
+
 				case SDL_SCANCODE_A:
 					Laplas.physic.xMoveL = -1;
 					break;
+
 				case SDL_SCANCODE_D:
 					Laplas.physic.xMoveR = 1;
 					break;
+
+				case SDL_SCANCODE_S:
+					Laplas.physic.pressed_S = 1;
+					break;
+
 				case SDL_SCANCODE_LSHIFT:
-					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD)
+					if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD )
 					{
-						Laplas.effect.timeCD = clock();
+						Laplas.effect.timeDashCD = deltaTime;
 						Laplas.physic.accelerationX = 8;
 					}
 					break;
+
 				case SDL_SCANCODE_SPACE:
 					if (Laplas.physic.onBorder)
 					{
@@ -295,7 +531,7 @@ void game(mainRenderer backGround, mainRenderer stoneBlock, int bordersCount, in
 				}
 				break;
 
-
+				
 
 			case SDL_KEYUP:
 				switch (ev.key.keysym.scancode)
@@ -303,171 +539,191 @@ void game(mainRenderer backGround, mainRenderer stoneBlock, int bordersCount, in
 				case SDL_SCANCODE_A:
 					Laplas.physic.xMoveL = 0;
 					break;
-					//case SDL_SCANCODE_W:
-					//	Laplas.physic.yMove = 0;
-					//	break;
-					//case SDL_SCANCODE_S:
-					//	Laplas.physic.yMove = 0;
-					//	break;
+
+				case SDL_SCANCODE_S:
+					Laplas.physic.pressed_S = 0;
+					break;
+
 				case SDL_SCANCODE_D:
 					Laplas.physic.xMoveR = 0;
 					break;
+
 				}
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
 				if (ev.button.button == SDL_BUTTON_X2)
 				{
-					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD)
+					if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
 					{
-						Laplas.effect.timeCD = clock();
+						Laplas.effect.timeDashCD = deltaTime;
 						Laplas.physic.accelerationX = 8;
 					}
 				}
 				break;
 
+
+			case SDL_MOUSEBUTTONUP:
+				if (ev.button.button == SDL_BUTTON_LEFT)
+				{
+					if (Laplas.battle.commonAtack == 0)
+					{
+						Laplas.effect.timeAtackCD = deltaTime;
+						Laplas.battle.commonAtack = 1;
+					}
+				}
+				else if (ev.button.button == SDL_BUTTON_RIGHT)
+				{
+					SDL_Rect rrr = {window.w*window.scaleX - 100, window.h*window.scaleY - 100, 100, 100};
+					SDL_GetMouseState(&mouseClick.x, &mouseClick.y);
+					if (SDL_PointInRect(&mouseClick, &rrr))
+						printf_s("click\n");
+				}
+				break;
 			}
 
 
 
 		}
-#pragma endregion
+		#pragma endregion
 
-#pragma region PHYSIC_CHECK
+		#pragma region PHYSIC_CHECK
 
 		//Получение координат
 		HeroPhysicGetBase(&Laplas);
-		EnemyPhysicGetBase(&levelEnemys[0]);
+		EnemyPhysicGetBase(levelEnemys, &enemysCount);
 
 		//Движение по оси X + рывок
 		HeroPhysicXmovement(&Laplas);
-		EnemyPhysicXmovement(&levelEnemys[0]);
 
 		//Прыжок
 		HeroPhysicJump(&Laplas);
-		EnemyPhysicJump(&levelEnemys[0]);
 
 		//Гравитация
 		HeroPhysicGravity(&Laplas);
-		EnemyPhysicGravity(&levelEnemys[0]);
-
+		EnemyPhysicGravity(levelEnemys, &enemysCount);
+		
 		//Проверка на наложение хитбоксов
-		HeroPhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
-		EnemyPhysicHitboxOverlay(bordersCount, &levelEnemys[0], levelBorders);
+		HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders);
+		EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders);
 
 		//Выход за границы мира
 		HeroPhysicOutworldCheck(&Laplas, levelBorders);
-		EnemyPhysicOutworldCheck(&levelEnemys[0], levelBorders);
+		EnemyPhysicOutworldCheck(&enemysCount, levelEnemys, levelBorders);
 
-		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[8].bordersHitbox))
+		for (int i = 0; i < enemysCount; i++)
 		{
-			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Borders1.txt");
-			//levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemy1.txt");
-			InitEnemys(levelEnemys, enemysCount);
+			if (levelEnemys[i].status.alive)
+			{
+				if (levelEnemys[i].hitbox.x < Laplas.hitbox.x)
+				{
+					levelEnemys[i].hitbox.x += levelEnemys[i].physic.speed;
+					levelEnemys[i].physic.xMoveR = 1;
+					levelEnemys[i].physic.xMoveL = 0;
+				}
+				else if (levelEnemys[i].hitbox.x > Laplas.hitbox.x)
+				{
+					levelEnemys[i].hitbox.x -= levelEnemys[i].physic.speed;
+					levelEnemys[i].physic.xMoveR = 0;
+					levelEnemys[i].physic.xMoveL = -1;
+				}
+			}
 		}
 
-#pragma endregion 
-#pragma region DRAW
-		SDL_RenderCopy(ren, backGround.texture, NULL, NULL);
+		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[9].bordersHitbox))
+		{
+			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders1.txt");
+			levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy1.txt");
+			InitEnemys(levelEnemys, enemysCount, &texture_beaver);
+		}
+
+		#pragma endregion 
+
+		#pragma region BATTLE
+
+		if (Laplas.battle.commonAtack && Laplas.effect.timeAtackCD + Laplas.effect.atackCD > deltaTime)
+		{
+			//анимация
+		}
+		else
+		{
+			Laplas.battle.commonAtack = 0;
+			for (int i = 0;i < enemysCount; i++)
+				levelEnemys[i].effect.underAtack = 0;
+		}
+
+		for (int i = 0; i < enemysCount; i++)
+		{
+			if (Laplas.battle.commonAtack && levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas.hitbox, &levelEnemys[i].hitbox))
+			{
+				levelEnemys[i].effect.underAtack = 1;
+				levelEnemys[i].status.HP -= Laplas.status.DMG;
+				if (levelEnemys[i].status.HP <= 0)
+				{
+					levelEnemys[i].status.alive = 0;
+				}
+			}
+		}
+
+		
+
+
+		#pragma endregion 
+
+		#pragma region DRAW
+		SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
+		
+
+		DrawHitbox(bordersCount, levelBorders, Laplas, window, texture_cobbleStone);
+		DrawEnemys(&enemysCount, levelEnemys, &Laplas, window);
+		
+		if (lastTime != deltaTime / 1000 % 60)
+		{
+			lastTime = deltaTime / 1000 % 60;
+			sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, lastTime);
+			SDL_DestroyTexture(texture_timer.texture);
+			texture_timer = CreateTextureFromText(timer_text, fontNovem, { 100, 100, 100, 255 });
+		}
+
+		
+		SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
+
+		//SDL_Rect tempRect = hpBar.textureSize;
+		////tempRect.h /= 2;
+		//SDL_Rect tempRect2 = { 0, 0, hpBar.textureSize.w, hpBar.textureSize.h/2 };
+		//
+		//
+
+		//SDL_RenderCopy(ren, hpBar.texture, &tempRect2, &tempRect);
+		
 		DrawMainHero(&Laplas, window);
-
-		DrawHitbox(bordersCount, levelBorders, Laplas, window);
-		DrawEnemys(enemysCount, levelEnemys, Laplas, window);
-
-
 		SDL_RenderPresent(ren);
 
 
 
 		SDL_SetRenderDrawColor(ren, 200, 200, 200, 255);
 		SDL_RenderClear(ren);
-#pragma endregion 
+		#pragma endregion 
 
-#pragma region FPS_DELAY
+		#pragma region FPS_DELAY
 
 		FPSControl();
 
-#pragma endregion 
+		#pragma endregion 
 	}
 
 	free(levelBorders);
 	free(levelEnemys);
-}
+	TTF_CloseFont(fontNovem);
 
-int mainMenu(mainWindow window) {
-	while (true) {
-		
-		SDL_Rect rrr = { 100, 100, 100, 100 };
-		SDL_SetRenderDrawColor(ren, 0, 255, 0, 255);
-		SDL_RenderDrawRect(ren, &rrr);
-		SDL_RenderPresent(ren);
-
-		while (SDL_PollEvent(&ev)){
-			switch (ev.type)
-			{
-			case SDL_KEYDOWN:
-			{
-				if (ev.key.keysym.sym == SDLK_ESCAPE)
-					exit(0);
-
-				break;
-			}
-			case SDL_MOUSEBUTTONDOWN:
-			{
-				switch (ev.button.button)
-				{
-				case SDL_BUTTON_LEFT:
-				{
-					SDL_Point mouse = { ev.button.x, ev.button.y };
-					if (SDL_PointInRect(&mouse, &rrr)) {
-						printf_s("click\n");
-						return 1;
-					}
-					break;
-				}
-				}
-				break;
-			}
-			case SDL_QUIT:
-			{
-				exit(0);
-
-				break;
-			}
-			}
-			}
-	}
-}
-
-int main(int argc, char* argv[])
-{
-	Init(&win, &ren, &win_surface);
-
-	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-	SDL_RenderClear(ren);
-
-	mainRenderer backGround = { NULL };
-	mainRenderer stoneBlock = { NULL };
-
-	int bordersCount = 0;
-	int enemysCount = 0;
-	mainBorders* levelBorders = NULL;
-	mainEnemys* levelEnemys = NULL;
-	int check = 1;
-	mainHero Laplas;
-	int temp = 0;
-	mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
-	
-	Laplas = InitHero();
-	while (true) {
-		if (mainMenu(window)==1)
-		{
-			game(backGround, stoneBlock, bordersCount, enemysCount, levelBorders, levelEnemys, check, Laplas, temp, window);
-		}
-	}
+	SDL_DestroyTexture(texture_backGround.texture);
+	SDL_DestroyTexture(texture_cobbleStone.texture);
+	SDL_DestroyTexture(texture_hpBar.texture);
+	SDL_DestroyTexture(texture_timer.texture);
+	SDL_DestroyTexture(texture_beaver.texture);
+	SDL_DestroyTexture(Laplas.render.texture);
 	
 
-	//game(backGround, stoneBlock, bordersCount, enemysCount, levelBorders, levelEnemys, check, Laplas, temp, window);
 	DeInit(0, &win, &ren, &win_surface);
 	
 	return 0;

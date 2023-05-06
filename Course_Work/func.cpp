@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_Image.h>
+#include <SDL_ttf.h>
 #include <iostream>
 #include <time.h>
 #include "common_parameters.h"
@@ -10,6 +11,7 @@ void DeInit(int error, SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_s
 	if (win_surface != NULL)SDL_FreeSurface(*win_surface);
 	if (ren != NULL)SDL_DestroyRenderer(*ren);
 	if (win != NULL)SDL_DestroyWindow(*win);
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 	exit(0);
@@ -34,6 +36,12 @@ void Init(SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface)
 	if (res & IMG_INIT_JPG) printf_s("Init JPG library.\n"); else printf_s("Can't Init JPG library!\n");
 	if (res & IMG_INIT_PNG) printf_s("Init PNG library.\n"); else printf_s("Can't Init PNG library!\n");
 
+	if (TTF_Init())
+	{
+		printf_s("Couldn't init SDL_ttf! Error: %s\n", SDL_GetError());
+		system("pause");
+		DeInit(1, win, ren, win_surface);
+	}
 
 	*win = SDL_CreateWindow("SDL project", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 

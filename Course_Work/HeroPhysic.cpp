@@ -97,16 +97,23 @@ void HeroPhysicGravity(mainHero* Laplas)
 }
 
 //Проверка на наложение хитбоксов
-void HeroPhysicHitboxOverlay(int bordersCount, mainHero* Laplas, mainBorders levelBorders[])
+void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[])
 {
 	int check = 1;
-	for (int i = 0;i < bordersCount;i++)
+	for (int i = 0;i < *bordersCount;i++)
 	{
-		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
+		if (levelBorders[i].type == 1 || levelBorders[i].type == 2 || (levelBorders[i].type == 4 && !Laplas->physic.pressed_S ))
 			if(!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
 			{
 			check = 0;
 			break;
+			}
+		
+		if(levelBorders[i].type == 5)
+			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+			{
+				Laplas->physic.impulse = 1;
+				break;
 			}
 	}
 
