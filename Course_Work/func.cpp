@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_Image.h>
 #include <iostream>
+#include <time.h>
 #include "common_parameters.h"
 
 void DeInit(int error, SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface)

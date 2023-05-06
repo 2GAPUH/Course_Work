@@ -5,6 +5,7 @@
 #include "func.h"
 #include "common_parameters.h"
 #include <math.h>
+#include <time.h>
 #include "HeroPhysic.h"
 #include "EnemyPhysic.h"
 
@@ -197,30 +198,12 @@ void InitEnemys(mainEnemys levelEnemys[], int enemysCount)
 	}
 }
 
-int main(int argc, char* argv[])
-{
-	Init(&win, &ren, &win_surface);
-
-	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-	SDL_RenderClear(ren);
-
-	mainRenderer backGround;
-	mainRenderer stoneBlock;
-
-	int bordersCount;
-	int enemysCount;
-	mainBorders* levelBorders = NULL;
-	mainEnemys* levelEnemys = NULL;
-	int check = 1;
-	mainHero Laplas;
-	int temp = 0;
-	mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
-
-	Laplas = InitHero();
+void game(mainRenderer backGround, mainRenderer stoneBlock, int bordersCount, int enemysCount, mainBorders* levelBorders, mainEnemys* levelEnemys, int check, mainHero Laplas, int temp, mainWindow window) {
 	
+
 #pragma region MAIN_HERO TEXTURE
 	SDL_Surface* surface = NULL;
-	if((surface = IMG_Load("bobr.png")) == NULL)
+	if ((surface = IMG_Load("bobr.png")) == NULL)
 	{
 		printf_s("Can't load image 'bobr.png'");
 		system("pause");
@@ -257,13 +240,13 @@ int main(int argc, char* argv[])
 
 	InitEnemys(levelEnemys, enemysCount);
 
-	
+
 
 	bool isRunning = true;
 
 	while (isRunning)
 	{
-		#pragma region BUTTON_CHECK
+#pragma region BUTTON_CHECK
 		while (SDL_PollEvent(&ev))
 		{
 			switch (ev.type)
@@ -296,7 +279,7 @@ int main(int argc, char* argv[])
 					Laplas.physic.xMoveR = 1;
 					break;
 				case SDL_SCANCODE_LSHIFT:
-					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD )
+					if (clock() - Laplas.effect.timeCD > Laplas.effect.dashCD)
 					{
 						Laplas.effect.timeCD = clock();
 						Laplas.physic.accelerationX = 8;
@@ -312,7 +295,7 @@ int main(int argc, char* argv[])
 				}
 				break;
 
-				
+
 
 			case SDL_KEYUP:
 				switch (ev.key.keysym.scancode)
@@ -320,12 +303,12 @@ int main(int argc, char* argv[])
 				case SDL_SCANCODE_A:
 					Laplas.physic.xMoveL = 0;
 					break;
-				//case SDL_SCANCODE_W:
-				//	Laplas.physic.yMove = 0;
-				//	break;
-				//case SDL_SCANCODE_S:
-				//	Laplas.physic.yMove = 0;
-				//	break;
+					//case SDL_SCANCODE_W:
+					//	Laplas.physic.yMove = 0;
+					//	break;
+					//case SDL_SCANCODE_S:
+					//	Laplas.physic.yMove = 0;
+					//	break;
 				case SDL_SCANCODE_D:
 					Laplas.physic.xMoveR = 0;
 					break;
@@ -348,9 +331,9 @@ int main(int argc, char* argv[])
 
 
 		}
-		#pragma endregion
+#pragma endregion
 
-		#pragma region PHYSIC_CHECK
+#pragma region PHYSIC_CHECK
 
 		//Получение координат
 		HeroPhysicGetBase(&Laplas);
@@ -367,7 +350,7 @@ int main(int argc, char* argv[])
 		//Гравитация
 		HeroPhysicGravity(&Laplas);
 		EnemyPhysicGravity(&levelEnemys[0]);
-		
+
 		//Проверка на наложение хитбоксов
 		HeroPhysicHitboxOverlay(bordersCount, &Laplas, levelBorders);
 		EnemyPhysicHitboxOverlay(bordersCount, &levelEnemys[0], levelBorders);
@@ -383,15 +366,14 @@ int main(int argc, char* argv[])
 			InitEnemys(levelEnemys, enemysCount);
 		}
 
-		#pragma endregion 
-
-		#pragma region DRAW
+#pragma endregion 
+#pragma region DRAW
 		SDL_RenderCopy(ren, backGround.texture, NULL, NULL);
 		DrawMainHero(&Laplas, window);
 
 		DrawHitbox(bordersCount, levelBorders, Laplas, window);
 		DrawEnemys(enemysCount, levelEnemys, Laplas, window);
-		
+
 
 		SDL_RenderPresent(ren);
 
@@ -399,18 +381,93 @@ int main(int argc, char* argv[])
 
 		SDL_SetRenderDrawColor(ren, 200, 200, 200, 255);
 		SDL_RenderClear(ren);
-		#pragma endregion 
+#pragma endregion 
 
-		#pragma region FPS_DELAY
+#pragma region FPS_DELAY
 
 		FPSControl();
 
-		#pragma endregion 
+#pragma endregion 
 	}
 
 	free(levelBorders);
 	free(levelEnemys);
+}
 
+int mainMenu(mainWindow window) {
+	while (true) {
+		
+		SDL_Rect rrr = { 100, 100, 100, 100 };
+		SDL_SetRenderDrawColor(ren, 0, 255, 0, 255);
+		SDL_RenderDrawRect(ren, &rrr);
+		SDL_RenderPresent(ren);
+
+		while (SDL_PollEvent(&ev)){
+			switch (ev.type)
+			{
+			case SDL_KEYDOWN:
+			{
+				if (ev.key.keysym.sym == SDLK_ESCAPE)
+					exit(0);
+
+				break;
+			}
+			case SDL_MOUSEBUTTONDOWN:
+			{
+				switch (ev.button.button)
+				{
+				case SDL_BUTTON_LEFT:
+				{
+					SDL_Point mouse = { ev.button.x, ev.button.y };
+					if (SDL_PointInRect(&mouse, &rrr)) {
+						printf_s("click\n");
+						return 1;
+					}
+					break;
+				}
+				}
+				break;
+			}
+			case SDL_QUIT:
+			{
+				exit(0);
+
+				break;
+			}
+			}
+			}
+	}
+}
+
+int main(int argc, char* argv[])
+{
+	Init(&win, &ren, &win_surface);
+
+	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+	SDL_RenderClear(ren);
+
+	mainRenderer backGround = { NULL };
+	mainRenderer stoneBlock = { NULL };
+
+	int bordersCount = 0;
+	int enemysCount = 0;
+	mainBorders* levelBorders = NULL;
+	mainEnemys* levelEnemys = NULL;
+	int check = 1;
+	mainHero Laplas;
+	int temp = 0;
+	mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
+	
+	Laplas = InitHero();
+	while (true) {
+		if (mainMenu(window)==1)
+		{
+			game(backGround, stoneBlock, bordersCount, enemysCount, levelBorders, levelEnemys, check, Laplas, temp, window);
+		}
+	}
+	
+
+	//game(backGround, stoneBlock, bordersCount, enemysCount, levelBorders, levelEnemys, check, Laplas, temp, window);
 	DeInit(0, &win, &ren, &win_surface);
 	
 	return 0;
