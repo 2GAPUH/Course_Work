@@ -158,7 +158,7 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 		if (Laplas->hitbox.y > levelHeight - window.h / 2.f)
 			movedEnemy.y -= levelHeight - window.h;
 		
-		SDL_RenderFillRect(ren, &movedEnemy);
+		//SDL_RenderFillRect(ren, &movedEnemy);
 
 		if (levelEnemys[i].physic.gazeDirection > 0)
 			SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);
