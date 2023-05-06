@@ -22,13 +22,14 @@ void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEne
 {
 	if (Laplas->battle.commonAtack && Laplas->effect.timeAtackCD + Laplas->effect.atackCD > *deltaTime)
 	{
-		Laplas->animationType = 1;
+		Laplas->animationType = 2;
 	}
 	else
 	{
 		Laplas->battle.commonAtack = 0;
 		for (int i = 0;i < *enemysCount; i++)
 			levelEnemys[i].effect.underAtack = 0;
+		Laplas->animationType = 0;
 	}
 
 	for (int i = 0; i < *enemysCount; i++)

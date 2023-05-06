@@ -32,21 +32,63 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 	if (Laplas->hitbox.y > levelHeight - window.h / 2.f)
 		movedLaplas.y = Laplas->hitbox.y - Laplas->hitbox.h / 2.f - (levelHeight - window.h);
 	SDL_Point p = { 100, -100 };
+
 	//SDL_RenderFillRect(ren, &movedLaplas);
-	if(Laplas->physic.gazeDirection > 0)
-		SDL_RenderCopyEx(ren, Laplas->render.texture, &Laplas->render.frame, &movedLaplas, 0, 0, SDL_FLIP_HORIZONTAL);
-	else if(Laplas->physic.gazeDirection < 0)
-		SDL_RenderCopyEx(ren, Laplas->render.texture, &Laplas->render.frame, &movedLaplas, 0, 0, SDL_FLIP_NONE);
 
+	if (Laplas->physic.xMoveL + Laplas->physic.xMoveR == 0)
+		Laplas->animationType == 0;
+	else if (Laplas->animationType != 2)
+		Laplas->animationType = 1;
 
-	if ((Laplas->physic.xMoveL || Laplas->physic.xMoveR) && (SDL_GetTicks() - Laplas->render.frameTime > 1000/30) && (Laplas->physic.xMoveL + Laplas->physic.xMoveR != 0))
+	switch (Laplas->animationType)
 	{
-		Laplas->render.frame.x += Laplas->render.textureSize.w / 6;
-		Laplas->render.frameTime = SDL_GetTicks();
+	case 0:
+		if (Laplas->physic.gazeDirection < 0)
+			SDL_RenderCopyEx(ren, Laplas->animation.com.texture, &Laplas->animation.com.frame, &movedLaplas, 0, 0, SDL_FLIP_HORIZONTAL);
+		else if (Laplas->physic.gazeDirection > 0)
+			SDL_RenderCopyEx(ren, Laplas->animation.com.texture, &Laplas->animation.com.frame, &movedLaplas, 0, 0, SDL_FLIP_NONE);
+		if (SDL_GetTicks() - Laplas->animation.com.frameTime > 1000 / Laplas->animation.com.frameCount) 
+		{
+			Laplas->animation.com.frame.x += Laplas->animation.com.textureSize.w / Laplas->animation.com.frameCount;
+			Laplas->animation.com.frameTime = SDL_GetTicks();
+		}
+
+		if (Laplas->animation.com.frame.x >= Laplas->animation.com.textureSize.w)
+			Laplas->animation.com.frame.x = 0;
+		break;
+
+	case 1:
+		if (Laplas->physic.gazeDirection < 0)
+			SDL_RenderCopyEx(ren, Laplas->animation.run.texture, &Laplas->animation.run.frame, &movedLaplas, 0, 0, SDL_FLIP_HORIZONTAL);
+		else if (Laplas->physic.gazeDirection > 0)
+			SDL_RenderCopyEx(ren, Laplas->animation.run.texture, &Laplas->animation.run.frame, &movedLaplas, 0, 0, SDL_FLIP_NONE);
+		if (SDL_GetTicks() - Laplas->animation.run.frameTime > 62 * HERO_SPEED / Laplas->animation.run.frameCount)
+		{
+			Laplas->animation.run.frame.x += Laplas->animation.run.textureSize.w / Laplas->animation.run.frameCount;
+			Laplas->animation.run.frameTime = SDL_GetTicks();
+		}
+
+		if (Laplas->animation.run.frame.x >= Laplas->animation.run.textureSize.w)
+			Laplas->animation.run.frame.x = 0;
+		break;
+
+	case 2:
+		if (Laplas->physic.gazeDirection < 0)
+			SDL_RenderCopyEx(ren, Laplas->animation.punch.texture, &Laplas->animation.punch.frame, &movedLaplas, 0, 0, SDL_FLIP_HORIZONTAL);
+		else if (Laplas->physic.gazeDirection > 0)
+			SDL_RenderCopyEx(ren, Laplas->animation.punch.texture, &Laplas->animation.punch.frame, &movedLaplas, 0, 0, SDL_FLIP_NONE);
+		if (SDL_GetTicks() - Laplas->animation.punch.frameTime > HERO_ATACK_CD / Laplas->animation.punch.frameCount)
+		{
+			Laplas->animation.punch.frame.x += Laplas->animation.punch.textureSize.w / Laplas->animation.punch.frameCount;
+			Laplas->animation.punch.frameTime = SDL_GetTicks();
+		}
+
+		if (Laplas->animation.punch.frame.x >= Laplas->animation.punch.textureSize.w )
+			Laplas->animation.punch.frame.x = 0;
+		break;
 	}
 
-	if (Laplas->render.frame.x >= Laplas->render.textureSize.w || (!Laplas->physic.xMoveL && !Laplas->physic.xMoveR) || (Laplas->physic.xMoveL + Laplas->physic.xMoveR == 0))
-		Laplas->render.frame.x = 0;
+
 }
 
 void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window, mainRenderer cobbleStone, mainRenderer platform)
@@ -130,8 +172,6 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 		}
 	}
 }
-
-
 
 void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, mainWindow window)
 {
@@ -250,11 +290,13 @@ mainHero InitHero()
 	mainHero Laplas;
 	Laplas.position = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
 	Laplas.hitbox = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT };
-	Laplas.physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER, PRESSED_S };
-	Laplas.effect = { DASH_CD, NULL, ATACK_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y };
-	Laplas.render = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
+	Laplas.physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, HERO_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER, PRESSED_S };
+	Laplas.effect = { HERO_DASH_CD, NULL, HERO_ATACK_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y };
+	Laplas.animation.com = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
+	Laplas.animation.run = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
+	Laplas.animation.punch = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
 	Laplas.battle = { NULL, { NULL, NULL } };
-	Laplas.status = { HERO_DAMAGE, HERO_HP, ALIVE };
+	Laplas.status = { HERO_DAMAGE, HERO_HP, ALIVE , HERO_START_AMUNITION};
 	Laplas.animationType = NULL;
 
 	return Laplas;
@@ -284,9 +326,7 @@ void InitEnemys(mainEnemys levelEnemys[], int enemysCount, mainRenderer* texture
 	}
 }
 
-
-
-mainRenderer CreateTextureFromText(const char str[], TTF_Font* font, SDL_Color fg)
+mainRenderer CreateTimerFromText(const char str[], TTF_Font* font, SDL_Color fg)
 {
 	SDL_Surface* surface = TTF_RenderText_Blended(font, str, fg);
 	mainRenderer texture;
@@ -299,7 +339,18 @@ mainRenderer CreateTextureFromText(const char str[], TTF_Font* font, SDL_Color f
 	return texture;
 }
 
-
+mainRenderer CreateAmmunitionFromText(const char str[], TTF_Font* font, SDL_Color fg)
+{
+	SDL_Surface* surface = TTF_RenderText_Blended(font, str, fg);
+	mainRenderer texture;
+	texture.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture.textureSize.w = surface->w;
+	texture.textureSize.h = surface->h;
+	texture.textureSize.x = NULL;
+	texture.textureSize.y = NULL;
+	SDL_FreeSurface(surface);
+	return texture;
+}
 
 void GetTexture(const char filePath[], mainRenderer* texture, int frameCount)
 {
@@ -322,8 +373,12 @@ void GetTexture(const char filePath[], mainRenderer* texture, int frameCount)
 	texture->frame.w = surface->w / frameCount;
 	texture->frame.h = surface->h;
 
+	texture->frameCount = frameCount;
+
 	SDL_FreeSurface(surface);
 }
+
+
 
 int main(int argc, char* argv[])
 {
@@ -338,9 +393,11 @@ int main(int argc, char* argv[])
 	mainRenderer texture_cobbleStone;
 	mainRenderer texture_hpBar;
 	mainRenderer texture_timer;
+	mainRenderer texture_ammunition;
 	mainRenderer texture_beaver;
 	mainRenderer texture_platform;
-	TTF_Font* fontNovem = NULL;
+	TTF_Font* fontNovemBig = NULL;
+	TTF_Font* fontNovemSmall = NULL;
 
 	int bordersCount;
 	int enemysCount = NULL;
@@ -357,6 +414,7 @@ int main(int argc, char* argv[])
 	SDL_Point mouseClick = { NULL, NULL };
 	
 	char timer_text[10] = "00:00";
+	char amunition_text[10] = "000";
 	
 	bool isRunning = true;
 
@@ -366,7 +424,10 @@ int main(int argc, char* argv[])
 
 	#pragma region TEXTURES_LOAD
 
-	GetTexture("Textures\\bobr.png", &Laplas.render, 6);
+	GetTexture("Textures\\hero_comm.png", &Laplas.animation.com, 3);
+	GetTexture("Textures\\hero_run.png", &Laplas.animation.run, 8);
+	GetTexture("Textures\\hero_punch.png", &Laplas.animation.punch, 5);
+	Laplas.hitbox.h *= (Laplas.animation.com.frame.w / 1. / Laplas.animation.com.frame.h);
 
 	GetTexture("Textures\\bobr.png", &texture_beaver, 6);
 
@@ -381,19 +442,41 @@ int main(int argc, char* argv[])
 	#pragma region TIMER_TEXTURE
 
 	SDL_Surface* surface = NULL;
-	if ((fontNovem = TTF_OpenFont("Fonts\\novem.ttf", TIMER_SIZE)) == NULL)
+	if ((fontNovemBig = TTF_OpenFont("Fonts\\novem.ttf", TIMER_TEXT_SIZE)) == NULL)
 	{
 		printf_s("Can't open 'novem.ttf'\n");
 		system("pause");
 	}
 
-	surface = TTF_RenderText_Blended(fontNovem, timer_text, { 100, 100, 100, 255 });
+	surface = TTF_RenderText_Blended(fontNovemBig, timer_text, { 100, 100, 100, 255 });
 
 	texture_timer.texture = SDL_CreateTextureFromSurface(ren, surface);
 	texture_timer.textureSize.w = surface->w;
 	texture_timer.textureSize.h = surface->h;
 	texture_timer.textureSize.x = WINDOW_WIDTH - surface->w;
 	texture_timer.textureSize.y = NULL;
+
+	SDL_FreeSurface(surface);
+
+	#pragma endregion
+
+	#pragma region AMMUNITION_TEXTURE
+
+	if ((fontNovemSmall = TTF_OpenFont("Fonts\\novem.ttf", AMMUNITION_TEXT_SIZE)) == NULL)
+	{
+		printf_s("Can't open 'novem.ttf'\n");
+		system("pause");
+	}
+
+	surface = NULL;
+
+	surface = TTF_RenderText_Blended(fontNovemSmall, timer_text, { 255, 215, 0, 255 });
+
+	texture_ammunition.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture_ammunition.textureSize.w = surface->w;
+	texture_ammunition.textureSize.h = surface->h;
+	texture_ammunition.textureSize.x = NULL;
+	texture_ammunition.textureSize.y = NULL;
 
 	SDL_FreeSurface(surface);
 
@@ -514,6 +597,8 @@ int main(int argc, char* argv[])
 					SDL_GetMouseState(&mouseClick.x, &mouseClick.y);
 					if (SDL_PointInRect(&mouseClick, &rrr))
 						printf_s("click\n");
+					if(Laplas.status.ammunition > 0)
+						Laplas.status.ammunition -= 1;
 				}
 				break;
 			}
@@ -530,6 +615,7 @@ int main(int argc, char* argv[])
 		EnemyPhysicGetBase(levelEnemys, &enemysCount);
 
 		//Движение по оси X + рывок
+		if(Laplas.animationType != 2)
 		HeroPhysicXmovement(&Laplas);
 
 		//Прыжок
@@ -595,12 +681,19 @@ int main(int argc, char* argv[])
 			lastTime = deltaTime / 1000 % 60;
 			sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, lastTime);
 			SDL_DestroyTexture(texture_timer.texture);
-			texture_timer = CreateTextureFromText(timer_text, fontNovem, { 100, 100, 100, 255 });
+			texture_timer = CreateTimerFromText(timer_text, fontNovemBig, { 100, 100, 100, 255 });
 		}
+
+		//Отрисовка кол-ва боеприпасов
+		sprintf_s(amunition_text, "%03i", Laplas.status.ammunition);
+		SDL_DestroyTexture(texture_ammunition.texture);
+		texture_ammunition = CreateAmmunitionFromText(amunition_text, fontNovemSmall, { 255, 215, 0, 255 });
 
 		
 		SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
+		SDL_RenderCopy(ren, texture_ammunition.texture, NULL, &texture_ammunition.textureSize);
 		
+
 		DrawMainHero(&Laplas, window);
 		SDL_RenderPresent(ren);
 
@@ -613,13 +706,14 @@ int main(int argc, char* argv[])
 
 	free(levelBorders);
 	free(levelEnemys);
-	TTF_CloseFont(fontNovem);
+	TTF_CloseFont(fontNovemBig);
+	TTF_CloseFont(fontNovemSmall);
 
 	SDL_DestroyTexture(texture_backGround.texture);
 	SDL_DestroyTexture(texture_cobbleStone.texture);
 	SDL_DestroyTexture(texture_timer.texture);
 	SDL_DestroyTexture(texture_beaver.texture);
-	SDL_DestroyTexture(Laplas.render.texture);
+	SDL_DestroyTexture(Laplas.animation.com.texture);
 	SDL_DestroyTexture(texture_platform.texture);
 	
 
