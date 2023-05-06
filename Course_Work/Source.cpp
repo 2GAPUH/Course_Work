@@ -8,6 +8,7 @@
 #include <math.h>
 #include "HeroPhysic.h"
 #include "EnemyPhysic.h"
+#include "HeroBattle.h"
 
 SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
@@ -254,6 +255,7 @@ mainHero InitHero()
 	Laplas.render = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
 	Laplas.battle = { NULL, { NULL, NULL } };
 	Laplas.status = { HERO_DAMAGE, HERO_HP, ALIVE };
+	Laplas.animationType = NULL;
 
 	return Laplas;
 }
@@ -282,17 +284,7 @@ void InitEnemys(mainEnemys levelEnemys[], int enemysCount, mainRenderer* texture
 	}
 }
 
-bool CheckAtackHitbox(SDL_Rect* hero, SDL_Rect* enemy)
-{
-	// Вычисляем расстояние между центрами окружностей
-	float distance = sqrt((hero->x - enemy->x) * (hero->x - enemy->x) + (hero->y - enemy->y) * (hero->y - enemy->y));
 
-	// Если расстояние меньше или равно сумме радиусов, то окружности пересекаются
-	if (distance <= (hero->w + hero->h) / 4 + (enemy->w + enemy->h) / 4)
-		return 1;
-	else
-		return 0;
-}
 
 mainRenderer CreateTextureFromText(const char str[], TTF_Font* font, SDL_Color fg)
 {
@@ -307,16 +299,31 @@ mainRenderer CreateTextureFromText(const char str[], TTF_Font* font, SDL_Color f
 	return texture;
 }
 
-//SDL_Texture* resizeTexture(SDL_Renderer* renderer, SDL_Texture* texture, int newWidth, int newHeight)
-//{
-//	SDL_Surface* surface = SDL_CreateRGBSurface(0, newWidth, newHeight, 32, 0, 0, 0, 0);
-//	SDL_Texture* newTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, newWidth, newHeight);
-//	SDL_BlitScaled(texture, NULL, surface, NULL);
-//	SDL_UpdateTexture(newTexture, NULL, surface->pixels, surface->pitch);
-//	SDL_FreeSurface(surface);
-//	SDL_DestroyTexture(texture);
-//	return newTexture;
-//}
+
+
+void GetTexture(const char filePath[], mainRenderer* texture, int frameCount)
+{
+	SDL_Surface* surface = NULL;
+	if ((surface = IMG_Load(filePath)) == NULL)
+	{
+		printf_s("Can't load image '%s'", filePath);
+		system("pause");
+	}
+
+	texture->texture = SDL_CreateTextureFromSurface(ren, surface);
+
+	texture->textureSize.x = NULL;
+	texture->textureSize.y = NULL;
+	texture->textureSize.w = surface->w;
+	texture->textureSize.h = surface->h;
+
+	texture->frame.x = NULL;
+	texture->frame.y = NULL;
+	texture->frame.w = surface->w / frameCount;
+	texture->frame.h = surface->h;
+
+	SDL_FreeSurface(surface);
+}
 
 int main(int argc, char* argv[])
 {
@@ -324,6 +331,8 @@ int main(int argc, char* argv[])
 
 	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 	SDL_RenderClear(ren);
+
+	#pragma region VARIABLE_INIT
 
 	mainRenderer texture_backGround;
 	mainRenderer texture_cobbleStone;
@@ -335,134 +344,43 @@ int main(int argc, char* argv[])
 
 	int bordersCount;
 	int enemysCount = NULL;
+	int lastTime = 0;
+	int temp = 0;
+	int deltaTime = clock();
+	int check = 1;
+
 	mainBorders* levelBorders = NULL;
 	mainEnemys* levelEnemys = NULL;
-	int check = 1;
 	mainHero Laplas;
-	int temp = 0;
+	
 	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
 	SDL_Point mouseClick = { NULL, NULL };
-	int deltaTime = clock();
+	
 	char timer_text[10] = "00:00";
-	int lastTime = 0;
+	
+	bool isRunning = true;
+
+	#pragma endregion
 
 	Laplas = InitHero();
-	
-	#pragma region MAIN_HERO TEXTURE
-	SDL_Surface* surface = NULL;
-	if((surface = IMG_Load("Textures/bobr.png")) == NULL)
-	{
-		printf_s("Can't load image 'bobr.png'");
-		system("pause");
-	}
 
-	Laplas.render.texture = SDL_CreateTextureFromSurface(ren, surface);
-	Laplas.render.textureSize.w = surface->w;
-	Laplas.render.textureSize.h = surface->h;
-	Laplas.render.frame.w = surface->w / 6;
-	Laplas.render.frame.h = surface->h;
-	SDL_FreeSurface(surface);
-	#pragma endregion
+	#pragma region TEXTURES_LOAD
 
-	#pragma region BEAVER TEXTURE
-	surface = NULL;
-	if ((surface = IMG_Load("Textures/bobr.png")) == NULL)
-	{
-		printf_s("Can't load image 'bobr.png'");
-		system("pause");
-	}
+	GetTexture("Textures\\bobr.png", &Laplas.render, 6);
 
-	texture_beaver.texture = SDL_CreateTextureFromSurface(ren, surface);
-	texture_beaver.textureSize.w = surface->w;
-	texture_beaver.textureSize.h = surface->h;
-	texture_beaver.textureSize.x = NULL;
-	texture_beaver.textureSize.y = NULL;
-	texture_beaver.frame.w = surface->w / 6;
-	texture_beaver.frame.h = surface->h;
-	texture_beaver.frame.x = NULL;
-	texture_beaver.frame.y = NULL;
-	SDL_FreeSurface(surface);
-	#pragma endregion
+	GetTexture("Textures\\bobr.png", &texture_beaver, 6);
 
-	#pragma region BACKGROUND TEXTURE
-		surface = NULL;
-		if ((surface = IMG_Load("Textures/BackGroundCave.png")) == NULL)
-		{
-			printf_s("Can't load image 'BackGroundCave.png'");
-			system("pause");
-		}
+	GetTexture("Textures\\BackGroundCave.png", &texture_backGround, 1);
 
-		texture_backGround.texture = SDL_CreateTextureFromSurface(ren, surface);
-		texture_backGround.textureSize.w = surface->w;
-		texture_backGround.textureSize.h = surface->h;
-		texture_backGround.frame.w = surface->w;
-		texture_backGround.frame.h = surface->h;
-		SDL_FreeSurface(surface);
-	#pragma endregion
+	GetTexture("Textures\\cobblestone40x40.png", &texture_cobbleStone, 1);
 
-	#pragma region COBBLESTONE TEXTURE
-	surface = NULL;
-	if ((surface = IMG_Load("Textures/cobblestone40x40.png")) == NULL)
-	{
-		printf_s("Can't load image 'cobblestone40x40.png'");
-		system("pause");
-	}
+	GetTexture("Textures\\woodenPlatform.png", &texture_platform, 1);
 
-	texture_cobbleStone.texture = SDL_CreateTextureFromSurface(ren, surface);
-	
-	texture_cobbleStone.textureSize.x = NULL;
-	texture_cobbleStone.textureSize.y = NULL;
-	texture_cobbleStone.textureSize.w = surface->w * 2.5;
-	texture_cobbleStone.textureSize.h = surface->h * 2.5;
-
-	texture_cobbleStone.frame.w = surface->w * 2.5;
-	texture_cobbleStone.frame.h = surface->h * 2.5;
-	SDL_FreeSurface(surface);
-	#pragma endregion
-
-#pragma region PLATFORM TEXTURE
-	surface = NULL;
-	if ((surface = IMG_Load("Textures/woodenPlatform.png")) == NULL)
-	{
-		printf_s("Can't load image 'woodenPlatform.png'");
-		system("pause");
-	}
-
-	texture_platform.texture = SDL_CreateTextureFromSurface(ren, surface);
-
-	texture_platform.textureSize.x = NULL;
-	texture_platform.textureSize.y = NULL;
-	texture_platform.textureSize.w = surface->w ;
-	texture_platform.textureSize.h = surface->h ;
-
-	texture_platform.frame.w = surface->w;
-	texture_platform.frame.h = surface->h;
-	SDL_FreeSurface(surface);
-#pragma endregion
-
-	#pragma region HP_BAR TEXTURE
-	surface = NULL;
-	if ((surface = IMG_Load("Textures/hpBar.png")) == NULL)
-	{
-		printf_s("Can't load image 'hpBar.png'");
-		system("pause");
-	}
-			
-	texture_hpBar.texture = SDL_CreateTextureFromSurface(ren, surface);
-
-	texture_hpBar.textureSize.x = NULL;
-	texture_hpBar.textureSize.y = NULL;
-	texture_hpBar.textureSize.w = surface->w * 0.5;
-	texture_hpBar.textureSize.h = surface->h * 0.5;
-
-	texture_hpBar.frame.w = surface->w * 0.5;
-	texture_hpBar.frame.h = surface->h * 0.5;
-	SDL_FreeSurface(surface);
 	#pragma endregion
 
 	#pragma region TIMER_TEXTURE
 
-	surface = NULL;
+	SDL_Surface* surface = NULL;
 	if ((fontNovem = TTF_OpenFont("Fonts\\novem.ttf", TIMER_SIZE)) == NULL)
 	{
 		printf_s("Can't open 'novem.ttf'\n");
@@ -485,10 +403,6 @@ int main(int argc, char* argv[])
 	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy.txt");
 
 	InitEnemys(levelEnemys, enemysCount, &texture_beaver);
-
-	
-
-	bool isRunning = true;
 
 	while (isRunning)
 	{
@@ -633,6 +547,7 @@ int main(int argc, char* argv[])
 		HeroPhysicOutworldCheck(&Laplas, levelBorders);
 		EnemyPhysicOutworldCheck(&enemysCount, levelEnemys, levelBorders);
 
+		//Движение врагов
 		for (int i = 0; i < enemysCount; i++)
 		{
 			if (levelEnemys[i].status.alive)
@@ -652,6 +567,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
+		//Переход на другую локацию
 		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[9].bordersHitbox))
 		{
 			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders1.txt");
@@ -663,42 +579,17 @@ int main(int argc, char* argv[])
 
 		#pragma region BATTLE
 
-		if (Laplas.battle.commonAtack && Laplas.effect.timeAtackCD + Laplas.effect.atackCD > deltaTime)
-		{
-			//анимация
-		}
-		else
-		{
-			Laplas.battle.commonAtack = 0;
-			for (int i = 0;i < enemysCount; i++)
-				levelEnemys[i].effect.underAtack = 0;
-		}
-
-		for (int i = 0; i < enemysCount; i++)
-		{
-			if (Laplas.battle.commonAtack && levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas.hitbox, &levelEnemys[i].hitbox))
-			{
-				levelEnemys[i].effect.underAtack = 1;
-				levelEnemys[i].status.HP -= Laplas.status.DMG;
-				if (levelEnemys[i].status.HP <= 0)
-				{
-					levelEnemys[i].status.alive = 0;
-				}
-			}
-		}
-
-		
-
+		HeroCommonAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
 
 		#pragma endregion 
 
 		#pragma region DRAW
 		SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 		
-
 		DrawHitbox(bordersCount, levelBorders, Laplas, window, texture_cobbleStone, texture_platform);
 		DrawEnemys(&enemysCount, levelEnemys, &Laplas, window);
 		
+		//Отрисовка таймера
 		if (lastTime != deltaTime / 1000 % 60)
 		{
 			lastTime = deltaTime / 1000 % 60;
@@ -709,29 +600,15 @@ int main(int argc, char* argv[])
 
 		
 		SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
-
-		//SDL_Rect tempRect = hpBar.textureSize;
-		////tempRect.h /= 2;
-		//SDL_Rect tempRect2 = { 0, 0, hpBar.textureSize.w, hpBar.textureSize.h/2 };
-		//
-		//
-
-		//SDL_RenderCopy(ren, hpBar.texture, &tempRect2, &tempRect);
 		
 		DrawMainHero(&Laplas, window);
 		SDL_RenderPresent(ren);
-
-
 
 		SDL_SetRenderDrawColor(ren, 200, 200, 200, 255);
 		SDL_RenderClear(ren);
 		#pragma endregion 
 
-		#pragma region FPS_DELAY
-
 		FPSControl();
-
-		#pragma endregion 
 	}
 
 	free(levelBorders);
@@ -740,7 +617,6 @@ int main(int argc, char* argv[])
 
 	SDL_DestroyTexture(texture_backGround.texture);
 	SDL_DestroyTexture(texture_cobbleStone.texture);
-	SDL_DestroyTexture(texture_hpBar.texture);
 	SDL_DestroyTexture(texture_timer.texture);
 	SDL_DestroyTexture(texture_beaver.texture);
 	SDL_DestroyTexture(Laplas.render.texture);
@@ -751,12 +627,3 @@ int main(int argc, char* argv[])
 	
 	return 0;
 }
-
-
-//SDL_Surface* surface = IMG_Load("barrel1.png");
-//
-//SDL_Rect destrect = { Laplas.hitbox.x, Laplas.hitbox.y, 100, 100 };
-//
-//SDL_BlitSurface(surface, NULL, win_surface, &destrect);
-//
-//SDL_UpdateWindowSurface(win);

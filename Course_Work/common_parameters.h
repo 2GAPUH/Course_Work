@@ -92,7 +92,17 @@ struct mainHero
 	mainRenderer render;
 	mainBattle battle;
 	mainStatistic status;
+	int animationType;
 };
+/*
+0 - стойка
+1 - бег
+2 - атака мечом
+3 - атака пистолетом
+4 - дэш
+5 - нахождение в воздухе
+*/
+
 
 struct mainBorders
 {
