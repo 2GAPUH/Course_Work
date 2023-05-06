@@ -426,7 +426,7 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\hero_comm.png", &Laplas.animation.com, 3);
 	GetTexture("Textures\\hero_run.png", &Laplas.animation.run, 8);
-	GetTexture("Textures\\hero_punch.png", &Laplas.animation.punch, 5);
+	GetTexture("Textures\\hero_atack.png", &Laplas.animation.punch, 5);
 	Laplas.hitbox.h *= (Laplas.animation.com.frame.w / 1. / Laplas.animation.com.frame.h);
 
 	GetTexture("Textures\\bobr.png", &texture_beaver, 6);
