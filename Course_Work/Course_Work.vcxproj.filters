@@ -30,6 +30,9 @@
     <ClCompile Include="EnemyPhysic.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="HeroBattle.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="func.h">
@@ -42,6 +45,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="EnemyPhysic.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="HeroBattle.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,6 +71,9 @@
       <Filter>Картинки</Filter>
     </Image>
     <Image Include="Textures\mainHero26x22.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="Textures\woodenPlatform.png">
       <Filter>Картинки</Filter>
     </Image>
   </ItemGroup>

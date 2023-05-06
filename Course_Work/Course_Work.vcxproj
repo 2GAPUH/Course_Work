@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClCompile Include="EnemyPhysic.cpp" />
     <ClCompile Include="func.cpp" />
+    <ClCompile Include="HeroBattle.cpp" />
     <ClCompile Include="HeroPhysic.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
@@ -146,6 +147,7 @@
     <ClInclude Include="common_parameters.h" />
     <ClInclude Include="EnemyPhysic.h" />
     <ClInclude Include="func.h" />
+    <ClInclude Include="HeroBattle.h" />
     <ClInclude Include="HeroPhysic.h" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +158,7 @@
     <Image Include="Textures\cobblestone40x40.png" />
     <Image Include="Textures\hpBar.png" />
     <Image Include="Textures\mainHero26x22.png" />
+    <Image Include="Textures\woodenPlatform.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt" />
