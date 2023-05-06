@@ -156,6 +156,7 @@
     <Image Include="Textures\cobblestone40x40.png" />
     <Image Include="Textures\hpBar.png" />
     <Image Include="Textures\mainHero26x22.png" />
+    <Image Include="Textures\woodenPlatform.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt" />

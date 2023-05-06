@@ -4,7 +4,7 @@
 #include "func.h"
 #include "common_parameters.h"
 #include <math.h>
-
+#include <stdio.h>
 
 
 bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
@@ -102,20 +102,34 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 	int check = 1;
 	for (int i = 0;i < *bordersCount;i++)
 	{
-		if (levelBorders[i].type == 1 || levelBorders[i].type == 2 || (levelBorders[i].type == 4 && !Laplas->physic.pressed_S ))
-			if(!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
+		{
+			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
 			{
-			check = 0;
-			break;
+				check = 0;
+				break;
 			}
+		}
 		
-		if(levelBorders[i].type == 5)
+		else if((levelBorders[i].type == 4 && !Laplas->physic.pressed_S && Laplas->physic.impulse < 0.1 ))
+		{
+			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+			{
+				check = 0;
+				break;
+			}
+		}
+
+
+		else if(levelBorders[i].type == 5)
 			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
 			{
 				Laplas->physic.impulse = 1;
 				break;
 			}
 	}
+
+	
 
 	if (check == 1)
 	{

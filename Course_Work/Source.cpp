@@ -48,7 +48,7 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 		Laplas->render.frame.x = 0;
 }
 
-void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window, mainRenderer cobbleStone)
+void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window, mainRenderer cobbleStone, mainRenderer platform)
 {
 	SDL_Rect rect123;
 	SDL_Rect dopRect = {NULL, NULL, NULL, NULL};
@@ -119,6 +119,7 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 		case 4:
 			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
 			SDL_RenderFillRect(ren, &rect123);
+			SDL_RenderCopy(ren, platform.texture, NULL, &rect123);
 			break;
 
 		case 5:
@@ -329,6 +330,7 @@ int main(int argc, char* argv[])
 	mainRenderer texture_hpBar;
 	mainRenderer texture_timer;
 	mainRenderer texture_beaver;
+	mainRenderer texture_platform;
 	TTF_Font* fontNovem = NULL;
 
 	int bordersCount;
@@ -417,6 +419,26 @@ int main(int argc, char* argv[])
 	texture_cobbleStone.frame.h = surface->h * 2.5;
 	SDL_FreeSurface(surface);
 	#pragma endregion
+
+#pragma region PLATFORM TEXTURE
+	surface = NULL;
+	if ((surface = IMG_Load("Textures/woodenPlatform.png")) == NULL)
+	{
+		printf_s("Can't load image 'woodenPlatform.png'");
+		system("pause");
+	}
+
+	texture_platform.texture = SDL_CreateTextureFromSurface(ren, surface);
+
+	texture_platform.textureSize.x = NULL;
+	texture_platform.textureSize.y = NULL;
+	texture_platform.textureSize.w = surface->w ;
+	texture_platform.textureSize.h = surface->h ;
+
+	texture_platform.frame.w = surface->w;
+	texture_platform.frame.h = surface->h;
+	SDL_FreeSurface(surface);
+#pragma endregion
 
 	#pragma region HP_BAR TEXTURE
 	surface = NULL;
@@ -674,7 +696,7 @@ int main(int argc, char* argv[])
 		SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 		
 
-		DrawHitbox(bordersCount, levelBorders, Laplas, window, texture_cobbleStone);
+		DrawHitbox(bordersCount, levelBorders, Laplas, window, texture_cobbleStone, texture_platform);
 		DrawEnemys(&enemysCount, levelEnemys, &Laplas, window);
 		
 		if (lastTime != deltaTime / 1000 % 60)
@@ -722,6 +744,7 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_timer.texture);
 	SDL_DestroyTexture(texture_beaver.texture);
 	SDL_DestroyTexture(Laplas.render.texture);
+	SDL_DestroyTexture(texture_platform.texture);
 	
 
 	DeInit(0, &win, &ren, &win_surface);

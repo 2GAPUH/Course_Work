@@ -67,6 +67,9 @@
     <Image Include="Textures\mainHero26x22.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="Textures\woodenPlatform.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt">
