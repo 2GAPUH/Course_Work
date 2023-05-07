@@ -6,6 +6,7 @@
 #include "func.h"
 #include "common_parameters.h"
 #include <math.h>
+#include <time.h>
 #include "HeroPhysic.h"
 #include "EnemyPhysic.h"
 #include "HeroBattle.h"
@@ -15,6 +16,7 @@ SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
 int levelWidth = 0, levelHeight = 0;
+
 
 
 void DrawMainHero(mainHero* Laplas, mainWindow window)
@@ -325,6 +327,188 @@ void GetTexture(const char filePath[], mainRenderer* texture, int frameCount)
 	SDL_FreeSurface(surface);
 }
 
+void MainMenu(GameState* gameState) {
+	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+	SDL_RenderClear(ren);
+
+	SDL_Rect startButton = { 560,240,160,50 };
+	SDL_Rect settingsButton = { 560,340,160,50 };
+	SDL_Rect creditsButton = { 560,440,160,50 };
+	SDL_Rect exitButton = { 560,540,160,50 };
+
+	SDL_Rect buttons[4] = { startButton, settingsButton, creditsButton, exitButton };
+	SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
+	for (int i = 0; i < 4; i++)
+	{
+		SDL_RenderDrawRect(ren, &buttons[i]);
+	}
+	SDL_RenderPresent(ren);
+
+	while (true)
+	{
+		while (SDL_PollEvent(&ev)) 
+		{
+			switch (ev.button.button)
+			{
+				case SDL_BUTTON_LEFT:
+				{
+					SDL_Point mousePoint = { ev.button.x,ev.button.y };
+					for (int i = 0; i < 4; i++)
+					{
+						if (SDL_PointInRect(&mousePoint, &buttons[i])) 
+						{
+							*gameState = (GameState)i;
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void PauseMenu(GameState* gameState) {
+	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+	SDL_RenderClear(ren);
+
+	SDL_Rect continueButton = { 560,240,160,50 };
+	SDL_Rect exitButton = { 560,340,160,50 };
+
+	SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
+	SDL_RenderDrawRect(ren, &continueButton);
+	SDL_RenderDrawRect(ren, &exitButton);
+
+	SDL_RenderPresent(ren);
+
+
+	while (true)
+	{
+		while (SDL_PollEvent(&ev))
+		{
+			switch (ev.button.button)
+			{
+			case SDL_BUTTON_LEFT:
+			{
+				SDL_Point mousePoint = { ev.button.x,ev.button.y };
+				if (SDL_PointInRect(&mousePoint, &continueButton))
+				{
+					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+					SDL_RenderClear(ren);
+					*gameState = IN_GAME;
+					return;
+				}
+				else if (SDL_PointInRect(&mousePoint, &exitButton))
+				{
+					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+					SDL_RenderClear(ren);
+					*gameState = MAIN_MENU;
+					return;
+				}
+			}
+			}
+		}
+	}
+}
+
+void SettingsMenu(GameState* gameState, Settings*  settings) {
+
+	SDL_Rect volumeLeftButton = { 410,240,50,50 };
+	SDL_Rect volumeBar;
+	SDL_Rect volumeRightButton = { 770,240,50,50 };
+	
+
+	SDL_Rect skinLeftButton = { 410,440,50,50 };
+	SDL_Rect skinRightButton = { 770,440,50,50 };
+	
+
+	SDL_Rect exitButton = { 540,640,160,50 };
+
+	while (true)
+	{
+		SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
+		SDL_RenderDrawRect(ren, &volumeLeftButton);
+		SDL_RenderDrawRect(ren, &volumeRightButton);
+
+		volumeBar = { 490,240,50 * settings->volume,50 };
+		SDL_RenderDrawRect(ren, &volumeBar);
+
+		SDL_RenderDrawRect(ren, &skinLeftButton);
+		SDL_RenderDrawRect(ren, &skinRightButton);
+
+		SDL_RenderDrawRect(ren, &exitButton);
+
+		SDL_RenderPresent(ren);
+
+		while (SDL_PollEvent(&ev))
+		{
+			switch (ev.button.button)
+			{
+			case SDL_BUTTON_LEFT:
+			{
+				SDL_Point mousePoint = { ev.button.x,ev.button.y };
+				if (SDL_PointInRect(&mousePoint, &volumeLeftButton) && settings->volume > 0) {
+					settings->volume--;
+				}
+				else if (SDL_PointInRect(&mousePoint, &volumeRightButton) && settings->volume < 5) {
+					settings->volume++;
+				}
+
+				if (SDL_PointInRect(&mousePoint, &skinLeftButton) && settings->skin > 0) {
+					settings->skin--;
+				}
+				else if (SDL_PointInRect(&mousePoint, &skinRightButton) && settings->skin < 5) {
+					settings->skin++;
+				}
+
+				if (SDL_PointInRect(&mousePoint, &exitButton))
+				{
+					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+					SDL_RenderClear(ren);
+					*gameState = MAIN_MENU;
+					return;
+				}
+			}
+			}
+		}
+
+		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+		SDL_RenderClear(ren);
+	}
+}
+
+void CreditsMenu(GameState* gameState) {
+	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+	SDL_RenderClear(ren);
+
+	SDL_Rect exitButton = { 540,640,160,50 };
+	SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
+	SDL_RenderDrawRect(ren, &exitButton);
+	SDL_RenderPresent(ren);
+
+	while (true)
+	{
+		while (SDL_PollEvent(&ev))
+		{
+			switch (ev.button.button)
+			{
+			case SDL_BUTTON_LEFT:
+			{
+				SDL_Point mousePoint = { ev.button.x,ev.button.y };
+
+				if (SDL_PointInRect(&mousePoint, &exitButton))
+				{
+					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+					SDL_RenderClear(ren);
+					*gameState = MAIN_MENU;
+					return;
+				}
+			}
+			}
+		}
+	}
+}
+
+
 int main(int argc, char* argv[])
 {
 	Init(&win, &ren, &win_surface);
@@ -333,6 +517,9 @@ int main(int argc, char* argv[])
 	SDL_RenderClear(ren);
 
 	#pragma region VARIABLE_INIT
+
+	GameState gameState = MAIN_MENU;
+	Settings settings = { 5, 1 };
 
 	mainRenderer texture_backGround;
 	mainRenderer texture_cobbleStone;
@@ -358,7 +545,7 @@ int main(int argc, char* argv[])
 	
 	char timer_text[10] = "00:00";
 	
-	bool isRunning = true;
+	bool isRunning;
 
 	#pragma endregion
 
@@ -404,212 +591,246 @@ int main(int argc, char* argv[])
 
 	InitEnemys(levelEnemys, enemysCount, &texture_beaver);
 
-	while (isRunning)
+
+
+	while (true)
 	{
-		deltaTime = clock();
-
-		#pragma region BUTTON_CHECK
-		while (SDL_PollEvent(&ev))
+		switch (gameState)
 		{
-			switch (ev.type)
+		case MAIN_MENU:
+			MainMenu(&gameState);
+			break;
+
+		case IN_GAME:
+			isRunning = true;
+			while (isRunning)
 			{
-			case SDL_QUIT:
-				isRunning = false;
-				break;
+				deltaTime = clock();
 
-			case SDL_WINDOWEVENT:
-				switch (ev.window.event)
+#pragma region BUTTON_CHECK
+				while (SDL_PollEvent(&ev))
 				{
-				case SDL_WINDOWEVENT_RESIZED:
-					SDL_GetWindowSize(win, &window.w, &window.h);
-					SDL_RenderSetScale(ren, window.scaleX = window.w / 1. / WINDOW_WIDTH, window.scaleY = window.h / 1. / WINDOW_HEIGHT);
-					window.w /= window.scaleX;
-					window.h /= window.scaleY;
-				
-					break;
-				}
-				break;
-
-			case SDL_KEYDOWN:
-				switch (ev.key.keysym.scancode)
-				{
-				case SDL_SCANCODE_ESCAPE:
-					isRunning = false;
-					break;
-
-				case SDL_SCANCODE_A:
-					Laplas.physic.xMoveL = -1;
-					break;
-
-				case SDL_SCANCODE_D:
-					Laplas.physic.xMoveR = 1;
-					break;
-
-				case SDL_SCANCODE_S:
-					Laplas.physic.pressed_S = 1;
-					break;
-
-				case SDL_SCANCODE_LSHIFT:
-					if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD )
+					switch (ev.type)
 					{
-						Laplas.effect.timeDashCD = deltaTime;
-						Laplas.physic.accelerationX = 8;
-					}
-					break;
+					case SDL_QUIT:
+						isRunning = false;
+						break;
 
-				case SDL_SCANCODE_SPACE:
-					if (Laplas.physic.onBorder)
+					case SDL_WINDOWEVENT:
+						switch (ev.window.event)
+						{
+						case SDL_WINDOWEVENT_RESIZED:
+							SDL_GetWindowSize(win, &window.w, &window.h);
+							SDL_RenderSetScale(ren, window.scaleX = window.w / 1. / WINDOW_WIDTH, window.scaleY = window.h / 1. / WINDOW_HEIGHT);
+							window.w /= window.scaleX;
+							window.h /= window.scaleY;
+
+							break;
+						}
+						break;
+
+					case SDL_KEYDOWN:
+						switch (ev.key.keysym.scancode)
+						{
+						case SDL_SCANCODE_ESCAPE:
+							isRunning = false;
+							gameState = PAUSE_MENU;
+							break;
+
+						case SDL_SCANCODE_A:
+							Laplas.physic.xMoveL = -1;
+							break;
+
+						case SDL_SCANCODE_D:
+							Laplas.physic.xMoveR = 1;
+							break;
+
+						case SDL_SCANCODE_S:
+							Laplas.physic.pressed_S = 1;
+							break;
+
+						case SDL_SCANCODE_LSHIFT:
+							if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
+							{
+								Laplas.effect.timeDashCD = deltaTime;
+								Laplas.physic.accelerationX = 8;
+							}
+							break;
+
+						case SDL_SCANCODE_SPACE:
+							if (Laplas.physic.onBorder)
+							{
+								Laplas.physic.impulse = 0.8;
+								Laplas.physic.accelerationY = 0;
+							}
+							break;
+						}
+						break;
+
+
+
+					case SDL_KEYUP:
+						switch (ev.key.keysym.scancode)
+						{
+						case SDL_SCANCODE_A:
+							Laplas.physic.xMoveL = 0;
+							break;
+
+						case SDL_SCANCODE_S:
+							Laplas.physic.pressed_S = 0;
+							break;
+
+						case SDL_SCANCODE_D:
+							Laplas.physic.xMoveR = 0;
+							break;
+
+						}
+						break;
+
+					case SDL_MOUSEBUTTONDOWN:
+						if (ev.button.button == SDL_BUTTON_X2)
+						{
+							if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
+							{
+								Laplas.effect.timeDashCD = deltaTime;
+								Laplas.physic.accelerationX = 8;
+							}
+						}
+						break;
+
+
+					case SDL_MOUSEBUTTONUP:
+						if (ev.button.button == SDL_BUTTON_LEFT)
+						{
+							if (Laplas.battle.commonAtack == 0)
+							{
+								Laplas.effect.timeAtackCD = deltaTime;
+								Laplas.battle.commonAtack = 1;
+							}
+						}
+						else if (ev.button.button == SDL_BUTTON_RIGHT)
+						{
+							SDL_Rect rrr = { window.w * window.scaleX - 100, window.h * window.scaleY - 100, 100, 100 };
+							SDL_GetMouseState(&mouseClick.x, &mouseClick.y);
+							if (SDL_PointInRect(&mouseClick, &rrr))
+								printf_s("click\n");
+						}
+						break;
+					}
+
+
+
+				}
+#pragma endregion
+
+#pragma region PHYSIC_CHECK
+
+				//Получение координат
+				HeroPhysicGetBase(&Laplas);
+				EnemyPhysicGetBase(levelEnemys, &enemysCount);
+
+				//Движение по оси X + рывок
+				HeroPhysicXmovement(&Laplas);
+
+				//Прыжок
+				HeroPhysicJump(&Laplas);
+
+				//Гравитация
+				HeroPhysicGravity(&Laplas);
+				EnemyPhysicGravity(levelEnemys, &enemysCount);
+
+				//Проверка на наложение хитбоксов
+				HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders);
+				EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders);
+
+				//Выход за границы мира
+				HeroPhysicOutworldCheck(&Laplas, levelBorders);
+				EnemyPhysicOutworldCheck(&enemysCount, levelEnemys, levelBorders);
+
+				//Движение врагов
+				for (int i = 0; i < enemysCount; i++)
+				{
+					if (levelEnemys[i].status.alive)
 					{
-						Laplas.physic.impulse = 0.8;
-						Laplas.physic.accelerationY = 0;
-					}
-					break;
-				}
-				break;
-
-				
-
-			case SDL_KEYUP:
-				switch (ev.key.keysym.scancode)
-				{
-				case SDL_SCANCODE_A:
-					Laplas.physic.xMoveL = 0;
-					break;
-
-				case SDL_SCANCODE_S:
-					Laplas.physic.pressed_S = 0;
-					break;
-
-				case SDL_SCANCODE_D:
-					Laplas.physic.xMoveR = 0;
-					break;
-
-				}
-				break;
-
-			case SDL_MOUSEBUTTONDOWN:
-				if (ev.button.button == SDL_BUTTON_X2)
-				{
-					if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
-					{
-						Laplas.effect.timeDashCD = deltaTime;
-						Laplas.physic.accelerationX = 8;
+						if (levelEnemys[i].hitbox.x < Laplas.hitbox.x)
+						{
+							levelEnemys[i].hitbox.x += levelEnemys[i].physic.speed;
+							levelEnemys[i].physic.xMoveR = 1;
+							levelEnemys[i].physic.xMoveL = 0;
+						}
+						else if (levelEnemys[i].hitbox.x > Laplas.hitbox.x)
+						{
+							levelEnemys[i].hitbox.x -= levelEnemys[i].physic.speed;
+							levelEnemys[i].physic.xMoveR = 0;
+							levelEnemys[i].physic.xMoveL = -1;
+						}
 					}
 				}
-				break;
+
+				//Переход на другую локацию
+				if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[9].bordersHitbox))
+				{
+					levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders1.txt");
+					levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy1.txt");
+					InitEnemys(levelEnemys, enemysCount, &texture_beaver);
+				}
+
+#pragma endregion 
+
+#pragma region BATTLE
+
+				HeroCommonAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
+
+#pragma endregion 
+
+#pragma region DRAW
+				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
+
+				DrawHitbox(bordersCount, levelBorders, Laplas, window, texture_cobbleStone, texture_platform);
+				DrawEnemys(&enemysCount, levelEnemys, &Laplas, window);
+
+				//Отрисовка таймера
+				if (lastTime != deltaTime / 1000 % 60)
+				{
+					lastTime = deltaTime / 1000 % 60;
+					sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, lastTime);
+					SDL_DestroyTexture(texture_timer.texture);
+					texture_timer = CreateTextureFromText(timer_text, fontNovem, { 100, 100, 100, 255 });
+				}
 
 
-			case SDL_MOUSEBUTTONUP:
-				if (ev.button.button == SDL_BUTTON_LEFT)
-				{
-					if (Laplas.battle.commonAtack == 0)
-					{
-						Laplas.effect.timeAtackCD = deltaTime;
-						Laplas.battle.commonAtack = 1;
-					}
-				}
-				else if (ev.button.button == SDL_BUTTON_RIGHT)
-				{
-					SDL_Rect rrr = {window.w*window.scaleX - 100, window.h*window.scaleY - 100, 100, 100};
-					SDL_GetMouseState(&mouseClick.x, &mouseClick.y);
-					if (SDL_PointInRect(&mouseClick, &rrr))
-						printf_s("click\n");
-				}
-				break;
+				SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
+
+				DrawMainHero(&Laplas, window);
+				SDL_RenderPresent(ren);
+
+				SDL_SetRenderDrawColor(ren, 200, 200, 200, 255);
+				SDL_RenderClear(ren);
+#pragma endregion 
+
+				FPSControl();
 			}
-
-
-
+			break;
+		case CREDITS:
+			CreditsMenu(&gameState);
+			break;
+		case SETTINGS:
+			SettingsMenu(&gameState,&settings);
+			break;
+		case PAUSE_MENU:
+			PauseMenu(&gameState);
+			break;
+		case QUIT:
+			return 0;
+			break;
 		}
-		#pragma endregion
-
-		#pragma region PHYSIC_CHECK
-
-		//Получение координат
-		HeroPhysicGetBase(&Laplas);
-		EnemyPhysicGetBase(levelEnemys, &enemysCount);
-
-		//Движение по оси X + рывок
-		HeroPhysicXmovement(&Laplas);
-
-		//Прыжок
-		HeroPhysicJump(&Laplas);
-
-		//Гравитация
-		HeroPhysicGravity(&Laplas);
-		EnemyPhysicGravity(levelEnemys, &enemysCount);
 		
-		//Проверка на наложение хитбоксов
-		HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders);
-		EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders);
 
-		//Выход за границы мира
-		HeroPhysicOutworldCheck(&Laplas, levelBorders);
-		EnemyPhysicOutworldCheck(&enemysCount, levelEnemys, levelBorders);
-
-		//Движение врагов
-		for (int i = 0; i < enemysCount; i++)
-		{
-			if (levelEnemys[i].status.alive)
-			{
-				if (levelEnemys[i].hitbox.x < Laplas.hitbox.x)
-				{
-					levelEnemys[i].hitbox.x += levelEnemys[i].physic.speed;
-					levelEnemys[i].physic.xMoveR = 1;
-					levelEnemys[i].physic.xMoveL = 0;
-				}
-				else if (levelEnemys[i].hitbox.x > Laplas.hitbox.x)
-				{
-					levelEnemys[i].hitbox.x -= levelEnemys[i].physic.speed;
-					levelEnemys[i].physic.xMoveR = 0;
-					levelEnemys[i].physic.xMoveL = -1;
-				}
-			}
-		}
-
-		//Переход на другую локацию
-		if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[9].bordersHitbox))
-		{
-			levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders1.txt");
-			levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy1.txt");
-			InitEnemys(levelEnemys, enemysCount, &texture_beaver);
-		}
-
-		#pragma endregion 
-
-		#pragma region BATTLE
-
-		HeroCommonAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
-
-		#pragma endregion 
-
-		#pragma region DRAW
-		SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
-		
-		DrawHitbox(bordersCount, levelBorders, Laplas, window, texture_cobbleStone, texture_platform);
-		DrawEnemys(&enemysCount, levelEnemys, &Laplas, window);
-		
-		//Отрисовка таймера
-		if (lastTime != deltaTime / 1000 % 60)
-		{
-			lastTime = deltaTime / 1000 % 60;
-			sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, lastTime);
-			SDL_DestroyTexture(texture_timer.texture);
-			texture_timer = CreateTextureFromText(timer_text, fontNovem, { 100, 100, 100, 255 });
-		}
-
-		
-		SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
-		
-		DrawMainHero(&Laplas, window);
-		SDL_RenderPresent(ren);
-
-		SDL_SetRenderDrawColor(ren, 200, 200, 200, 255);
-		SDL_RenderClear(ren);
-		#pragma endregion 
-
-		FPSControl();
 	}
+
+
+
+	
 
 	free(levelBorders);
 	free(levelEnemys);

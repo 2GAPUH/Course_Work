@@ -41,6 +41,21 @@ struct mainWindow
 	float scaleX, scaleY;
 };
 
+typedef enum GameState {
+	IN_GAME,
+	SETTINGS,
+	CREDITS,
+	QUIT,
+	MAIN_MENU,
+	PAUSE_MENU
+};
+
+struct Settings
+{
+	int volume;
+	int skin;
+};
+
 struct mainStatistic
 {
 	int DMG;
