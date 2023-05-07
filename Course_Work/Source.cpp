@@ -562,6 +562,11 @@ void CreditsMenu(GameState* gameState) {
 }
 
 
+void DrawBullet()
+{
+
+}
+
 int main(int argc, char* argv[])
 {
 	bool flag = 1;
@@ -613,6 +618,7 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\hero_comm.png", &Laplas.animation.com, 3);
 	GetTexture("Textures\\hero_run.png", &Laplas.animation.run, 8);
 	GetTexture("Textures\\hero_atack.png", &Laplas.animation.punch, 5);
+	GetTexture("Textures\\hero_s.png", &Laplas.animation.punch, 5);
 	Laplas.hitbox.h *= (Laplas.animation.com.frame.w / 1. / Laplas.animation.com.frame.h);
 
 	GetTexture("Textures\\bobr.png", &texture_beaver, 6);
@@ -689,7 +695,7 @@ int main(int argc, char* argv[])
 			{
 				deltaTime = clock();
 
-			#pragma region BUTTON_CHECK
+				#pragma region BUTTON_CHECK
 				while (SDL_PollEvent(&ev))
 				{
 					switch (ev.type)
@@ -900,6 +906,8 @@ int main(int argc, char* argv[])
 						SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 						SDL_RenderFillRect(ren, &tmmmm);
 					}
+
+				DrawBullets();
 
 				DrawMainHero(&Laplas, window);
 				SDL_RenderPresent(ren);
