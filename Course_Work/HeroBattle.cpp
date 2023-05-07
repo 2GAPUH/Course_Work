@@ -105,7 +105,7 @@ void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnem
 			Laplas->battle.shoot[j].shootAtackCentere.x += Laplas->battle.shoot[j].bulletSpeed;
 			for (int i = 0; i < *enemysCount; i++)
 			{
-				if (Laplas->battle.shootAtack && levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckShootHitbox(&Laplas->battle.shoot[j].shootAtackCentere, &levelEnemys[i].hitbox))
+				if (levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckShootHitbox(&Laplas->battle.shoot[j].shootAtackCentere, &levelEnemys[i].hitbox))
 				{
 					levelEnemys[i].effect.underAtack = 1;
 					levelEnemys[i].status.HP -= Laplas->status.Shoot_DMG;

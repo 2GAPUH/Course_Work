@@ -689,7 +689,7 @@ int main(int argc, char* argv[])
 			{
 				deltaTime = clock();
 
-#pragma region BUTTON_CHECK
+			#pragma region BUTTON_CHECK
 				while (SDL_PollEvent(&ev))
 				{
 					switch (ev.type)
@@ -781,32 +781,32 @@ int main(int argc, char* argv[])
 						break;
 
 
-			case SDL_MOUSEBUTTONUP:
-				if (ev.button.button == SDL_BUTTON_LEFT)
-				{
-					if (Laplas.battle.commonAtack == 0)
-					{
-						Laplas.effect.timeAtackCD = deltaTime;
-						Laplas.battle.commonAtack = 1;
+					case SDL_MOUSEBUTTONUP:
+						if (ev.button.button == SDL_BUTTON_LEFT)
+						{
+							if (Laplas.battle.commonAtack == 0)
+							{
+								Laplas.effect.timeAtackCD = deltaTime;
+								Laplas.battle.commonAtack = 1;
+							}
+						}
+						else if (ev.button.button == SDL_BUTTON_RIGHT)
+						{
+							if (Laplas.status.ammunition > 0)
+							{
+								Laplas.status.ammunition -= 1;
+								AddNewBullet(&Laplas);
+							}
+						}
+						break;
 					}
-				}
-				else if (ev.button.button == SDL_BUTTON_RIGHT)
-				{
-					if (Laplas.status.ammunition > 0)
-					{
-						Laplas.status.ammunition -= 1;
-						AddNewBullet(&Laplas);
-					}
-				}
-				break;
-			}
 
 
 
 				}
-#pragma endregion
+				#pragma endregion
 
-#pragma region PHYSIC_CHECK
+				#pragma region PHYSIC_CHECK
 
 				//Получение координат
 				HeroPhysicGetBase(&Laplas);
@@ -859,67 +859,71 @@ int main(int argc, char* argv[])
 					InitEnemys(levelEnemys, enemysCount, &texture_beaver);
 				}
 
-#pragma endregion 
+				#pragma endregion 
 
-#pragma region BATTLE
+				#pragma region BATTLE
 
 				HeroCommonAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
 
 				HeroShootAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
 
-#pragma endregion 
+				#pragma endregion 
 
-		#pragma region DRAW
-		SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
+				#pragma region DRAW
+				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 		
-		DrawHitbox(bordersCount, levelBorders, Laplas, window, texture_cobbleStone, texture_platform);
-		DrawEnemys(&enemysCount, levelEnemys, &Laplas, window);
+				DrawHitbox(bordersCount, levelBorders, Laplas, window, texture_cobbleStone, texture_platform);
+				DrawEnemys(&enemysCount, levelEnemys, &Laplas, window);
 		
-		//Отрисовка таймера
-		if (lastTime != deltaTime / 1000 % 60)
-		{
-			lastTime = deltaTime / 1000 % 60;
-			sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, lastTime);
-			SDL_DestroyTexture(texture_timer.texture);
-			texture_timer = CreateTimerFromText(timer_text, fontNovemBig, { 100, 100, 100, 255 });
-		}
+				//Отрисовка таймера
+				if (lastTime != deltaTime / 1000 % 60)
+				{
+					lastTime = deltaTime / 1000 % 60;
+					sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, lastTime);
+					SDL_DestroyTexture(texture_timer.texture);
+					texture_timer = CreateTimerFromText(timer_text, fontNovemBig, { 100, 100, 100, 255 });
+				}
 
-		//Отрисовка кол-ва боеприпасов
-		sprintf_s(amunition_text, "%03i", Laplas.status.ammunition);
-		SDL_DestroyTexture(texture_ammunition.texture);
-		texture_ammunition = CreateAmmunitionFromText(amunition_text, fontNovemSmall, { 255, 215, 0, 255 });
+				//Отрисовка кол-ва боеприпасов
+				sprintf_s(amunition_text, "%03i", Laplas.status.ammunition);
+				SDL_DestroyTexture(texture_ammunition.texture);
+				texture_ammunition = CreateAmmunitionFromText(amunition_text, fontNovemSmall, { 255, 215, 0, 255 });
 
 		
-		SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
-		SDL_RenderCopy(ren, texture_ammunition.texture, NULL, &texture_ammunition.textureSize);
+				SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
+				SDL_RenderCopy(ren, texture_ammunition.texture, NULL, &texture_ammunition.textureSize);
 		
-		for(int k = 0; k < 10;k++)
-			if (Laplas.battle.shoot[k].alive)
-			{
-				SDL_Rect tmmmm = { Laplas.battle.shoot[k].shootAtackCentere.x - 2, Laplas.battle.shoot[k].shootAtackCentere.y - 2, 4, 4};
-				SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-				SDL_RenderFillRect(ren, &tmmmm);
-			}
+				for(int k = 0; k < 10;k++)
+					if (Laplas.battle.shoot[k].alive)
+					{
+						SDL_Rect tmmmm = { Laplas.battle.shoot[k].shootAtackCentere.x - 2, Laplas.battle.shoot[k].shootAtackCentere.y - 2, 4, 4};
+						SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+						SDL_RenderFillRect(ren, &tmmmm);
+					}
 
-		DrawMainHero(&Laplas, window);
-		SDL_RenderPresent(ren);
+				DrawMainHero(&Laplas, window);
+				SDL_RenderPresent(ren);
 
 				SDL_SetRenderDrawColor(ren, 200, 200, 200, 255);
 				SDL_RenderClear(ren);
-#pragma endregion 
+				#pragma endregion 
 
 				FPSControl();
 			}
 			break;
+
 		case CREDITS:
 			CreditsMenu(&gameState);
 			break;
+
 		case SETTINGS:
 			SettingsMenu(&gameState,&settings);
 			break;
+
 		case PAUSE_MENU:
 			PauseMenu(&gameState);
 			break;
+
 		case QUIT:
 			flag = 0;
 			break;
