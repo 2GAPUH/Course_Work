@@ -18,33 +18,7 @@ bool CheckAtackHitbox(SDL_Rect* hero, SDL_Rect* enemy)
 		return 0;
 }
 
-void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[])
-{
-	if (Laplas->battle.commonAtack && Laplas->effect.timeAtackCD + Laplas->effect.atackCD > *deltaTime)
-	{
-		Laplas->animationType = 2;
-	}
-	else
-	{
-		Laplas->battle.commonAtack = 0;
-		for (int i = 0;i < *enemysCount; i++)
-			levelEnemys[i].effect.underAtack = 0;
-		Laplas->animationType = 0;
-	}
 
-	for (int i = 0; i < *enemysCount; i++)
-	{
-		if (Laplas->battle.commonAtack && levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas->hitbox, &levelEnemys[i].hitbox))
-		{
-			levelEnemys[i].effect.underAtack = 1;
-			levelEnemys[i].status.HP -= Laplas->status.DMG;
-			if (levelEnemys[i].status.HP <= 0)
-			{
-				levelEnemys[i].status.alive = 0;
-			}
-		}
-	}
-}
 
 void AddNewBullet(mainHero* Laplas)
 {
@@ -84,6 +58,33 @@ bool CheckShootHitbox(SDL_Point* shoot, SDL_Rect* enemy)
 		return 0;
 }
 
+void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[])
+{
+	if (Laplas->battle.commonAtack && Laplas->animationType != 3 &&Laplas->effect.timeAtackCD + Laplas->effect.atackCD > *deltaTime)
+	{
+		Laplas->animationType = 2;
+	}
+	else if(Laplas->animationType != 3)
+	{
+		Laplas->battle.commonAtack = 0;
+		for (int i = 0; i < *enemysCount; i++)
+			levelEnemys[i].effect.underAtack = 0;
+		Laplas->animationType = 0;
+	}
+
+	for (int i = 0; i < *enemysCount; i++)
+	{
+		if (Laplas->battle.commonAtack && levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas->hitbox, &levelEnemys[i].hitbox))
+		{
+			levelEnemys[i].effect.underAtack = 1;
+			levelEnemys[i].status.HP -= Laplas->status.DMG;
+			if (levelEnemys[i].status.HP <= 0)
+			{
+				levelEnemys[i].status.alive = 0;
+			}
+		}
+	}
+}
 
 void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[])
 {

@@ -37,9 +37,9 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 
 	//SDL_RenderFillRect(ren, &movedLaplas);
 
-	if (Laplas->physic.xMoveL + Laplas->physic.xMoveR == 0)
-		Laplas->animationType == 0;
-	else if (Laplas->animationType != 2)
+	if (Laplas->physic.xMoveL + Laplas->physic.xMoveR == 0 && !Laplas->battle.commonAtack && !Laplas->battle.shootAtack)
+		Laplas->animationType = 0;
+	else if (!Laplas->battle.commonAtack && !Laplas->battle.shootAtack)
 		Laplas->animationType = 1;
 
 	switch (Laplas->animationType)
@@ -87,6 +87,21 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 
 		if (Laplas->animation.punch.frame.x >= Laplas->animation.punch.textureSize.w )
 			Laplas->animation.punch.frame.x = 0;
+		break;
+
+	case 3:
+		if (Laplas->physic.gazeDirection < 0)
+			SDL_RenderCopyEx(ren, Laplas->animation.shoot.texture, &Laplas->animation.shoot.frame, &movedLaplas, 0, 0, SDL_FLIP_HORIZONTAL);
+		else if (Laplas->physic.gazeDirection > 0)
+			SDL_RenderCopyEx(ren, Laplas->animation.shoot.texture, &Laplas->animation.shoot.frame, &movedLaplas, 0, 0, SDL_FLIP_NONE);
+		if (SDL_GetTicks() - Laplas->animation.shoot.frameTime > HERO_SHOOT_CD / Laplas->animation.shoot.frameCount)
+		{
+			Laplas->animation.shoot.frame.x += Laplas->animation.shoot.textureSize.w / Laplas->animation.shoot.frameCount;
+			Laplas->animation.shoot.frameTime = SDL_GetTicks();
+		}
+
+		if (Laplas->animation.shoot.frame.x >= Laplas->animation.shoot.textureSize.w)
+			Laplas->animation.shoot.frame.x = 0;
 		break;
 	}
 
@@ -618,7 +633,7 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\hero_comm.png", &Laplas.animation.com, 3);
 	GetTexture("Textures\\hero_run.png", &Laplas.animation.run, 8);
 	GetTexture("Textures\\hero_atack.png", &Laplas.animation.punch, 5);
-	GetTexture("Textures\\hero_s.png", &Laplas.animation.punch, 5);
+	GetTexture("Textures\\hero_shoot.png", &Laplas.animation.shoot, 3);
 	Laplas.hitbox.h *= (Laplas.animation.com.frame.w / 1. / Laplas.animation.com.frame.h);
 
 	GetTexture("Textures\\bobr.png", &texture_beaver, 6);
@@ -790,7 +805,7 @@ int main(int argc, char* argv[])
 					case SDL_MOUSEBUTTONUP:
 						if (ev.button.button == SDL_BUTTON_LEFT)
 						{
-							if (Laplas.battle.commonAtack == 0)
+							if (!Laplas.battle.commonAtack && !Laplas.battle.shootAtack)
 							{
 								Laplas.effect.timeAtackCD = deltaTime;
 								Laplas.battle.commonAtack = 1;
@@ -798,8 +813,10 @@ int main(int argc, char* argv[])
 						}
 						else if (ev.button.button == SDL_BUTTON_RIGHT)
 						{
-							if (Laplas.status.ammunition > 0)
+							if (Laplas.status.ammunition > 0 && !Laplas.battle.shootAtack && !Laplas.battle.commonAtack)
 							{
+								Laplas.effect.timeShootCD = deltaTime;
+								Laplas.battle.shootAtack = 1;
 								Laplas.status.ammunition -= 1;
 								AddNewBullet(&Laplas);
 							}
@@ -819,8 +836,8 @@ int main(int argc, char* argv[])
 				EnemyPhysicGetBase(levelEnemys, &enemysCount);
 
 				//Движение по оси X + рывок
-				if(Laplas.animationType != 2)
-				HeroPhysicXmovement(&Laplas);
+				if(Laplas.animationType != 2 && Laplas.animationType != 3)
+					HeroPhysicXmovement(&Laplas);
 
 				//Прыжок
 				HeroPhysicJump(&Laplas);
@@ -903,11 +920,11 @@ int main(int argc, char* argv[])
 					if (Laplas.battle.shoot[k].alive)
 					{
 						SDL_Rect tmmmm = { Laplas.battle.shoot[k].shootAtackCentere.x - 2, Laplas.battle.shoot[k].shootAtackCentere.y - 2, 4, 4};
-						SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+						SDL_SetRenderDrawColor(ren, 255, 215, 0, 255);
 						SDL_RenderFillRect(ren, &tmmmm);
 					}
 
-				DrawBullets();
+				//DrawBullets();
 
 				DrawMainHero(&Laplas, window);
 				SDL_RenderPresent(ren);
