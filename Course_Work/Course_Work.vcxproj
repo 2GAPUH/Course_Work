@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClCompile Include="EnemyPhysic.cpp" />
     <ClCompile Include="func.cpp" />
+    <ClCompile Include="HeroBattle.cpp" />
     <ClCompile Include="HeroPhysic.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
@@ -146,24 +147,30 @@
     <ClInclude Include="common_parameters.h" />
     <ClInclude Include="EnemyPhysic.h" />
     <ClInclude Include="func.h" />
+    <ClInclude Include="HeroBattle.h" />
     <ClInclude Include="HeroPhysic.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="BackGroundCave.png" />
-    <Image Include="barrel1.png" />
-    <Image Include="bobr.png" />
-    <Image Include="cobblestone20x20.png" />
-    <Image Include="cobblestone40x40.png" />
-    <Image Include="Hentai.jpg" />
-    <Image Include="hpBar.png" />
-    <Image Include="mainHero26x22.png" />
-    <Image Include="StoneBlock.png" />
+    <Image Include="Textures\BackGroundCave.png" />
+    <Image Include="Textures\barrel1.png" />
+    <Image Include="Textures\bobr.png" />
+    <Image Include="Textures\cobblestone20x20.png" />
+    <Image Include="Textures\cobblestone40x40.png" />
+    <Image Include="Textures\hero_comm.png" />
+    <Image Include="Textures\hero_punch.png" />
+    <Image Include="Textures\hero_run.png" />
+    <Image Include="Textures\hpBar.png" />
+    <Image Include="Textures\mainHero26x22.png" />
+    <Image Include="Textures\woodenPlatform.png" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Borders.txt" />
-    <Text Include="Borders1.txt" />
-    <Text Include="Enemy.txt" />
-    <Text Include="Enemy1.txt" />
+    <Text Include="Enemys\Enemy.txt" />
+    <Text Include="Enemys\Enemy1.txt" />
+    <Text Include="Levels\Borders.txt" />
+    <Text Include="Levels\Borders1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Fonts\novem.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

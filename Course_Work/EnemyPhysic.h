@@ -7,9 +7,9 @@
 
 
 bool EnemyCheckBorders(mainEnemys* Enemy, SDL_Rect unit);
-void EnemyPhysicGetBase(mainEnemys* Enemy);
+void EnemyPhysicGetBase(mainEnemys Enemy[], int* enemysCount);
 void EnemyPhysicXmovement(mainEnemys* Enemy);
 void EnemyPhysicJump(mainEnemys* Enemy);
-void EnemyPhysicGravity(mainEnemys* Enemy);
-void EnemyPhysicHitboxOverlay(int bordersCount, mainEnemys* Enemy, mainBorders levelBorders[]);
-void EnemyPhysicOutworldCheck(mainEnemys* Enemy, mainBorders levelBorders[]);
+void EnemyPhysicGravity(mainEnemys Enemy[], int* enemysCount);
+void EnemyPhysicHitboxOverlay(int* bordersCount,int* enemysCount, mainEnemys Enemy[], mainBorders levelBorders[]);
+void EnemyPhysicOutworldCheck(int* enemysCount, mainEnemys Enemy[], mainBorders levelBorders[]);

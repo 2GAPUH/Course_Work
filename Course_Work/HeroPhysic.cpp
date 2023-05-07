@@ -4,7 +4,7 @@
 #include "func.h"
 #include "common_parameters.h"
 #include <math.h>
-
+#include <stdio.h>
 
 
 bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
@@ -14,8 +14,8 @@ bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
 	if (SegmentOverlay({ Laplas->hitbox.x ,Laplas->hitbox.y + Laplas->hitbox.h / 2 }, { Laplas->position.x, Laplas->position.y + Laplas->hitbox.h / 2 },
 		{ unit.x - Laplas->hitbox.w / 2, unit.y }, { unit.x + unit.w + Laplas->hitbox.w / 2, unit.y }, &intersect))
 	{
-		Laplas->hitbox.x = Laplas->position.x;
-		Laplas->hitbox.y = intersect.y - Laplas->hitbox.h / 2 - 1;
+		Laplas->position.x = Laplas->position.x;
+		Laplas->position.y = intersect.y - Laplas->hitbox.h / 2 - 1;
 		Laplas->physic.onBorder = 1;
 		//Laplas->physic.accelerationY = 0.1;
 		return 0;
@@ -25,8 +25,8 @@ bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
 	if (SegmentOverlay({ Laplas->hitbox.x - Laplas->hitbox.w / 2 ,Laplas->hitbox.y }, { Laplas->position.x - Laplas->hitbox.w / 2, Laplas->position.y },
 		{ unit.x + unit.w, unit.y - Laplas->hitbox.h / 2 }, { unit.x + unit.w , unit.y + unit.h + Laplas->hitbox.h / 2 }, &intersect))
 	{
-		Laplas->hitbox.x = intersect.x + Laplas->hitbox.w / 2 + 1;
-		Laplas->hitbox.y = Laplas->position.y;
+		Laplas->position.x = intersect.x + Laplas->hitbox.w / 2 + 1;
+		Laplas->position.y = Laplas->position.y;
 		return 0;
 	}
 
@@ -34,8 +34,8 @@ bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
 	if (SegmentOverlay({ Laplas->hitbox.x + Laplas->hitbox.w / 2 ,Laplas->hitbox.y }, { Laplas->position.x + Laplas->hitbox.w / 2, Laplas->position.y },
 		{ unit.x, unit.y - Laplas->hitbox.h / 2 }, { unit.x , unit.y + unit.h + Laplas->hitbox.h / 2 }, &intersect))
 	{
-		Laplas->hitbox.x = intersect.x - Laplas->hitbox.w / 2 - 1;
-		Laplas->hitbox.y = Laplas->position.y;
+		Laplas->position.x = intersect.x - Laplas->hitbox.w / 2 - 1;
+		Laplas->position.y = Laplas->position.y;
 		return 0;
 	}
 
@@ -43,8 +43,8 @@ bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
 	if (SegmentOverlay({ Laplas->hitbox.x ,Laplas->hitbox.y - Laplas->hitbox.h / 2 }, { Laplas->position.x, Laplas->position.y - Laplas->hitbox.h / 2 },
 		{ unit.x - Laplas->hitbox.w / 2, unit.y + unit.h }, { unit.x + unit.w + Laplas->hitbox.w / 2, unit.y + unit.h }, &intersect))
 	{
-		Laplas->hitbox.x = Laplas->position.x;
-		Laplas->hitbox.y = intersect.y + Laplas->hitbox.h / 2 + 1;
+		Laplas->position.x = Laplas->position.x;
+		Laplas->position.y = intersect.y + Laplas->hitbox.h / 2 + 1;
 		Laplas->physic.impulse = 0.1;
 		Laplas->physic.accelerationY = 0.3;
 		return 0;
@@ -97,24 +97,40 @@ void HeroPhysicGravity(mainHero* Laplas)
 }
 
 //Проверка на наложение хитбоксов
-void HeroPhysicHitboxOverlay(int bordersCount, mainHero* Laplas, mainBorders levelBorders[])
+void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[])
 {
 	int check = 1;
-	for (int i = 0;i < bordersCount;i++)
+	for (int i = 0;i < *bordersCount;i++)
 	{
 		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
-			if(!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+		{
+			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
 			{
-			check = 0;
-			break;
+				check = 0;
 			}
+		}
 		
+		else if((levelBorders[i].type == 4 && !Laplas->physic.pressed_S && Laplas->physic.impulse < 0.1 ))
+		{
+			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+			{
+				check = 0;
+			}
+		}
+
+
+		else if(levelBorders[i].type == 5)
+			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+			{
+				Laplas->physic.impulse = 1;
+			}
 	}
+
+	Laplas->hitbox.x = Laplas->position.x;
+	Laplas->hitbox.y = Laplas->position.y;
 
 	if (check == 1)
 	{
-		Laplas->hitbox.x = Laplas->position.x;
-		Laplas->hitbox.y = Laplas->position.y;
 		Laplas->physic.onBorder = 0;
 	}
 }
