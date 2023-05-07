@@ -33,7 +33,7 @@
 #define HERO_DAMAGE 40
 #define HERO_DASH_CD 700
 #define HERO_SPEED 7
-#define HERO_ATACK_CD 500
+#define HERO_ATACK_CD 300
 
 
 #pragma endregion
