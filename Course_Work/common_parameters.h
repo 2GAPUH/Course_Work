@@ -31,10 +31,12 @@
 
 #define HERO_HP 100
 #define HERO_DAMAGE 40
+#define HERO_SHOOT_DAMAGE 50
 #define HERO_DASH_CD 700
 #define HERO_SPEED 7
+#define HERO_BULLET_SPEED 21
 #define HERO_ATACK_CD 500
-
+#define HERO_SHOOT_CD 300 
 
 #pragma endregion
 
@@ -74,6 +76,7 @@ struct mainStatistic
 	int HP;
 	bool alive;
 	int ammunition;
+	int Shoot_DMG;
 };
 
 struct mainPhysics
@@ -93,6 +96,7 @@ struct statusEffect
 {
 	int dashCD, timeDashCD;
 	int atackCD, timeAtackCD;
+	int shootCD, timeShootCD;
 	SDL_Point camersScale;
 	bool underAtack;
 };
@@ -111,12 +115,22 @@ struct heroAnimation
 	mainRenderer com;
 	mainRenderer run;
 	mainRenderer punch;
+	mainRenderer shoot;
+};
+
+struct heroShoot
+{
+	bool alive;
+	int bulletSpeed;
+	SDL_Point shootAtackCentere;
 };
 
 struct mainBattle
 {
 	bool commonAtack;
 	SDL_Point commonAtackCentere;
+	bool shootAtack;
+	heroShoot shoot[10];
 };
 
 struct mainHero

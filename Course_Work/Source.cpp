@@ -293,12 +293,12 @@ mainHero InitHero()
 	Laplas.position = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
 	Laplas.hitbox = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT };
 	Laplas.physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, HERO_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER, PRESSED_S };
-	Laplas.effect = { HERO_DASH_CD, NULL, HERO_ATACK_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y };
+	Laplas.effect = { HERO_DASH_CD, NULL, HERO_ATACK_CD, NULL, HERO_SHOOT_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y };
 	Laplas.animation.com = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
 	Laplas.animation.run = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
 	Laplas.animation.punch = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
-	Laplas.battle = { NULL, { NULL, NULL } };
-	Laplas.status = { HERO_DAMAGE, HERO_HP, ALIVE , HERO_START_AMUNITION};
+	Laplas.battle = { NULL, { NULL, NULL } , NULL, NULL};
+	Laplas.status = { HERO_DAMAGE, HERO_HP, ALIVE , HERO_START_AMUNITION, HERO_SHOOT_DAMAGE};
 	Laplas.animationType = NULL;
 
 	return Laplas;
@@ -564,6 +564,7 @@ void CreditsMenu(GameState* gameState) {
 
 int main(int argc, char* argv[])
 {
+	bool flag = 1;
 	Init(&win, &ren, &win_surface);
 
 	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
@@ -674,7 +675,7 @@ int main(int argc, char* argv[])
 
 
 
-	while (true)
+	while (flag)
 	{
 		switch (gameState)
 		{
@@ -791,12 +792,11 @@ int main(int argc, char* argv[])
 				}
 				else if (ev.button.button == SDL_BUTTON_RIGHT)
 				{
-					SDL_Rect rrr = {window.w*window.scaleX - 100, window.h*window.scaleY - 100, 100, 100};
-					SDL_GetMouseState(&mouseClick.x, &mouseClick.y);
-					if (SDL_PointInRect(&mouseClick, &rrr))
-						printf_s("click\n");
-					if(Laplas.status.ammunition > 0)
+					if (Laplas.status.ammunition > 0)
+					{
 						Laplas.status.ammunition -= 1;
+						AddNewBullet(&Laplas);
+					}
 				}
 				break;
 			}
@@ -812,9 +812,9 @@ int main(int argc, char* argv[])
 				HeroPhysicGetBase(&Laplas);
 				EnemyPhysicGetBase(levelEnemys, &enemysCount);
 
-		//Движение по оси X + рывок
-		if(Laplas.animationType != 2)
-		HeroPhysicXmovement(&Laplas);
+				//Движение по оси X + рывок
+				if(Laplas.animationType != 2)
+				HeroPhysicXmovement(&Laplas);
 
 				//Прыжок
 				HeroPhysicJump(&Laplas);
@@ -865,6 +865,8 @@ int main(int argc, char* argv[])
 
 				HeroCommonAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
 
+				HeroShootAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
+
 #pragma endregion 
 
 		#pragma region DRAW
@@ -891,6 +893,13 @@ int main(int argc, char* argv[])
 		SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
 		SDL_RenderCopy(ren, texture_ammunition.texture, NULL, &texture_ammunition.textureSize);
 		
+		for(int k = 0; k < 10;k++)
+			if (Laplas.battle.shoot[k].alive)
+			{
+				SDL_Rect tmmmm = { Laplas.battle.shoot[k].shootAtackCentere.x - 2, Laplas.battle.shoot[k].shootAtackCentere.y - 2, 4, 4};
+				SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+				SDL_RenderFillRect(ren, &tmmmm);
+			}
 
 		DrawMainHero(&Laplas, window);
 		SDL_RenderPresent(ren);
@@ -912,7 +921,7 @@ int main(int argc, char* argv[])
 			PauseMenu(&gameState);
 			break;
 		case QUIT:
-			return 0;
+			flag = 0;
 			break;
 		}
 		
