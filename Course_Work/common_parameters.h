@@ -1,30 +1,42 @@
 #pragma once
+#include <SDL.h>
+#include <SDL_Image.h>
+#include <math.h>
+#include <stdio.h>
 
 #define WINDOW_HEIGHT 720
 #define WINDOW_WIDTH 1280
 #define FPS 60
-#define HERO_WIDHT 105
-#define HERO_HEIGHT 60
+#define HERO_WIDHT 100
+#define HERO_HEIGHT 100
 #define X_MOVE_L 0
 #define X_MOVE_R 0
 #define Y_MOVE 0
 #define GAZE_DIRECTION 1
-#define SPEED 7
 #define GRAVITY 10
 #define ACCELERATION_Y 1
 #define ACCELERATION_X 1
 #define IMPULSE 0
 #define ON_BORDER 0
 #define EPS 1E-9
-#define DASH_CD 700
-#define ATACK_CD 700
 #define CAMERA_SCALE_X 0
 #define CAMERA_SCALE_Y 0
-#define HERO_DAMAGE 40
-#define HERO_HP 100
 #define ALIVE 1
-#define TIMER_SIZE 50
+#define TIMER_TEXT_SIZE 50
+#define AMMUNITION_TEXT_SIZE 30
 #define PRESSED_S 0
+#define HERO_START_AMUNITION 10
+
+#pragma region HERO_STATS
+
+#define HERO_HP 100
+#define HERO_DAMAGE 40
+#define HERO_DASH_CD 700
+#define HERO_SPEED 7
+#define HERO_ATACK_CD 500
+
+
+#pragma endregion
 
 #pragma region BEAVER_STATS
 
@@ -61,6 +73,7 @@ struct mainStatistic
 	int DMG;
 	int HP;
 	bool alive;
+	int ammunition;
 };
 
 struct mainPhysics
@@ -90,6 +103,14 @@ struct mainRenderer
 	SDL_Rect textureSize;
 	SDL_Rect frame;
 	int frameTime;
+	int frameCount;
+};
+
+struct heroAnimation
+{
+	mainRenderer com;
+	mainRenderer run;
+	mainRenderer punch;
 };
 
 struct mainBattle
@@ -104,7 +125,7 @@ struct mainHero
 	SDL_Rect hitbox;
 	mainPhysics physic;
 	statusEffect effect;
-	mainRenderer render;
+	heroAnimation animation;
 	mainBattle battle;
 	mainStatistic status;
 	int animationType;

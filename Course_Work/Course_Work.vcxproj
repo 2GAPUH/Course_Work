@@ -156,6 +156,9 @@
     <Image Include="Textures\bobr.png" />
     <Image Include="Textures\cobblestone20x20.png" />
     <Image Include="Textures\cobblestone40x40.png" />
+    <Image Include="Textures\hero_comm.png" />
+    <Image Include="Textures\hero_punch.png" />
+    <Image Include="Textures\hero_run.png" />
     <Image Include="Textures\hpBar.png" />
     <Image Include="Textures\mainHero26x22.png" />
     <Image Include="Textures\woodenPlatform.png" />

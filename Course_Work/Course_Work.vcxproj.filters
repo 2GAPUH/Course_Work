@@ -76,6 +76,15 @@
     <Image Include="Textures\woodenPlatform.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="Textures\hero_comm.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="Textures\hero_punch.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="Textures\hero_run.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt">
