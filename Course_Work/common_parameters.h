@@ -47,6 +47,14 @@
 
 #pragma endregion
 
+#pragma region TEXTURE_FLAGS
+
+#define INIT 1
+#define DONT_TOUCH 2
+#define DELETE 3
+
+#pragma endregion
+
 struct mainWindow
 {
 	int w, h;

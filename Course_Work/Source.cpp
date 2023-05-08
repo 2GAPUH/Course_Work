@@ -17,8 +17,6 @@ SDL_Surface* win_surface = NULL;
 SDL_Event ev;
 int levelWidth = 0, levelHeight = 0;
 
-
-
 void DrawMainHero(mainHero* Laplas, mainWindow window)
 {
 	SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
@@ -380,42 +378,67 @@ void GetTexture(const char filePath[], mainRenderer* texture, int frameCount)
 	SDL_FreeSurface(surface);
 }
 
-void MainMenu(GameState* gameState) {
-	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-	SDL_RenderClear(ren);
-	mainRenderer ButtonTexture;
-	GetTexture("Textures\\button.png", &ButtonTexture, 1);
+void MainMenu(GameState* gameState, mainWindow* window) {
+	mainRenderer startButtonTexture;
+	mainRenderer optionsButtonTexture;
+	mainRenderer creditsButtonTexture;
+	mainRenderer exitButtonTexture;
+	GetTexture("Textures\\button_start.png", &startButtonTexture, 1);
+	GetTexture("Textures\\button_options.png", &optionsButtonTexture, 1);
+	GetTexture("Textures\\button_credits.png", &creditsButtonTexture, 1);
+	GetTexture("Textures\\button_exit.png", &exitButtonTexture, 1);
 
-	SDL_Rect startButton = { WINDOW_WIDTH/2.3,WINDOW_HEIGHT/3,WINDOW_WIDTH/8,WINDOW_HEIGHT/8 };
-	SDL_RenderCopy(ren, ButtonTexture.texture, NULL, &startButton);
+	SDL_FRect startButton;
+	SDL_FRect settingsButton;
+	SDL_FRect creditsButton;
+	SDL_FRect exitButton;
 
-	SDL_Rect settingsButton = { WINDOW_WIDTH / 2.3,WINDOW_HEIGHT / 2.1,WINDOW_WIDTH / 8,  WINDOW_HEIGHT / 8 };
-	SDL_RenderCopy(ren, ButtonTexture.texture, NULL, &settingsButton);
-
-	SDL_Rect creditsButton = { WINDOW_WIDTH / 2.3,WINDOW_HEIGHT / 1.6,WINDOW_WIDTH / 8,WINDOW_HEIGHT / 8 };
-	SDL_RenderCopy(ren, ButtonTexture.texture, NULL, &creditsButton);
-
-	SDL_Rect exitButton = { WINDOW_WIDTH / 2.3,WINDOW_HEIGHT / 1.3,WINDOW_WIDTH / 8, WINDOW_HEIGHT / 8 };
-	SDL_RenderCopy(ren, ButtonTexture.texture, NULL, &exitButton);
-
-	SDL_RenderPresent(ren);
-
-	SDL_Rect buttons[4] = { startButton, settingsButton, creditsButton, exitButton };
+	SDL_FRect buttons[4];
 
 	while (true)
 	{
+		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+		SDL_RenderClear(ren);
+
+		startButton = { float(window->w / 2.3), float(window->h / 3), float(window->w / 8),float(window->h / 8) };
+		SDL_RenderCopyF(ren, startButtonTexture.texture, NULL, &startButton);
+		buttons[0] = startButton;
+
+		settingsButton = { float(window->w / 2.3),float(window->h / 2.1),float(window->w / 8),  float(window->h / 8) };
+		SDL_RenderCopyF(ren, optionsButtonTexture.texture, NULL, &settingsButton);
+		buttons[1] = settingsButton;
+
+		creditsButton = { float(window->w / 2.3),float(window->h / 1.6),float(window->w / 8),float(window->h / 8) };
+		SDL_RenderCopyF(ren, creditsButtonTexture.texture, NULL, &creditsButton);
+		buttons[2] = creditsButton;
+
+		exitButton = { float(window->w / 2.3) ,float(window->h / 1.3),float(window->w / 8),float(window->h / 8) };
+		SDL_RenderCopyF(ren, exitButtonTexture.texture, NULL, &exitButton);
+		buttons[3] = exitButton;
+
+		SDL_RenderPresent(ren);
 		while (SDL_PollEvent(&ev)) 
 		{
 			switch (ev.type)
 			{
+				case SDL_WINDOWEVENT:
+					if (ev.window.event == SDL_WINDOWEVENT_RESIZED)
+					{
+						SDL_GetWindowSize(win, &window->w, &window->h);
+					}
+				break;
 				case SDL_MOUSEBUTTONUP:
 				{
-					SDL_Point mousePoint = { ev.button.x,ev.button.y };
+					SDL_FPoint mousePoint = { ev.button.x,ev.button.y };
 					for (int i = 0; i < 4; i++)
 					{
-						if (SDL_PointInRect(&mousePoint, &buttons[i])) 
+						if (SDL_PointInFRect(&mousePoint, &buttons[i])) 
 						{
 							*gameState = (GameState)i;
+							SDL_DestroyTexture(startButtonTexture.texture);
+							SDL_DestroyTexture(optionsButtonTexture.texture);
+							SDL_DestroyTexture(creditsButtonTexture.texture);
+							SDL_DestroyTexture(exitButtonTexture.texture);
 							return;
 						}
 					}
@@ -425,76 +448,110 @@ void MainMenu(GameState* gameState) {
 	}
 }
 
-void PauseMenu(GameState* gameState) {
-	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-	SDL_RenderClear(ren);
+void PauseMenu(GameState* gameState, mainWindow* window) {
+	
+	mainRenderer continueButtonTexture;
+	GetTexture("Textures\\button_continue.png", &continueButtonTexture, 1);
+	mainRenderer exitButtonTexture;
+	GetTexture("Textures\\button_exit.png", &exitButtonTexture, 1);
+	SDL_FRect continueButton;
+	SDL_FRect exitButton;
+	
 
-	SDL_Rect continueButton = { 560,240,160,50 };
-	SDL_Rect exitButton = { 560,340,160,50 };
-
-	SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
-	SDL_RenderDrawRect(ren, &continueButton);
-	SDL_RenderDrawRect(ren, &exitButton);
-
-	SDL_RenderPresent(ren);
+	
 
 
 	while (true)
 	{
+		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+		SDL_RenderClear(ren);
+
+		continueButton = { float(window->w / 2.3), float(window->h / 3), float(window->w / 8),float(window->h / 8) };
+		exitButton = { float(window->w / 2.3),float(window->h / 2.1),float(window->w / 8),  float(window->h / 8) };
+		SDL_RenderCopyF(ren, continueButtonTexture.texture, NULL, &continueButton);
+		SDL_RenderCopyF(ren, exitButtonTexture.texture, NULL, &exitButton);
+
+		SDL_RenderPresent(ren);
 		while (SDL_PollEvent(&ev))
 		{
 			switch (ev.type)
 			{
-			case SDL_MOUSEBUTTONUP:
-			{
-				SDL_Point mousePoint = { ev.button.x,ev.button.y };
-				if (SDL_PointInRect(&mousePoint, &continueButton))
+				case SDL_WINDOWEVENT:
+					if (ev.window.event == SDL_WINDOWEVENT_RESIZED)
+					{
+						SDL_GetWindowSize(win, &window->w, &window->h);
+					}
+					break;
+
+				case SDL_MOUSEBUTTONUP:
 				{
-					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-					SDL_RenderClear(ren);
-					*gameState = IN_GAME;
-					return;
+					SDL_FPoint mousePoint = { ev.button.x,ev.button.y };
+					if (SDL_PointInFRect(&mousePoint, &continueButton))
+					{
+						SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+						SDL_RenderClear(ren);
+						SDL_DestroyTexture(exitButtonTexture.texture);
+						SDL_DestroyTexture(continueButtonTexture.texture);
+						*gameState = IN_GAME;
+						return;
+					}
+					else if (SDL_PointInFRect(&mousePoint, &exitButton))
+					{
+						SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+						SDL_RenderClear(ren);
+						SDL_DestroyTexture(exitButtonTexture.texture);
+						SDL_DestroyTexture(continueButtonTexture.texture);
+						*gameState = MAIN_MENU;
+						return;
+					}
 				}
-				else if (SDL_PointInRect(&mousePoint, &exitButton))
-				{
-					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-					SDL_RenderClear(ren);
-					*gameState = MAIN_MENU;
-					return;
-				}
-			}
 			}
 		}
 	}
 }
 
-void SettingsMenu(GameState* gameState, Settings*  settings) {
+void SettingsMenu(GameState* gameState, Settings*  settings, mainWindow* window) {
 
-	SDL_Rect volumeLeftButton = { 410,240,50,50 };
-	SDL_Rect volumeBar;
-	SDL_Rect volumeRightButton = { 770,240,50,50 };
+	SDL_FRect volumeLeftButton;
+	SDL_FRect volumeBar;
+	SDL_FRect volumeRightButton;
+
+	mainRenderer plusButtonTexture;
+	mainRenderer minusButtonTexture;
 	mainRenderer volumeBarTexture;
+	mainRenderer ButtonTexture;
+	GetTexture("Textures\\button_exit.png", &ButtonTexture, 1);
+	GetTexture("Textures\\batton_plus.png", &plusButtonTexture, 1);
+	GetTexture("Textures\\button_minus.png", &minusButtonTexture, 1);
 	GetTexture("Textures\\volume_bar.png", &volumeBarTexture, 1);
 
-	SDL_Rect skinLeftButton = { 410,440,50,50 };
-	SDL_Rect skinRightButton = { 770,440,50,50 };
-	
+	SDL_FRect skinLeftButton;
+	SDL_FRect skinRightButton;
 
-	SDL_Rect exitButton = { 540,640,160,50 };
+	SDL_FRect exitButton;
 
 	while (true)
 	{
 		SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
-		SDL_RenderDrawRect(ren, &volumeLeftButton);
-		SDL_RenderDrawRect(ren, &volumeRightButton);
 
-		volumeBar = { 490,240,50 * settings->volume,50 };
-		SDL_RenderCopy(ren,volumeBarTexture.texture,NULL,&volumeBar);
+		volumeLeftButton = {float(window->w / 3.12), float(window->h / 3), float(window->w / 25.6), float(window->h / 14.4)};
+		volumeRightButton = { float(window->w / 1.66), float(window->h / 3), float(window->w / 25.6), float(window->h / 14.4) };
+		volumeBar = { float(window->w / 2.61),float(window->h / 3),float(window->w / 25.6) * settings->volume,float(window->h / 14.4) };
 
-		SDL_RenderDrawRect(ren, &skinLeftButton);
-		SDL_RenderDrawRect(ren, &skinRightButton);
+		skinLeftButton = { float(window->w / 3.12), float(window->h / 1.63), float(window->w / 25.6), float(window->h / 14.4) };
+		skinRightButton = { float(window->w / 1.66),float(window->h / 1.63), float(window->w / 25.6), float(window->h / 14.4) };
 
-		SDL_RenderDrawRect(ren, &exitButton);
+		exitButton = { float(window->w / 2.37),float(window->h / 1.2), float(window->w / 8), float(window->h / 8) };
+
+		SDL_RenderCopyF(ren, minusButtonTexture.texture,NULL,&volumeLeftButton);
+		SDL_RenderCopyF(ren, plusButtonTexture.texture, NULL, &volumeRightButton);
+
+		SDL_RenderCopyF(ren, volumeBarTexture.texture, NULL, &volumeBar);
+
+		SDL_RenderCopyF(ren, minusButtonTexture.texture, NULL, &skinLeftButton);
+		SDL_RenderCopyF(ren, plusButtonTexture.texture, NULL, &skinRightButton);
+
+		SDL_RenderCopyF(ren, ButtonTexture.texture, NULL, &exitButton);
 
 		SDL_RenderPresent(ren);
 
@@ -502,31 +559,44 @@ void SettingsMenu(GameState* gameState, Settings*  settings) {
 		{
 			switch (ev.type)
 			{
-			case SDL_MOUSEBUTTONUP:
-			{
-				SDL_Point mousePoint = { ev.button.x,ev.button.y };
-				if (SDL_PointInRect(&mousePoint, &volumeLeftButton) && settings->volume > 0) {
-					settings->volume--;
-				}
-				else if (SDL_PointInRect(&mousePoint, &volumeRightButton) && settings->volume < 5) {
-					settings->volume++;
-				}
+				case SDL_WINDOWEVENT:
+					if (ev.window.event == SDL_WINDOWEVENT_RESIZED)
+					{
+						SDL_GetWindowSize(win, &window->w, &window->h);
+					}
+					break;
 
-				if (SDL_PointInRect(&mousePoint, &skinLeftButton) && settings->skin > 0) {
-					settings->skin--;
-				}
-				else if (SDL_PointInRect(&mousePoint, &skinRightButton) && settings->skin < 5) {
-					settings->skin++;
-				}
-
-				if (SDL_PointInRect(&mousePoint, &exitButton))
+				case SDL_MOUSEBUTTONUP:
 				{
-					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-					SDL_RenderClear(ren);
-					*gameState = MAIN_MENU;
-					return;
+					SDL_FPoint mousePoint = { ev.button.x,ev.button.y };
+					if (SDL_PointInFRect(&mousePoint, &volumeLeftButton) && settings->volume > 0) {
+						settings->volume--;
+					}
+					else if (SDL_PointInFRect(&mousePoint, &volumeRightButton) && settings->volume < 5) {
+						settings->volume++;
+					}
+
+					if (SDL_PointInFRect(&mousePoint, &skinLeftButton) && settings->skin > 0) {
+						settings->skin--;
+					}
+					else if (SDL_PointInFRect(&mousePoint, &skinRightButton) && settings->skin < 5) {
+						settings->skin++;
+					}
+
+					if (SDL_PointInFRect(&mousePoint, &exitButton))
+					{
+						SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+						SDL_RenderClear(ren);
+						*gameState = MAIN_MENU;
+
+						SDL_DestroyTexture(ButtonTexture.texture);
+						SDL_DestroyTexture(plusButtonTexture.texture);
+						SDL_DestroyTexture(minusButtonTexture.texture);
+						SDL_DestroyTexture(volumeBarTexture.texture);
+
+						return;
+					}
 				}
-			}
 			}
 		}
 
@@ -535,54 +605,61 @@ void SettingsMenu(GameState* gameState, Settings*  settings) {
 	}
 }
 
-void CreditsMenu(GameState* gameState) {
-	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-	SDL_RenderClear(ren);
-
-	SDL_Rect exitButton = { 540,640,160,50 };
-	SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
-	SDL_RenderDrawRect(ren, &exitButton);
-	SDL_RenderPresent(ren);
+void CreditsMenu(GameState* gameState, mainWindow* window) {
+	
+	mainRenderer ButtonTexture;
+	GetTexture("Textures\\button_exit.png", &ButtonTexture, 1);
+	SDL_FRect exitButton;
+	
 
 	while (true)
 	{
 		while (SDL_PollEvent(&ev))
 		{
+			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+			SDL_RenderClear(ren);
+
+			exitButton = { float(window->w / 2.37),float(window->h / 1.2), float(window->w / 8), float(window->h / 8) };
+			SDL_RenderCopyF(ren, ButtonTexture.texture, NULL, &exitButton);
+
+			SDL_RenderPresent(ren);
 			switch (ev.type)
 			{
-			case SDL_MOUSEBUTTONUP:
-			{
-				SDL_Point mousePoint = { ev.button.x,ev.button.y };
+				case SDL_WINDOWEVENT :
+					if (ev.window.event == SDL_WINDOWEVENT_RESIZED)
+					{
+						SDL_GetWindowSize(win, &window->w, &window->h);
+					}
+				break;
 
-				if (SDL_PointInRect(&mousePoint, &exitButton))
+				case SDL_MOUSEBUTTONUP:
 				{
-					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-					SDL_RenderClear(ren);
-					*gameState = MAIN_MENU;
-					return;
+					SDL_FPoint mousePoint = { ev.button.x,ev.button.y };
+
+					if (SDL_PointInFRect(&mousePoint, &exitButton))
+					{
+						SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+						SDL_RenderClear(ren);
+						SDL_DestroyTexture(ButtonTexture.texture);
+						*gameState = MAIN_MENU;
+						return;
+					}
 				}
-			}
 			}
 		}
 	}
 }
 
-void DrawLifeBar(mainHero laplas) {
-	mainRenderer hpBarTexture;
-	mainRenderer hpBarEdgingTexture;
-	SDL_Rect hpBar = { WINDOW_WIDTH / 11, WINDOW_HEIGHT - WINDOW_HEIGHT / 4.95, WINDOW_WIDTH / 32.8 * laplas.status.HP / 10,  50 };
-	SDL_Rect hpBarEdging = { WINDOW_WIDTH / 30, WINDOW_HEIGHT - WINDOW_HEIGHT / 4.15, WINDOW_WIDTH / 2.7,  100 };
-	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1);
-	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1);
-	SDL_RenderCopy(ren, hpBarTexture.texture, NULL, &hpBar);
-	SDL_RenderCopy(ren, hpBarEdgingTexture.texture, NULL, &hpBarEdging);
+void DrawLifeBar(mainHero laplas, mainRenderer hpBarTexture, mainRenderer hpBarEdgingTexture, mainWindow* window) {
+	SDL_FRect hpBar = { float(window->w / 11), float(window->h) - float(window->h / 4.95), float(window->w / 32.8) * laplas.status.HP / 10,  float(window->h / 14.3) };
+	SDL_FRect hpBarEdging = { float(window->w / 30), float(window->h) - float(window->h / 4.15), float(window->w / 2.7),  float(window->h / 7.2) };
+	SDL_RenderCopyF(ren, hpBarTexture.texture, NULL, &hpBar);
+	SDL_RenderCopyF(ren, hpBarEdgingTexture.texture, NULL, &hpBarEdging);
 }
 
-void DrawAmmoBar() {
-	mainRenderer ammoBarTexture;
-	SDL_Rect ammoBar = { WINDOW_WIDTH / 25.8, WINDOW_HEIGHT - WINDOW_HEIGHT / 7.4, WINDOW_WIDTH / 6,  65 };
-	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1);
-	SDL_RenderCopy(ren, ammoBarTexture.texture, NULL, &ammoBar);
+void DrawAmmoBar(mainRenderer ammoBarTexture, mainWindow* window) {
+	SDL_FRect ammoBar = { float(window->w / 25.8), float(window->h) - float(window->h / 7.4), float(window->w / 6),  float(window->h / 11.07) };
+	SDL_RenderCopyF(ren, ammoBarTexture.texture, NULL, &ammoBar);
 }
 
 
@@ -607,6 +684,10 @@ int main(int argc, char* argv[])
 	mainRenderer texture_platform;
 	TTF_Font* fontNovemBig = NULL;
 	TTF_Font* fontNovemSmall = NULL;
+
+	mainRenderer hpBarTexture;
+	mainRenderer hpBarEdgingTexture;
+	mainRenderer ammoBarTexture;
 
 	int bordersCount;
 	int enemysCount = NULL;
@@ -646,6 +727,9 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\woodenPlatform.png", &texture_platform, 1);
 
+	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1);
+	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1);
+	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1);
 	#pragma endregion
 
 	#pragma region TIMER_TEXTURE
@@ -703,7 +787,7 @@ int main(int argc, char* argv[])
 		switch (gameState)
 		{
 		case MAIN_MENU:
-			MainMenu(&gameState);
+			MainMenu(&gameState, &window);
 			break;
 
 		case IN_GAME:
@@ -919,8 +1003,8 @@ int main(int argc, char* argv[])
 		DrawMainHero(&Laplas, window);
 
 		
-		DrawAmmoBar();
-		DrawLifeBar(Laplas);
+		DrawAmmoBar(ammoBarTexture, &window);
+		DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window);
 
 		SDL_RenderPresent(ren);
 
@@ -932,13 +1016,13 @@ int main(int argc, char* argv[])
 			}
 			break;
 		case CREDITS:
-			CreditsMenu(&gameState);
+			CreditsMenu(&gameState, &window);
 			break;
 		case SETTINGS:
-			SettingsMenu(&gameState,&settings);
+			SettingsMenu(&gameState,&settings, &window);
 			break;
 		case PAUSE_MENU:
-			PauseMenu(&gameState);
+			PauseMenu(&gameState, &window);
 			break;
 		case QUIT:
 			return 0;
@@ -963,7 +1047,9 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_beaver.texture);
 	SDL_DestroyTexture(Laplas.animation.com.texture);
 	SDL_DestroyTexture(texture_platform.texture);
-	
+	SDL_DestroyTexture(hpBarEdgingTexture.texture);
+	SDL_DestroyTexture(hpBarTexture.texture);
+	SDL_DestroyTexture(ammoBarTexture.texture);
 
 	DeInit(0, &win, &ren, &win_surface);
 	
