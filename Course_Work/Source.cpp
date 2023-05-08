@@ -576,7 +576,6 @@ void CreditsMenu(GameState* gameState) {
 	}
 }
 
-
 void DrawBullet(mainHero* Laplas, mainWindow* window)
 {
 	for(int i = 0; i < 10; i++)
@@ -596,6 +595,19 @@ void DrawBullet(mainHero* Laplas, mainWindow* window)
 
 			SDL_RenderCopy(ren, Laplas->animation.bullet.texture, NULL, &rect123);
 		}
+}
+
+void BulletHitboxInRange(mainHero* Laplas, int* bordersCount, mainBorders levelBorders[])
+{
+	for (int f = 0; f < 10; f++)
+	{
+		if (Laplas->battle.shoot[f].alive)
+		{
+			for (int g = 0; g < *bordersCount; g++)
+				if (HeroPhysicInRange(Laplas->battle.shoot[f].shootAtackCentere, levelBorders[g].bordersHitbox))
+					Laplas->battle.shoot[f].alive = 0;
+		}
+	}
 }
 
 int main(int argc, char* argv[])
@@ -866,6 +878,7 @@ int main(int argc, char* argv[])
 				//Проверка на наложение хитбоксов
 				HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders);
 				EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders);
+				BulletHitboxInRange(&Laplas, &bordersCount, levelBorders);
 
 				//Выход за границы мира
 				HeroPhysicOutworldCheck(&Laplas, levelBorders);

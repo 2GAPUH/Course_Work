@@ -108,6 +108,7 @@ void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnem
 			{
 				if (levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckShootHitbox(&Laplas->battle.shoot[j].shootAtackCentere, &levelEnemys[i].hitbox))
 				{
+					Laplas->battle.shoot[j].alive = 0;
 					levelEnemys[i].effect.underAtack = 1;
 					levelEnemys[i].status.HP -= Laplas->status.Shoot_DMG;
 					if (levelEnemys[i].status.HP <= 0)
