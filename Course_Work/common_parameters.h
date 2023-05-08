@@ -37,6 +37,8 @@
 #define HERO_BULLET_SPEED 21
 #define HERO_ATACK_CD 500
 #define HERO_SHOOT_CD 300 
+#define HERO_BULLET_WIDTH 18 
+#define HERO_BULLET_HIGHT 4 
 
 #pragma endregion
 
@@ -116,6 +118,7 @@ struct heroAnimation
 	mainRenderer run;
 	mainRenderer punch;
 	mainRenderer shoot;
+	mainRenderer bullet;
 };
 
 struct heroShoot

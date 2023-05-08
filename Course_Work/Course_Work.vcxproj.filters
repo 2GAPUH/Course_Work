@@ -85,6 +85,9 @@
     <Image Include="Textures\hero_run.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="Textures\hero_bullet.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt">

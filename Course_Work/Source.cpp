@@ -108,7 +108,7 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 
 }
 
-void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, mainWindow window, mainRenderer cobbleStone, mainRenderer platform)
+void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, mainWindow* window, mainRenderer cobbleStone, mainRenderer platform)
 {
 	SDL_Rect rect123;
 	SDL_Rect dopRect = {NULL, NULL, NULL, NULL};
@@ -118,15 +118,15 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 	{
 		rect123 = levelBorders[i].bordersHitbox;
 
-		if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= levelWidth - window.w / 2.f)
-			rect123.x -= Laplas.hitbox.x - window.w / 2.f;
-		if (Laplas.hitbox.x > levelWidth - window.w / 2.f)
-			rect123.x -= levelWidth - window.w;
+		if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+			rect123.x -= Laplas->hitbox.x - window->w / 2.f;
+		if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+			rect123.x -= levelWidth - window->w;
 
-		if (Laplas.hitbox.y >= window.h / 2.f && Laplas.hitbox.y <= levelHeight - window.h / 2.f)
-			rect123.y -= Laplas.hitbox.y - window.h / 2.f;
-		if (Laplas.hitbox.y > levelHeight - window.h / 2.f)
-			rect123.y -= levelHeight - window.h;
+		if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+			rect123.y -= Laplas->hitbox.y - window->h / 2.f;
+		if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+			rect123.y -= levelHeight - window->h;
 
 		switch (levelBorders[i].type)
 		{
@@ -190,7 +190,7 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero Laplas, m
 	}
 }
 
-void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, mainWindow window)
+void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, mainWindow* window)
 {
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0;i < *enemysCount;i++)
@@ -207,15 +207,15 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 
 		SDL_Rect movedEnemy = { levelEnemys[i].hitbox.x - levelEnemys[i].hitbox.w / 2,levelEnemys[i].hitbox.y - levelEnemys[i].hitbox.h / 2, levelEnemys[i].hitbox.w, levelEnemys[i].hitbox.h};
 
-		if (Laplas->hitbox.x >= window.w / 2.f && Laplas->hitbox.x <= levelWidth - window.w / 2.f)
-			movedEnemy.x -= Laplas->hitbox.x - window.w / 2.f;
-		if (Laplas->hitbox.x > levelWidth - window.w / 2.f)
-			movedEnemy.x -= levelWidth - window.w;
+		if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+			movedEnemy.x -= Laplas->hitbox.x - window->w / 2.f;
+		if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+			movedEnemy.x -= levelWidth - window->w;
 
-		if (Laplas->hitbox.y >= window.h / 2.f && Laplas->hitbox.y <= levelHeight - window.h / 2.f)
-			movedEnemy.y -= Laplas->hitbox.y - window.h / 2.f;
-		if (Laplas->hitbox.y > levelHeight - window.h / 2.f)
-			movedEnemy.y -= levelHeight - window.h;
+		if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+			movedEnemy.y -= Laplas->hitbox.y - window->h / 2.f;
+		if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+			movedEnemy.y -= levelHeight - window->h;
 		
 		//SDL_RenderFillRect(ren, &movedEnemy);
 
@@ -577,9 +577,25 @@ void CreditsMenu(GameState* gameState) {
 }
 
 
-void DrawBullet()
+void DrawBullet(mainHero* Laplas, mainWindow* window)
 {
+	for(int i = 0; i < 10; i++)
+		if (Laplas->battle.shoot[i].alive)
+		{
+			SDL_Rect rect123 = { Laplas->battle.shoot[i].shootAtackCentere.x - HERO_BULLET_WIDTH / 2 ,Laplas->battle.shoot[i].shootAtackCentere.y - HERO_BULLET_HIGHT / 2, HERO_BULLET_WIDTH, HERO_BULLET_HIGHT };
 
+			if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+				rect123.x -= Laplas->hitbox.x - window->w / 2.f;
+			if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+				rect123.x -= levelWidth - window->w;
+
+			if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+				rect123.y -= Laplas->hitbox.y - window->h / 2.f;
+			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+				rect123.y -= levelHeight - window->h;
+
+			SDL_RenderCopy(ren, Laplas->animation.bullet.texture, NULL, &rect123);
+		}
 }
 
 int main(int argc, char* argv[])
@@ -634,6 +650,7 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\hero_run.png", &Laplas.animation.run, 8);
 	GetTexture("Textures\\hero_atack.png", &Laplas.animation.punch, 5);
 	GetTexture("Textures\\hero_shoot.png", &Laplas.animation.shoot, 3);
+	GetTexture("Textures\\hero_bullet.png", &Laplas.animation.bullet, 1);
 	Laplas.hitbox.h *= (Laplas.animation.com.frame.w / 1. / Laplas.animation.com.frame.h);
 
 	GetTexture("Textures\\bobr.png", &texture_beaver, 6);
@@ -895,8 +912,8 @@ int main(int argc, char* argv[])
 				#pragma region DRAW
 				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 		
-				DrawHitbox(bordersCount, levelBorders, Laplas, window, texture_cobbleStone, texture_platform);
-				DrawEnemys(&enemysCount, levelEnemys, &Laplas, window);
+				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, texture_cobbleStone, texture_platform);
+				DrawEnemys(&enemysCount, levelEnemys, &Laplas, &window);
 		
 				//Отрисовка таймера
 				if (lastTime != deltaTime / 1000 % 60)
@@ -915,16 +932,8 @@ int main(int argc, char* argv[])
 		
 				SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
 				SDL_RenderCopy(ren, texture_ammunition.texture, NULL, &texture_ammunition.textureSize);
-		
-				for(int k = 0; k < 10;k++)
-					if (Laplas.battle.shoot[k].alive)
-					{
-						SDL_Rect tmmmm = { Laplas.battle.shoot[k].shootAtackCentere.x - 2, Laplas.battle.shoot[k].shootAtackCentere.y - 2, 4, 4};
-						SDL_SetRenderDrawColor(ren, 255, 215, 0, 255);
-						SDL_RenderFillRect(ren, &tmmmm);
-					}
 
-				//DrawBullets();
+				DrawBullet(&Laplas, &window);
 
 				DrawMainHero(&Laplas, window);
 				SDL_RenderPresent(ren);
