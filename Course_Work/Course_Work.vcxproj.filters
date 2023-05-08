@@ -88,6 +88,12 @@
     <Image Include="Textures\hero_bullet.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="Textures\trap_with_dart.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="Textures\pressure_plate.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt">
@@ -100,6 +106,9 @@
       <Filter>Файлы ресурсов</Filter>
     </Text>
     <Text Include="Levels\Borders1.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="Traps\Trap.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
   </ItemGroup>

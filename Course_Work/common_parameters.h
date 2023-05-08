@@ -121,7 +121,7 @@ struct heroAnimation
 	mainRenderer bullet;
 };
 
-struct heroShoot
+struct mainShoot
 {
 	bool alive;
 	int bulletSpeed;
@@ -133,7 +133,7 @@ struct mainBattle
 	bool commonAtack;
 	SDL_Point commonAtackCentere;
 	bool shootAtack;
-	heroShoot shoot[10];
+	mainShoot shoot[10];
 };
 
 struct mainHero
@@ -172,4 +172,12 @@ struct mainEnemys
 	statusEffect effect;
 	mainStatistic status;
 	mainRenderer render;
+};
+
+struct mainTraps
+{
+	int type;
+	SDL_Rect hitbox;
+	mainShoot shoot;
+	bool gazeDirection;
 };

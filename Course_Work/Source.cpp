@@ -108,7 +108,7 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 
 }
 
-void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, mainWindow* window, mainRenderer cobbleStone, mainRenderer platform)
+void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, mainWindow* window, mainRenderer* cobbleStone, mainRenderer* platform, mainRenderer* dart_trap)
 {
 	SDL_Rect rect123;
 	SDL_Rect dopRect = {NULL, NULL, NULL, NULL};
@@ -138,8 +138,8 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 		case 2:
 			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 			SDL_RenderFillRect(ren, &rect123);
-			SDL_Rect rect1 = cobbleStone.textureSize;
-			dopRect = cobbleStone.textureSize;
+			SDL_Rect rect1 = cobbleStone->textureSize;
+			dopRect = cobbleStone->textureSize;
 
 			for (int i = rect123.y; i < rect123.y + rect123.h; i+= rect1.h)
 				for (int j = rect123.x; j < rect123.x + rect123.w; j+= rect1.w)
@@ -158,13 +158,13 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 					}
 					rect1.x = j;
 					rect1.y = i;
-					SDL_RenderCopy(ren, cobbleStone.texture, &dopRect, &rect1);
+					SDL_RenderCopy(ren, cobbleStone->texture, &dopRect, &rect1);
 					if (check)
 					{
-						rect1.h = cobbleStone.textureSize.h;
-						rect1.w = cobbleStone.textureSize.w;
-						dopRect.h = cobbleStone.textureSize.h;
-						dopRect.w = cobbleStone.textureSize.w;
+						rect1.h = cobbleStone->textureSize.h;
+						rect1.w = cobbleStone->textureSize.w;
+						dopRect.h = cobbleStone->textureSize.h;
+						dopRect.w = cobbleStone->textureSize.w;
 						check = 0;
 					}
 
@@ -179,12 +179,16 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 		case 4:
 			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
 			SDL_RenderFillRect(ren, &rect123);
-			SDL_RenderCopy(ren, platform.texture, NULL, &rect123);
+			SDL_RenderCopy(ren, platform->texture, NULL, &rect123);
 			break;
 
 		case 5:
 			SDL_SetRenderDrawColor(ren, 120, 0, 120, 255);
 			SDL_RenderFillRect(ren, &rect123);
+			break;
+
+		case 6:
+			SDL_RenderCopy(ren, dart_trap->texture, NULL, &rect123);
 			break;
 		}
 	}
@@ -292,6 +296,34 @@ mainEnemys* LoadEnemys(mainEnemys* levelEnemys, int* enemysCount, const char lev
 	fclose(f);
 
 	return levelEnemys;
+}
+
+mainTraps* LoadTraps(mainTraps* levelTraps, int* trapsCount, const char levelName[])
+{
+	FILE* f;
+	fopen_s(&f, levelName, "r");
+
+	fscanf_s(f, "%d", trapsCount);
+
+	levelTraps = (mainTraps*)realloc(levelTraps, sizeof(mainTraps) * (*trapsCount));
+
+	for (int i = 0; i < *trapsCount; i++)
+	{
+		fscanf_s(f, "%d", &levelTraps[i].type);
+
+		fscanf_s(f, "%d", &levelTraps[i].hitbox.x);
+		fscanf_s(f, "%d", &levelTraps[i].hitbox.y);
+		fscanf_s(f, "%d", &levelTraps[i].hitbox.w);
+		fscanf_s(f, "%d", &levelTraps[i].hitbox.h);
+
+		fscanf_s(f, "%d", &levelTraps[i].gazeDirection);
+	}
+
+
+
+	fclose(f);
+
+	return levelTraps;
 }
 
 bool HeroPhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
@@ -610,6 +642,23 @@ void BulletHitboxInRange(mainHero* Laplas, int* bordersCount, mainBorders levelB
 	}
 }
 
+void BulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
+{
+	for(int i = 0; i < 10; i++)
+		if (Laplas->battle.shoot[i].alive)
+		{
+			if (Laplas->battle.shoot[i].shootAtackCentere.x > levelBorders[1].bordersHitbox.w - HERO_BULLET_WIDTH / 2 - 2)
+				Laplas->battle.shoot[i].alive = 0;
+			else if (Laplas->battle.shoot[i].shootAtackCentere.x < levelBorders[0].bordersHitbox.x + HERO_BULLET_WIDTH / 2 + 2)
+				Laplas->battle.shoot[i].alive = 0;
+
+			if (Laplas->battle.shoot[i].shootAtackCentere.y > levelBorders[0].bordersHitbox.h - HERO_BULLET_HIGHT / 2 - 2)
+				Laplas->battle.shoot[i].alive = 0;
+			else if (Laplas->battle.shoot[i].shootAtackCentere.y < levelBorders[0].bordersHitbox.y + HERO_BULLET_HIGHT / 2 + 2)
+				Laplas->battle.shoot[i].alive = 0;
+		}
+}
+
 int main(int argc, char* argv[])
 {
 	bool flag = 1;
@@ -630,11 +679,14 @@ int main(int argc, char* argv[])
 	mainRenderer texture_ammunition;
 	mainRenderer texture_beaver;
 	mainRenderer texture_platform;
+	mainRenderer texture_dart_trap;
+	mainRenderer texture_pressure_plate;
 	TTF_Font* fontNovemBig = NULL;
 	TTF_Font* fontNovemSmall = NULL;
 
-	int bordersCount;
+	int bordersCount = NULL;
 	int enemysCount = NULL;
+	int trapsCount = NULL;
 	int lastTime = 0;
 	int temp = 0;
 	int deltaTime = clock();
@@ -642,6 +694,7 @@ int main(int argc, char* argv[])
 
 	mainBorders* levelBorders = NULL;
 	mainEnemys* levelEnemys = NULL;
+	mainTraps* levelTraps = NULL;
 	mainHero Laplas;
 	
 	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
@@ -672,6 +725,12 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\cobblestone40x40.png", &texture_cobbleStone, 1);
 
 	GetTexture("Textures\\woodenPlatform.png", &texture_platform, 1);
+	
+	GetTexture("Textures\\trap_with_dart.png", &texture_dart_trap, 1);
+
+	GetTexture("Textures\\pressure_plate.png", &texture_pressure_plate, 1);
+
+
 
 	#pragma endregion
 
@@ -718,8 +777,9 @@ int main(int argc, char* argv[])
 
 	#pragma endregion
 
-	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders.txt");
-	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy.txt");
+	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders.txt");
+	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy.txt");
+	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap.txt");
 
 	InitEnemys(levelEnemys, enemysCount, &texture_beaver);
 
@@ -883,6 +943,8 @@ int main(int argc, char* argv[])
 				//Выход за границы мира
 				HeroPhysicOutworldCheck(&Laplas, levelBorders);
 				EnemyPhysicOutworldCheck(&enemysCount, levelEnemys, levelBorders);
+				BulletOutworldCheck(&Laplas, levelBorders);
+
 
 				//Движение врагов
 				for (int i = 0; i < enemysCount; i++)
@@ -925,7 +987,7 @@ int main(int argc, char* argv[])
 				#pragma region DRAW
 				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 		
-				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, texture_cobbleStone, texture_platform);
+				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_dart_trap);
 				DrawEnemys(&enemysCount, levelEnemys, &Laplas, &window);
 		
 				//Отрисовка таймера
@@ -992,8 +1054,16 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_cobbleStone.texture);
 	SDL_DestroyTexture(texture_timer.texture);
 	SDL_DestroyTexture(texture_beaver.texture);
-	SDL_DestroyTexture(Laplas.animation.com.texture);
 	SDL_DestroyTexture(texture_platform.texture);
+	SDL_DestroyTexture(texture_dart_trap.texture);
+	SDL_DestroyTexture(texture_pressure_plate.texture);
+
+	SDL_DestroyTexture(Laplas.animation.com.texture);
+	SDL_DestroyTexture(Laplas.animation.bullet.texture);
+	SDL_DestroyTexture(Laplas.animation.punch.texture);
+	SDL_DestroyTexture(Laplas.animation.run.texture);
+	SDL_DestroyTexture(Laplas.animation.shoot.texture);
+	
 	
 
 	DeInit(0, &win, &ren, &win_surface);
