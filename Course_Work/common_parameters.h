@@ -39,6 +39,7 @@
 #define HERO_SHOOT_CD 300 
 #define HERO_BULLET_WIDTH 18 
 #define HERO_BULLET_HIGHT 4 
+#define HERO_AFTER_ATACK_PROTECTION 500 
 
 #pragma endregion
 
@@ -109,6 +110,8 @@ struct statusEffect
 	int shootCD, timeShootCD;
 	SDL_Point camersScale;
 	bool underAtack;
+	int afterAtackResist;
+	int lastDamage;
 };
 
 struct mainRenderer

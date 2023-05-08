@@ -13,3 +13,4 @@ void HeroPhysicJump(mainHero* Laplas);
 void HeroPhysicXmovement(mainHero* Laplas);
 void HeroPhysicGetBase(mainHero* Laplas);
 bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit);
+bool HeroCheckBordersWithoutColision(mainHero* Laplas, SDL_Rect unit);

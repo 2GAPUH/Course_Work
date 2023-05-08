@@ -247,7 +247,7 @@ void DrawTraps(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, mainWi
 	for (int i = 0; i < *trapsCount; i++)
 	{
 
-		SDL_Rect movedTrap = { levelTraps[i].hitbox.x - levelTraps[i].hitbox.w / 2,levelTraps[i].hitbox.y - levelTraps[i].hitbox.h / 2, levelTraps[i].hitbox.w, levelTraps[i].hitbox.h };
+		SDL_Rect movedTrap = { levelTraps[i].hitbox.x,levelTraps[i].hitbox.y, levelTraps[i].hitbox.w, levelTraps[i].hitbox.h };
 
 		if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
 			movedTrap.x -= Laplas->hitbox.x - window->w / 2.f;
@@ -260,9 +260,9 @@ void DrawTraps(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, mainWi
 			movedTrap.y -= levelHeight - window->h;
 
 		if (levelTraps[i].gazeDirection == 1)
-			SDL_RenderCopyEx(ren, levelTraps[i].render.texture, &levelTraps[i].render.frame, &movedTrap, 0, 0, SDL_FLIP_HORIZONTAL);
+			SDL_RenderCopyEx(ren, levelTraps[i].render.texture, NULL, &movedTrap, 0, 0, SDL_FLIP_HORIZONTAL);
 		else if (levelTraps[i].gazeDirection == 0)
-			SDL_RenderCopyEx(ren, levelTraps[i].render.texture, &levelTraps[i].render.frame, &movedTrap, 0, 0, SDL_FLIP_NONE);
+			SDL_RenderCopyEx(ren, levelTraps[i].render.texture, NULL, &movedTrap, 0, 0, SDL_FLIP_NONE);
 
 	}
 }
@@ -407,7 +407,7 @@ mainHero InitHero()
 	Laplas.position = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
 	Laplas.hitbox = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT };
 	Laplas.physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, HERO_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER, PRESSED_S };
-	Laplas.effect = { HERO_DASH_CD, NULL, HERO_ATACK_CD, NULL, HERO_SHOOT_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y };
+	Laplas.effect = { HERO_DASH_CD, NULL, HERO_ATACK_CD, NULL, HERO_SHOOT_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y, NULL, HERO_AFTER_ATACK_PROTECTION, NULL };
 	Laplas.animation.com = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
 	Laplas.animation.run = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
 	Laplas.animation.punch = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
@@ -1120,6 +1120,7 @@ int main(int argc, char* argv[])
 						{
 							levelTraps[j].shoot.alive = 0;
 							Laplas.effect.underAtack = 1;
+							Laplas.effect.lastDamage = deltaTime;
 							Laplas.status.HP -= levelTraps[j].DMG;
 							if (Laplas.status.HP <= 0)
 							{
@@ -1129,6 +1130,8 @@ int main(int argc, char* argv[])
 						
 					}
 
+				if (Laplas.effect.lastDamage + Laplas.effect.afterAtackResist < deltaTime)
+					Laplas.effect.underAtack = 0;
 
 
 

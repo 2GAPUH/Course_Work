@@ -53,6 +53,41 @@ bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
 	return 1;
 }
 
+bool HeroCheckBordersWithoutColision(mainHero* Laplas, SDL_Rect unit)
+{
+	static SDL_Point intersect;
+	//Верхнаяя прямая
+	if (SegmentOverlay({ Laplas->hitbox.x ,Laplas->hitbox.y + Laplas->hitbox.h / 2 }, { Laplas->position.x, Laplas->position.y + Laplas->hitbox.h / 2 },
+		{ unit.x - Laplas->hitbox.w / 2, unit.y }, { unit.x + unit.w + Laplas->hitbox.w / 2, unit.y }, &intersect))
+	{
+		return 0;
+	}
+
+	//Правая прямая
+	if (SegmentOverlay({ Laplas->hitbox.x - Laplas->hitbox.w / 2 ,Laplas->hitbox.y }, { Laplas->position.x - Laplas->hitbox.w / 2, Laplas->position.y },
+		{ unit.x + unit.w, unit.y - Laplas->hitbox.h / 2 }, { unit.x + unit.w , unit.y + unit.h + Laplas->hitbox.h / 2 }, &intersect))
+	{
+		return 0;
+	}
+
+	//Левая прямая
+	if (SegmentOverlay({ Laplas->hitbox.x + Laplas->hitbox.w / 2 ,Laplas->hitbox.y }, { Laplas->position.x + Laplas->hitbox.w / 2, Laplas->position.y },
+		{ unit.x, unit.y - Laplas->hitbox.h / 2 }, { unit.x , unit.y + unit.h + Laplas->hitbox.h / 2 }, &intersect))
+	{
+		return 0;
+	}
+
+	//Нижняя прямая
+	if (SegmentOverlay({ Laplas->hitbox.x ,Laplas->hitbox.y - Laplas->hitbox.h / 2 }, { Laplas->position.x, Laplas->position.y - Laplas->hitbox.h / 2 },
+		{ unit.x - Laplas->hitbox.w / 2, unit.y + unit.h }, { unit.x + unit.w + Laplas->hitbox.w / 2, unit.y + unit.h }, &intersect))
+	{
+		return 0;
+	}
+
+	return 1;
+}
+
+
 //Получение координат
 void HeroPhysicGetBase(mainHero* Laplas)
 {
@@ -130,14 +165,14 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 	{
 		if (levelTraps[i].type == 1)
 		{
-			if (!HeroCheckBorders(Laplas, levelTraps[i].hitbox))
+			if (HeroCheckBorders(Laplas, levelTraps[i].hitbox))
 			{
 				check = 0;
 			}
 		}
 
 		else if(levelTraps[i].type == 2)
-			if (!HeroCheckBorders(Laplas, levelTraps[i].hitbox))
+			if (!HeroCheckBordersWithoutColision(Laplas, levelTraps[i].hitbox))
 			{
 				check = 0;
 				levelTraps[i].triggered = 1;
