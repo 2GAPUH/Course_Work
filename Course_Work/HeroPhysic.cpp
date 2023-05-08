@@ -179,6 +179,15 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 			}
 			else
 				levelTraps[i].triggered = 0;
+
+		else if (levelTraps[i].type == 3)
+			if (!HeroCheckBordersWithoutColision(Laplas, levelTraps[i].hitbox))
+			{
+				check = 0;
+				levelTraps[i].triggered = 1;
+			}
+			else
+				levelTraps[i].triggered = 0;
 	}
 
 	Laplas->hitbox.x = Laplas->position.x;

@@ -57,6 +57,8 @@
 #define TRAP_DART_WIDTH 24 
 #define TRAP_DART_HIGHT 14 
 #define TRAP_DART_DMG 50 
+#define TRAP_SPIKES_DMG 1 
+
 
 #pragma endregion
 

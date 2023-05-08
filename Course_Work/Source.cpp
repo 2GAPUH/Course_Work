@@ -442,7 +442,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 	}
 }
 
-void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_dart_trap, mainRenderer* texture_pressure_plate)
+void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_dart_trap, mainRenderer* texture_pressure_plate, mainRenderer* texture_trap_spikes)
 {
 	for (int i = 0; i < *trapsCount; i++)
 	{
@@ -464,6 +464,16 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 			levelTraps[i].shoot.shootAtackCentere = { NULL, NULL };
 			levelTraps[i].triggered = NULL;
 			levelTraps[i].DMG = NULL;
+		}
+
+		else if (levelTraps[i].type == 3)
+		{
+			levelTraps[i].render = *texture_trap_spikes;
+			levelTraps[i].shoot.alive = NULL;
+			levelTraps[i].shoot.bulletSpeed = HERO_BULLET_SPEED;
+			levelTraps[i].shoot.shootAtackCentere = { NULL, NULL };
+			levelTraps[i].triggered = NULL;
+			levelTraps[i].DMG = TRAP_SPIKES_DMG;
 		}
 	}
 }
@@ -784,6 +794,7 @@ int main(int argc, char* argv[])
 	mainRenderer texture_trap_with_dart;
 	mainRenderer texture_pressure_plate;
 	mainRenderer texture_trap_dart;
+	mainRenderer texture_trap_spikes;
 	TTF_Font* fontNovemBig = NULL;
 	TTF_Font* fontNovemSmall = NULL;
 
@@ -834,6 +845,8 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\pressure_plate.png", &texture_pressure_plate, 1);
 
 	GetTexture("Textures\\trap_dart.png", &texture_trap_dart, 1);
+
+	GetTexture("Textures\\trap_spikes.png", &texture_trap_spikes, 1);
 
 
 
@@ -887,7 +900,7 @@ int main(int argc, char* argv[])
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap.txt");
 
 	InitEnemys(levelEnemys, &enemysCount, &texture_beaver);
-	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate);
+	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 
 
 	while (flag)
@@ -1109,7 +1122,12 @@ int main(int argc, char* argv[])
 							levelTraps[t - 1].shoot.alive = 1;
 						}
 					}
+					else if (levelTraps[t].type == 3 && levelTraps[t].triggered)
+					{
+						Laplas.status.HP -= levelTraps[t].DMG;
+					}
 					
+				
 				//Атака ловушкой по ГГ
 				for (int j = 0; j < trapsCount; j++)
 					if (levelTraps[j].shoot.alive)
@@ -1157,7 +1175,7 @@ int main(int argc, char* argv[])
 				}
 
 				//Отрисовка кол-ва боеприпасов
-				sprintf_s(amunition_text, "%03i", Laplas.status.ammunition);
+				sprintf_s(amunition_text, "%03i", Laplas.status.HP);
 				SDL_DestroyTexture(texture_ammunition.texture);
 				texture_ammunition = CreateAmmunitionFromText(amunition_text, fontNovemSmall, { 255, 215, 0, 255 });
 
@@ -1222,6 +1240,8 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_trap_with_dart.texture);
 	SDL_DestroyTexture(texture_pressure_plate.texture);
 	SDL_DestroyTexture(texture_trap_dart.texture);
+	SDL_DestroyTexture(texture_trap_spikes.texture);
+
 
 	SDL_DestroyTexture(Laplas.animation.com.texture);
 	SDL_DestroyTexture(Laplas.animation.bullet.texture);
