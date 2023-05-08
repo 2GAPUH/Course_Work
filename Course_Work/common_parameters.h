@@ -7,8 +7,8 @@
 #define WINDOW_HEIGHT 720
 #define WINDOW_WIDTH 1280
 #define FPS 60
-#define HERO_WIDHT 100
-#define HERO_HEIGHT 100
+#define HERO_WIDHT 80
+#define HERO_HEIGHT 80
 #define X_MOVE_L 0
 #define X_MOVE_R 0
 #define Y_MOVE 0
@@ -48,6 +48,14 @@
 #define BEAVER_DMG 10
 #define BEAVER_SPEED 5
 #define BEAVER_ATACK_CD 1500
+
+#pragma endregion
+
+#pragma region TRAPS_STATS
+
+#define TRAP_DART_WIDTH 24 
+#define TRAP_DART_HIGHT 14 
+#define TRAP_DART_DMG 50 
 
 #pragma endregion
 
@@ -181,4 +189,6 @@ struct mainTraps
 	mainShoot shoot;
 	bool gazeDirection;
 	mainRenderer render;
+	bool triggered;
+	int DMG;
 };

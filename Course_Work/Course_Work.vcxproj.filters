@@ -94,6 +94,9 @@
     <Image Include="Textures\pressure_plate.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="Textures\trap_dart.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt">

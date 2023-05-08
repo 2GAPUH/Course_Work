@@ -97,10 +97,10 @@ void HeroPhysicGravity(mainHero* Laplas)
 }
 
 //Проверка на наложение хитбоксов
-void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[])
+void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[], int* trapsCount, mainTraps levelTraps[])
 {
 	int check = 1;
-	for (int i = 0;i < *bordersCount;i++)
+	for (int i = 0;i  < *bordersCount;i++)
 	{
 		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
 		{
@@ -126,6 +126,26 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 			}
 	}
 
+	for (int i = 0; i < *trapsCount; i++)
+	{
+		if (levelTraps[i].type == 1)
+		{
+			if (!HeroCheckBorders(Laplas, levelTraps[i].hitbox))
+			{
+				check = 0;
+			}
+		}
+
+		else if(levelTraps[i].type == 2)
+			if (!HeroCheckBorders(Laplas, levelTraps[i].hitbox))
+			{
+				check = 0;
+				levelTraps[i].triggered = 1;
+			}
+			else
+				levelTraps[i].triggered = 0;
+	}
+
 	Laplas->hitbox.x = Laplas->position.x;
 	Laplas->hitbox.y = Laplas->position.y;
 
@@ -134,6 +154,7 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 		Laplas->physic.onBorder = 0;
 	}
 }
+
 
 //Выход за границы мира
 void HeroPhysicOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])

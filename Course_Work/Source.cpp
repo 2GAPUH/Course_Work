@@ -267,6 +267,48 @@ void DrawTraps(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, mainWi
 	}
 }
 
+void DrawHeroBullet(mainHero* Laplas, mainWindow* window)
+{
+	for (int i = 0; i < 10; i++)
+		if (Laplas->battle.shoot[i].alive)
+		{
+			SDL_Rect rect123 = { Laplas->battle.shoot[i].shootAtackCentere.x - HERO_BULLET_WIDTH / 2 ,Laplas->battle.shoot[i].shootAtackCentere.y - HERO_BULLET_HIGHT / 2, HERO_BULLET_WIDTH, HERO_BULLET_HIGHT };
+
+			if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+				rect123.x -= Laplas->hitbox.x - window->w / 2.f;
+			if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+				rect123.x -= levelWidth - window->w;
+
+			if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+				rect123.y -= Laplas->hitbox.y - window->h / 2.f;
+			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+				rect123.y -= levelHeight - window->h;
+
+			SDL_RenderCopy(ren, Laplas->animation.bullet.texture, NULL, &rect123);
+		}
+}
+
+void DrawTrapsBullet(mainHero* Laplas, mainWindow* window, int* trapsCount, mainTraps levelTraps[], mainRenderer* trap_dart)
+{
+	for (int i = 0; i < *trapsCount; i++)
+		if (levelTraps[i].shoot.alive)
+		{
+			SDL_Rect rect123 = { levelTraps[i].shoot.shootAtackCentere.x - TRAP_DART_WIDTH / 2 ,levelTraps[i].shoot.shootAtackCentere.y - TRAP_DART_HIGHT / 2, TRAP_DART_WIDTH, TRAP_DART_HIGHT };
+
+			if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+				rect123.x -= Laplas->hitbox.x - window->w / 2.f;
+			if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+				rect123.x -= levelWidth - window->w;
+
+			if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+				rect123.y -= Laplas->hitbox.y - window->h / 2.f;
+			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+				rect123.y -= levelHeight - window->h;
+
+			SDL_RenderCopy(ren, trap_dart->texture, NULL, &rect123);
+		}
+}
+
 mainBorders* LoadLevel(mainBorders* levelBorders, int *bordersCount, mainHero* Laplas, const char levelName[])
 {
 	FILE* f;
@@ -407,11 +449,21 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 		if (levelTraps[i].type == 1)
 		{
 			levelTraps[i].render = *texture_dart_trap;
+			levelTraps[i].shoot.alive = NULL;
+			levelTraps[i].shoot.bulletSpeed = HERO_BULLET_SPEED;
+			levelTraps[i].shoot.shootAtackCentere = { NULL, NULL };
+			levelTraps[i].triggered = NULL;
+			levelTraps[i].DMG = TRAP_DART_DMG;
 		}
 
 		else if (levelTraps[i].type == 2)
 		{
 			levelTraps[i].render = *texture_pressure_plate;
+			levelTraps[i].shoot.alive = NULL;
+			levelTraps[i].shoot.bulletSpeed = HERO_BULLET_SPEED;
+			levelTraps[i].shoot.shootAtackCentere = { NULL, NULL };
+			levelTraps[i].triggered = NULL;
+			levelTraps[i].DMG = NULL;
 		}
 	}
 }
@@ -649,28 +701,7 @@ void CreditsMenu(GameState* gameState) {
 	}
 }
 
-void DrawBullet(mainHero* Laplas, mainWindow* window)
-{
-	for(int i = 0; i < 10; i++)
-		if (Laplas->battle.shoot[i].alive)
-		{
-			SDL_Rect rect123 = { Laplas->battle.shoot[i].shootAtackCentere.x - HERO_BULLET_WIDTH / 2 ,Laplas->battle.shoot[i].shootAtackCentere.y - HERO_BULLET_HIGHT / 2, HERO_BULLET_WIDTH, HERO_BULLET_HIGHT };
-
-			if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
-				rect123.x -= Laplas->hitbox.x - window->w / 2.f;
-			if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
-				rect123.x -= levelWidth - window->w;
-
-			if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
-				rect123.y -= Laplas->hitbox.y - window->h / 2.f;
-			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
-				rect123.y -= levelHeight - window->h;
-
-			SDL_RenderCopy(ren, Laplas->animation.bullet.texture, NULL, &rect123);
-		}
-}
-
-void BulletHitboxInRange(mainHero* Laplas, int* bordersCount, mainBorders levelBorders[])
+void HeroBulletHitboxInRange(mainHero* Laplas, int* bordersCount, mainBorders levelBorders[])
 {
 	for (int f = 0; f < 10; f++)
 	{
@@ -683,7 +714,20 @@ void BulletHitboxInRange(mainHero* Laplas, int* bordersCount, mainBorders levelB
 	}
 }
 
-void BulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
+void TrapBulletHitboxInRange(mainTraps levelTraps[], int* trapsCount, int* bordersCount, mainBorders levelBorders[])
+{
+	for (int f = 0; f < *trapsCount; f++)
+	{
+		if (levelTraps[f].shoot.alive)
+		{
+			for (int g = 0; g < *bordersCount; g++)
+				if (HeroPhysicInRange(levelTraps[f].shoot.shootAtackCentere, levelBorders[g].bordersHitbox))
+					levelTraps[f].shoot.alive = 0;
+		}
+	}
+}
+
+void HeroBulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
 {
 	for(int i = 0; i < 10; i++)
 		if (Laplas->battle.shoot[i].alive)
@@ -697,6 +741,23 @@ void BulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
 				Laplas->battle.shoot[i].alive = 0;
 			else if (Laplas->battle.shoot[i].shootAtackCentere.y < levelBorders[0].bordersHitbox.y + HERO_BULLET_HIGHT / 2 + 2)
 				Laplas->battle.shoot[i].alive = 0;
+		}
+}
+
+void TrapBulletOutworldCheck(mainTraps levelTraps[], int* trapsCount, mainBorders levelBorders[])
+{
+	for (int f = 0; f < *trapsCount; f++)
+		if (levelTraps[f].shoot.alive)
+		{
+			if (levelTraps[f].shoot.shootAtackCentere.x > levelBorders[1].bordersHitbox.w - HERO_BULLET_WIDTH / 2 - 2)
+				levelTraps[f].shoot.alive = 0;
+			else if (levelTraps[f].shoot.shootAtackCentere.x < levelBorders[0].bordersHitbox.x + HERO_BULLET_WIDTH / 2 + 2)
+				levelTraps[f].shoot.alive = 0;
+
+			if (levelTraps[f].shoot.shootAtackCentere.y > levelBorders[0].bordersHitbox.h - HERO_BULLET_HIGHT / 2 - 2)
+				levelTraps[f].shoot.alive = 0;
+			else if (levelTraps[f].shoot.shootAtackCentere.y < levelBorders[0].bordersHitbox.y + HERO_BULLET_HIGHT / 2 + 2)
+				levelTraps[f].shoot.alive = 0;
 		}
 }
 
@@ -720,8 +781,9 @@ int main(int argc, char* argv[])
 	mainRenderer texture_ammunition;
 	mainRenderer texture_beaver;
 	mainRenderer texture_platform;
-	mainRenderer texture_dart_trap;
+	mainRenderer texture_trap_with_dart;
 	mainRenderer texture_pressure_plate;
+	mainRenderer texture_trap_dart;
 	TTF_Font* fontNovemBig = NULL;
 	TTF_Font* fontNovemSmall = NULL;
 
@@ -767,9 +829,11 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\woodenPlatform.png", &texture_platform, 1);
 	
-	GetTexture("Textures\\trap_with_dart.png", &texture_dart_trap, 1);
+	GetTexture("Textures\\trap_with_dart.png", &texture_trap_with_dart, 1);
 
 	GetTexture("Textures\\pressure_plate.png", &texture_pressure_plate, 1);
+
+	GetTexture("Textures\\trap_dart.png", &texture_trap_dart, 1);
 
 
 
@@ -823,7 +887,7 @@ int main(int argc, char* argv[])
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap.txt");
 
 	InitEnemys(levelEnemys, &enemysCount, &texture_beaver);
-	InitTraps(levelTraps, &trapsCount, &texture_dart_trap, &texture_pressure_plate);
+	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate);
 
 
 	while (flag)
@@ -977,14 +1041,18 @@ int main(int argc, char* argv[])
 				EnemyPhysicGravity(levelEnemys, &enemysCount);
 
 				//Проверка на наложение хитбоксов
-				HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders);
+				HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders, &trapsCount, levelTraps);
 				EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders);
-				BulletHitboxInRange(&Laplas, &bordersCount, levelBorders);
+
+				//Проверка пуль на касание с стеной
+				TrapBulletHitboxInRange(levelTraps, &trapsCount, &bordersCount, levelBorders);
+				HeroBulletHitboxInRange(&Laplas, &bordersCount, levelBorders);
 
 				//Выход за границы мира
 				HeroPhysicOutworldCheck(&Laplas, levelBorders);
 				EnemyPhysicOutworldCheck(&enemysCount, levelEnemys, levelBorders);
-				BulletOutworldCheck(&Laplas, levelBorders);
+				HeroBulletOutworldCheck(&Laplas, levelBorders);
+				TrapBulletOutworldCheck(levelTraps, &trapsCount, levelBorders);
 
 
 				//Движение врагов
@@ -1023,6 +1091,47 @@ int main(int argc, char* argv[])
 
 				HeroShootAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
 
+				for (int t = 0; t < trapsCount; t++)
+					if (levelTraps[t].type == 2 && levelTraps[t].triggered && !levelTraps[t - 1].shoot.alive)
+					{
+						if (levelTraps[t - 1].gazeDirection == 0)
+						{
+							levelTraps[t - 1].shoot.shootAtackCentere.x = levelTraps[t - 1].hitbox.x + levelTraps[t - 1].hitbox.w / 2;
+							levelTraps[t - 1].shoot.shootAtackCentere.y = levelTraps[t - 1].hitbox.y;
+							levelTraps[t - 1].shoot.bulletSpeed = HERO_BULLET_SPEED;
+							levelTraps[t - 1].shoot.alive = 1;
+						}
+						else
+						{
+							levelTraps[t - 1].shoot.shootAtackCentere.x = levelTraps[t - 1].hitbox.x - levelTraps[t - 1].hitbox.w / 2;
+							levelTraps[t - 1].shoot.shootAtackCentere.y = levelTraps[t - 1].hitbox.y;
+							levelTraps[t - 1].shoot.bulletSpeed = -HERO_BULLET_SPEED;
+							levelTraps[t - 1].shoot.alive = 1;
+						}
+					}
+					
+				//Атака ловушкой по ГГ
+				for (int j = 0; j < trapsCount; j++)
+					if (levelTraps[j].shoot.alive)
+					{
+						levelTraps[j].shoot.shootAtackCentere.x += levelTraps[j].shoot.bulletSpeed;
+						
+						if (!Laplas.effect.underAtack && CheckShootHitbox(&levelTraps[j].shoot.shootAtackCentere, &Laplas.hitbox))
+						{
+							levelTraps[j].shoot.alive = 0;
+							Laplas.effect.underAtack = 1;
+							Laplas.status.HP -= levelTraps[j].DMG;
+							if (Laplas.status.HP <= 0)
+							{
+								Laplas.status.alive = 0;
+							}
+						}
+						
+					}
+
+
+
+
 				#pragma endregion 
 
 				#pragma region DRAW
@@ -1031,10 +1140,10 @@ int main(int argc, char* argv[])
 				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 		
 				//Враги и стены
-				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_dart_trap);
+				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_trap_with_dart);
 				DrawEnemys(&enemysCount, levelEnemys, &Laplas, &window);
 				DrawTraps(&trapsCount, levelTraps, &Laplas, &window);
-		
+				
 				//Отрисовка таймера
 				if (lastTime != deltaTime / 1000 % 60)
 				{
@@ -1055,7 +1164,8 @@ int main(int argc, char* argv[])
 				SDL_RenderCopy(ren, texture_ammunition.texture, NULL, &texture_ammunition.textureSize);
 
 				//Отрисовка пуль
-				DrawBullet(&Laplas, &window);
+				DrawHeroBullet(&Laplas, &window);
+				DrawTrapsBullet(&Laplas, &window, &trapsCount, levelTraps, &texture_trap_dart);
 
 				//ГГ
 				DrawMainHero(&Laplas, window);
@@ -1097,6 +1207,7 @@ int main(int argc, char* argv[])
 
 	free(levelBorders);
 	free(levelEnemys);
+	free(levelTraps);
 	TTF_CloseFont(fontNovemBig);
 	TTF_CloseFont(fontNovemSmall);
 
@@ -1105,8 +1216,9 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_timer.texture);
 	SDL_DestroyTexture(texture_beaver.texture);
 	SDL_DestroyTexture(texture_platform.texture);
-	SDL_DestroyTexture(texture_dart_trap.texture);
+	SDL_DestroyTexture(texture_trap_with_dart.texture);
 	SDL_DestroyTexture(texture_pressure_plate.texture);
+	SDL_DestroyTexture(texture_trap_dart.texture);
 
 	SDL_DestroyTexture(Laplas.animation.com.texture);
 	SDL_DestroyTexture(Laplas.animation.bullet.texture);
