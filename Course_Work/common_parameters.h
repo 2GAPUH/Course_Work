@@ -180,4 +180,5 @@ struct mainTraps
 	SDL_Rect hitbox;
 	mainShoot shoot;
 	bool gazeDirection;
+	mainRenderer render;
 };

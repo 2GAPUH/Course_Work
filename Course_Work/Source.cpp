@@ -242,6 +242,31 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 	}
 }
 
+void DrawTraps(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, mainWindow* window)
+{
+	for (int i = 0; i < *trapsCount; i++)
+	{
+
+		SDL_Rect movedTrap = { levelTraps[i].hitbox.x - levelTraps[i].hitbox.w / 2,levelTraps[i].hitbox.y - levelTraps[i].hitbox.h / 2, levelTraps[i].hitbox.w, levelTraps[i].hitbox.h };
+
+		if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+			movedTrap.x -= Laplas->hitbox.x - window->w / 2.f;
+		if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+			movedTrap.x -= levelWidth - window->w;
+
+		if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+			movedTrap.y -= Laplas->hitbox.y - window->h / 2.f;
+		if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+			movedTrap.y -= levelHeight - window->h;
+
+		if (levelTraps[i].gazeDirection == 1)
+			SDL_RenderCopyEx(ren, levelTraps[i].render.texture, &levelTraps[i].render.frame, &movedTrap, 0, 0, SDL_FLIP_HORIZONTAL);
+		else if (levelTraps[i].gazeDirection == 0)
+			SDL_RenderCopyEx(ren, levelTraps[i].render.texture, &levelTraps[i].render.frame, &movedTrap, 0, 0, SDL_FLIP_NONE);
+
+	}
+}
+
 mainBorders* LoadLevel(mainBorders* levelBorders, int *bordersCount, mainHero* Laplas, const char levelName[])
 {
 	FILE* f;
@@ -351,9 +376,9 @@ mainHero InitHero()
 	return Laplas;
 }
 
-void InitEnemys(mainEnemys levelEnemys[], int enemysCount, mainRenderer* texture_beaver)
+void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* texture_beaver)
 {
-	for (int i = 0; i < enemysCount;i++)
+	for (int i = 0; i < *enemysCount;i++)
 	{
 		if (levelEnemys[i].type == 1)
 		{
@@ -371,6 +396,22 @@ void InitEnemys(mainEnemys levelEnemys[], int enemysCount, mainRenderer* texture
 			levelEnemys[i].status = { BEAVER_DMG, BEAVER_HP , ALIVE };
 			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
 			levelEnemys[i].render = *texture_beaver;
+		}
+	}
+}
+
+void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_dart_trap, mainRenderer* texture_pressure_plate)
+{
+	for (int i = 0; i < *trapsCount; i++)
+	{
+		if (levelTraps[i].type == 1)
+		{
+			levelTraps[i].render = *texture_dart_trap;
+		}
+
+		else if (levelTraps[i].type == 2)
+		{
+			levelTraps[i].render = *texture_pressure_plate;
 		}
 	}
 }
@@ -781,8 +822,8 @@ int main(int argc, char* argv[])
 	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy.txt");
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap.txt");
 
-	InitEnemys(levelEnemys, enemysCount, &texture_beaver);
-
+	InitEnemys(levelEnemys, &enemysCount, &texture_beaver);
+	InitTraps(levelTraps, &trapsCount, &texture_dart_trap, &texture_pressure_plate);
 
 
 	while (flag)
@@ -969,9 +1010,9 @@ int main(int argc, char* argv[])
 				//Переход на другую локацию
 				if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[9].bordersHitbox))
 				{
-					levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels/Borders1.txt");
-					levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys/Enemy1.txt");
-					InitEnemys(levelEnemys, enemysCount, &texture_beaver);
+					levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders1.txt");
+					levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy1.txt");
+					InitEnemys(levelEnemys, &enemysCount, &texture_beaver);
 				}
 
 				#pragma endregion 
@@ -985,10 +1026,14 @@ int main(int argc, char* argv[])
 				#pragma endregion 
 
 				#pragma region DRAW
+
+				//Задний фон
 				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 		
+				//Враги и стены
 				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_dart_trap);
 				DrawEnemys(&enemysCount, levelEnemys, &Laplas, &window);
+				DrawTraps(&trapsCount, levelTraps, &Laplas, &window);
 		
 				//Отрисовка таймера
 				if (lastTime != deltaTime / 1000 % 60)
@@ -1005,14 +1050,19 @@ int main(int argc, char* argv[])
 				texture_ammunition = CreateAmmunitionFromText(amunition_text, fontNovemSmall, { 255, 215, 0, 255 });
 
 		
+				//Таймер и боезапас
 				SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
 				SDL_RenderCopy(ren, texture_ammunition.texture, NULL, &texture_ammunition.textureSize);
 
+				//Отрисовка пуль
 				DrawBullet(&Laplas, &window);
 
+				//ГГ
 				DrawMainHero(&Laplas, window);
+				
 				SDL_RenderPresent(ren);
 
+				//Очистка
 				SDL_SetRenderDrawColor(ren, 200, 200, 200, 255);
 				SDL_RenderClear(ren);
 				#pragma endregion 
