@@ -899,12 +899,12 @@ int main(int argc, char* argv[])
 	TTF_Font* fontNovemBig = NULL;
 	TTF_Font* fontNovemSmall = NULL;
 
-	int bordersCount = NULL;
+	
 	mainRenderer hpBarTexture;
 	mainRenderer hpBarEdgingTexture;
 	mainRenderer ammoBarTexture;
 
-	int bordersCount;
+	int bordersCount = NULL;
 	int enemysCount = NULL;
 	int trapsCount = NULL;
 	int lastTime = 0;
@@ -1300,15 +1300,11 @@ int main(int argc, char* argv[])
 
 				//ГГ
 				DrawMainHero(&Laplas, window);
-				
+
+				DrawAmmoBar(ammoBarTexture, &window);
+				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window);
+
 				SDL_RenderPresent(ren);
-		DrawMainHero(&Laplas, window);
-
-		
-		DrawAmmoBar(ammoBarTexture, &window);
-		DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window);
-
-		SDL_RenderPresent(ren);
 
 				//Очистка
 				SDL_SetRenderDrawColor(ren, 200, 200, 200, 255);
