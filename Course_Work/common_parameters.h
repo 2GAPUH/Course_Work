@@ -7,8 +7,8 @@
 #define WINDOW_HEIGHT 720
 #define WINDOW_WIDTH 1280
 #define FPS 60
-#define HERO_WIDHT 100
-#define HERO_HEIGHT 100
+#define HERO_WIDHT 80
+#define HERO_HEIGHT 80
 #define X_MOVE_L 0
 #define X_MOVE_R 0
 #define Y_MOVE 0
@@ -25,16 +25,21 @@
 #define TIMER_TEXT_SIZE 50
 #define AMMUNITION_TEXT_SIZE 30
 #define PRESSED_S 0
-#define HERO_START_AMUNITION 10
+#define HERO_START_AMUNITION 30
 
 #pragma region HERO_STATS
 
 #define HERO_HP 100
 #define HERO_DAMAGE 40
+#define HERO_SHOOT_DAMAGE 50
 #define HERO_DASH_CD 700
 #define HERO_SPEED 7
+#define HERO_BULLET_SPEED 21
 #define HERO_ATACK_CD 500
-
+#define HERO_SHOOT_CD 300 
+#define HERO_BULLET_WIDTH 18 
+#define HERO_BULLET_HIGHT 4 
+#define HERO_AFTER_ATACK_PROTECTION 500 
 
 #pragma endregion
 
@@ -44,6 +49,24 @@
 #define BEAVER_DMG 10
 #define BEAVER_SPEED 5
 #define BEAVER_ATACK_CD 1500
+
+#pragma endregion
+
+#pragma region TRAPS_STATS
+
+#define TRAP_DART_WIDTH 24 
+#define TRAP_DART_HIGHT 14 
+#define TRAP_DART_DMG 50 
+#define TRAP_SPIKES_DMG 1 
+
+
+#pragma endregion
+
+#pragma region TEXTURE_FLAGS
+
+#define INIT 1
+#define DONT_TOUCH 2
+#define DELETE 3
 
 #pragma endregion
 
@@ -74,6 +97,7 @@ struct mainStatistic
 	int HP;
 	bool alive;
 	int ammunition;
+	int Shoot_DMG;
 };
 
 struct mainPhysics
@@ -93,8 +117,11 @@ struct statusEffect
 {
 	int dashCD, timeDashCD;
 	int atackCD, timeAtackCD;
+	int shootCD, timeShootCD;
 	SDL_Point camersScale;
 	bool underAtack;
+	int afterAtackResist;
+	int lastDamage;
 };
 
 struct mainRenderer
@@ -111,12 +138,23 @@ struct heroAnimation
 	mainRenderer com;
 	mainRenderer run;
 	mainRenderer punch;
+	mainRenderer shoot;
+	mainRenderer bullet;
+};
+
+struct mainShoot
+{
+	bool alive;
+	int bulletSpeed;
+	SDL_Point shootAtackCentere;
 };
 
 struct mainBattle
 {
 	bool commonAtack;
 	SDL_Point commonAtackCentere;
+	bool shootAtack;
+	mainShoot shoot[10];
 };
 
 struct mainHero
@@ -155,4 +193,15 @@ struct mainEnemys
 	statusEffect effect;
 	mainStatistic status;
 	mainRenderer render;
+};
+
+struct mainTraps
+{
+	int type;
+	SDL_Rect hitbox;
+	mainShoot shoot;
+	bool gazeDirection;
+	mainRenderer render;
+	bool triggered;
+	int DMG;
 };

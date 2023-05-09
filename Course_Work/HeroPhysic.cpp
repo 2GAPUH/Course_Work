@@ -53,6 +53,41 @@ bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
 	return 1;
 }
 
+bool HeroCheckBordersWithoutColision(mainHero* Laplas, SDL_Rect unit)
+{
+	static SDL_Point intersect;
+	//Верхнаяя прямая
+	if (SegmentOverlay({ Laplas->hitbox.x ,Laplas->hitbox.y + Laplas->hitbox.h / 2 }, { Laplas->position.x, Laplas->position.y + Laplas->hitbox.h / 2 },
+		{ unit.x - Laplas->hitbox.w / 2, unit.y }, { unit.x + unit.w + Laplas->hitbox.w / 2, unit.y }, &intersect))
+	{
+		return 0;
+	}
+
+	//Правая прямая
+	if (SegmentOverlay({ Laplas->hitbox.x - Laplas->hitbox.w / 2 ,Laplas->hitbox.y }, { Laplas->position.x - Laplas->hitbox.w / 2, Laplas->position.y },
+		{ unit.x + unit.w, unit.y - Laplas->hitbox.h / 2 }, { unit.x + unit.w , unit.y + unit.h + Laplas->hitbox.h / 2 }, &intersect))
+	{
+		return 0;
+	}
+
+	//Левая прямая
+	if (SegmentOverlay({ Laplas->hitbox.x + Laplas->hitbox.w / 2 ,Laplas->hitbox.y }, { Laplas->position.x + Laplas->hitbox.w / 2, Laplas->position.y },
+		{ unit.x, unit.y - Laplas->hitbox.h / 2 }, { unit.x , unit.y + unit.h + Laplas->hitbox.h / 2 }, &intersect))
+	{
+		return 0;
+	}
+
+	//Нижняя прямая
+	if (SegmentOverlay({ Laplas->hitbox.x ,Laplas->hitbox.y - Laplas->hitbox.h / 2 }, { Laplas->position.x, Laplas->position.y - Laplas->hitbox.h / 2 },
+		{ unit.x - Laplas->hitbox.w / 2, unit.y + unit.h }, { unit.x + unit.w + Laplas->hitbox.w / 2, unit.y + unit.h }, &intersect))
+	{
+		return 0;
+	}
+
+	return 1;
+}
+
+
 //Получение координат
 void HeroPhysicGetBase(mainHero* Laplas)
 {
@@ -97,10 +132,10 @@ void HeroPhysicGravity(mainHero* Laplas)
 }
 
 //Проверка на наложение хитбоксов
-void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[])
+void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[], int* trapsCount, mainTraps levelTraps[])
 {
 	int check = 1;
-	for (int i = 0;i < *bordersCount;i++)
+	for (int i = 0;i  < *bordersCount;i++)
 	{
 		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
 		{
@@ -126,6 +161,35 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 			}
 	}
 
+	for (int i = 0; i < *trapsCount; i++)
+	{
+		if (levelTraps[i].type == 1)
+		{
+			if (HeroCheckBorders(Laplas, levelTraps[i].hitbox))
+			{
+				check = 0;
+			}
+		}
+
+		else if(levelTraps[i].type == 2)
+			if (!HeroCheckBordersWithoutColision(Laplas, levelTraps[i].hitbox))
+			{
+				check = 0;
+				levelTraps[i].triggered = 1;
+			}
+			else
+				levelTraps[i].triggered = 0;
+
+		else if (levelTraps[i].type == 3)
+			if (!HeroCheckBordersWithoutColision(Laplas, levelTraps[i].hitbox))
+			{
+				check = 0;
+				levelTraps[i].triggered = 1;
+			}
+			else
+				levelTraps[i].triggered = 0;
+	}
+
 	Laplas->hitbox.x = Laplas->position.x;
 	Laplas->hitbox.y = Laplas->position.y;
 
@@ -134,6 +198,7 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 		Laplas->physic.onBorder = 0;
 	}
 }
+
 
 //Выход за границы мира
 void HeroPhysicOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])

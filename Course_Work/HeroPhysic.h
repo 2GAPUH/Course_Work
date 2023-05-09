@@ -7,9 +7,10 @@
 
 
 void HeroPhysicOutworldCheck(mainHero* Laplas, mainBorders levelBorders[]);
-void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[]);
+void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[], int* trapsCount, mainTraps levelTraps[]);
 void HeroPhysicGravity(mainHero* Laplas);
 void HeroPhysicJump(mainHero* Laplas);
 void HeroPhysicXmovement(mainHero* Laplas);
 void HeroPhysicGetBase(mainHero* Laplas);
 bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit);
+bool HeroCheckBordersWithoutColision(mainHero* Laplas, SDL_Rect unit);

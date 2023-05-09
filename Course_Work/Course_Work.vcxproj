@@ -156,11 +156,16 @@
     <Image Include="Textures\bobr.png" />
     <Image Include="Textures\cobblestone20x20.png" />
     <Image Include="Textures\cobblestone40x40.png" />
+    <Image Include="Textures\hero_bullet.png" />
     <Image Include="Textures\hero_comm.png" />
     <Image Include="Textures\hero_punch.png" />
     <Image Include="Textures\hero_run.png" />
     <Image Include="Textures\hpBar.png" />
     <Image Include="Textures\mainHero26x22.png" />
+    <Image Include="Textures\pressure_plate.png" />
+    <Image Include="Textures\trap_dart.png" />
+    <Image Include="Textures\trap_spikes.png" />
+    <Image Include="Textures\trap_with_dart.png" />
     <Image Include="Textures\woodenPlatform.png" />
   </ItemGroup>
   <ItemGroup>
@@ -168,6 +173,7 @@
     <Text Include="Enemys\Enemy1.txt" />
     <Text Include="Levels\Borders.txt" />
     <Text Include="Levels\Borders1.txt" />
+    <Text Include="Traps\Trap.txt" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Fonts\novem.ttf" />
