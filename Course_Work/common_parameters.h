@@ -29,7 +29,7 @@
 
 #pragma region HERO_STATS
 
-#define HERO_HP 100
+#define HERO_HP 500
 #define HERO_DAMAGE 40
 #define HERO_SHOOT_DAMAGE 50
 #define HERO_DASH_CD 700
@@ -58,7 +58,7 @@
 #define TRAP_DART_HIGHT 14 
 #define TRAP_DART_DMG 50 
 #define TRAP_SPIKES_DMG 1 
-
+#define TRAPS_BULLET_SPEED 10
 
 #pragma endregion
 

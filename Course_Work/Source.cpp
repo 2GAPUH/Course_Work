@@ -448,7 +448,7 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 		{
 			levelTraps[i].render = *texture_dart_trap;
 			levelTraps[i].shoot.alive = NULL;
-			levelTraps[i].shoot.bulletSpeed = HERO_BULLET_SPEED;
+			levelTraps[i].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
 			levelTraps[i].shoot.shootAtackCentere = { NULL, NULL };
 			levelTraps[i].triggered = NULL;
 			levelTraps[i].DMG = TRAP_DART_DMG;
@@ -458,7 +458,7 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 		{
 			levelTraps[i].render = *texture_pressure_plate;
 			levelTraps[i].shoot.alive = NULL;
-			levelTraps[i].shoot.bulletSpeed = HERO_BULLET_SPEED;
+			levelTraps[i].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
 			levelTraps[i].shoot.shootAtackCentere = { NULL, NULL };
 			levelTraps[i].triggered = NULL;
 			levelTraps[i].DMG = NULL;
