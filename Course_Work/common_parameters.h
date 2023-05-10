@@ -7,7 +7,7 @@
 #define WINDOW_HEIGHT 720
 #define WINDOW_WIDTH 1280
 #define FPS 60
-#define HERO_WIDHT 80
+#define HERO_WIDHT 50
 #define HERO_HEIGHT 80
 #define X_MOVE_L 0
 #define X_MOVE_R 0
@@ -24,7 +24,6 @@
 #define ALIVE 1
 #define TIMER_TEXT_SIZE 50
 #define AMMUNITION_TEXT_SIZE 30
-#define PRESSED_S 0
 #define HERO_START_AMUNITION 30
 
 #pragma region HERO_STATS
@@ -40,7 +39,10 @@
 #define HERO_BULLET_WIDTH 18 
 #define HERO_BULLET_HIGHT 4 
 #define HERO_AFTER_ATACK_PROTECTION 500 
+#define DMG_BUFF_DUARATION 30000
+#define DMG_BUFF_PERCENT 30
 
+#define DMG_POTION_DROP_CHANCE 90
 #pragma endregion
 
 #pragma region BEAVER_STATS
@@ -59,6 +61,8 @@
 #define TRAP_DART_DMG 50 
 #define TRAP_SPIKES_DMG 1 
 #define TRAPS_BULLET_SPEED 10
+#define TRAPS_DART_CD 5000
+
 
 #pragma endregion
 
@@ -110,7 +114,6 @@ struct mainPhysics
 	float accelerationX;
 	float impulse;
 	bool onBorder;
-	bool pressed_S;
 };
 
 struct statusEffect
@@ -122,6 +125,7 @@ struct statusEffect
 	bool underAtack;
 	int afterAtackResist;
 	int lastDamage;
+
 };
 
 struct mainRenderer
@@ -157,16 +161,34 @@ struct mainBattle
 	mainShoot shoot[10];
 };
 
+struct mainBuffs
+{
+	bool DMG_buff_active;
+	int startDMG_buff;
+	int DMG_buffDuaration;
+	int DMG_buffPercent;
+};
+
+struct mainKeys
+{
+	bool pressed_S;
+	bool pressed_Space;
+	bool pressed_E;
+};
+
 struct mainHero
 {
 	SDL_Point position;
 	SDL_Rect hitbox;
+	SDL_Rect texture_rect;
 	mainPhysics physic;
 	statusEffect effect;
 	heroAnimation animation;
 	mainBattle battle;
 	mainStatistic status;
 	int animationType;
+	mainBuffs buffs;
+	mainKeys keys;
 };
 /*
 0 - стойка
@@ -204,4 +226,6 @@ struct mainTraps
 	mainRenderer render;
 	bool triggered;
 	int DMG;
+	int lastShoot;
+	int cooldown;
 };

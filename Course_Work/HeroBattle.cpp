@@ -74,7 +74,7 @@ void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEne
 
 	for (int i = 0; i < *enemysCount; i++)
 	{
-		if (Laplas->battle.commonAtack && levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas->hitbox, &levelEnemys[i].hitbox))
+		if (Laplas->battle.commonAtack && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas->hitbox, &levelEnemys[i].hitbox))
 		{
 			levelEnemys[i].effect.underAtack = 1;
 			levelEnemys[i].status.HP -= Laplas->status.DMG;
@@ -106,7 +106,7 @@ void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnem
 			Laplas->battle.shoot[j].shootAtackCentere.x += Laplas->battle.shoot[j].bulletSpeed;
 			for (int i = 0; i < *enemysCount; i++)
 			{
-				if (levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckShootHitbox(&Laplas->battle.shoot[j].shootAtackCentere, &levelEnemys[i].hitbox))
+				if (!levelEnemys[i].effect.underAtack && CheckShootHitbox(&Laplas->battle.shoot[j].shootAtackCentere, &levelEnemys[i].hitbox))
 				{
 					Laplas->battle.shoot[j].alive = 0;
 					levelEnemys[i].effect.underAtack = 1;

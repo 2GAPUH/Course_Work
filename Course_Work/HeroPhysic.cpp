@@ -121,6 +121,7 @@ void HeroPhysicJump(mainHero* Laplas)
 			Laplas->physic.accelerationY = 0.1;
 		Laplas->physic.onBorder = 0;
 	}
+
 }
 
 //Гравитация
@@ -145,7 +146,7 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 			}
 		}
 		
-		else if((levelBorders[i].type == 4 && !Laplas->physic.pressed_S && Laplas->physic.impulse < 0.1 ))
+		else if((levelBorders[i].type == 4 && !Laplas->keys.pressed_S && Laplas->physic.impulse < 0.1 ))
 		{
 			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
 			{

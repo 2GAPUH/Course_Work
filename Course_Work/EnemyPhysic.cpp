@@ -60,12 +60,11 @@ void EnemyPhysicGetBase(mainEnemys Enemy[], int* enemysCount)
 {
 	for (int i = 0; i < *enemysCount;i++)
 	{
-		if (Enemy[i].status.alive)
-		{
-			Enemy[i].position.x = Enemy[i].hitbox.x;
-			Enemy[i].position.y = Enemy[i].hitbox.y;
-			Enemy[i].physic.gazeDirection = Enemy[i].physic.xMoveL + Enemy[i].physic.xMoveR;
-		}
+		
+		Enemy[i].position.x = Enemy[i].hitbox.x;
+		Enemy[i].position.y = Enemy[i].hitbox.y;
+		Enemy[i].physic.gazeDirection = Enemy[i].physic.xMoveL + Enemy[i].physic.xMoveR;
+		
 	}
 }
 
@@ -98,12 +97,11 @@ void EnemyPhysicGravity(mainEnemys Enemy[], int* enemysCount)
 {
 	for (int i = 0; i < *enemysCount;i++)
 	{
-		if (Enemy[i].status.alive)
-		{
-			Enemy[i].position.y += Enemy[i].physic.gravity * Enemy[i].physic.accelerationY;
-			if (Enemy[i].physic.accelerationY < 1)
-				Enemy[i].physic.accelerationY += 0.05;
-		}
+		
+		Enemy[i].position.y += Enemy[i].physic.gravity * Enemy[i].physic.accelerationY;
+		if (Enemy[i].physic.accelerationY < 1)
+			Enemy[i].physic.accelerationY += 0.05;
+		
 	}
 }
 
@@ -112,26 +110,26 @@ void EnemyPhysicHitboxOverlay(int* bordersCount,int* enemysCount, mainEnemys Ene
 {
 	for (int i = 0; i < *enemysCount;i++)
 	{
-		if (Enemy[i].status.alive)
-		{
-			int check = 1;
-			for (int j = 0;j < *bordersCount;j++)
-			{
-				if (levelBorders[j].type == 1 || levelBorders[j].type == 2)
-					if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
-					{
-						check = 0;
-						break;
-					}
-			}
 
-			if (check == 1)
-			{
-				Enemy[i].hitbox.x = Enemy[i].position.x;
-				Enemy[i].hitbox.y = Enemy[i].position.y;
-				Enemy[i].physic.onBorder = 0;
-			}
+		
+		int check = 1;
+		for (int j = 0;j < *bordersCount;j++)
+		{
+			if (levelBorders[j].type == 1 || levelBorders[j].type == 2)
+				if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
+				{
+					check = 0;
+					break;
+				}
 		}
+
+		if (check == 1)
+		{
+			Enemy[i].hitbox.x = Enemy[i].position.x;
+			Enemy[i].hitbox.y = Enemy[i].position.y;
+			Enemy[i].physic.onBorder = 0;
+		}
+		
 	}
 }
 
@@ -140,17 +138,16 @@ void EnemyPhysicOutworldCheck(int* enemysCount, mainEnemys Enemy[], mainBorders 
 {
 	for (int i = 0; i < *enemysCount;i++)
 	{
-		if (Enemy[i].status.alive)
-		{
-			if (Enemy[i].hitbox.x > levelBorders[1].bordersHitbox.w - Enemy[i].hitbox.w / 2 - 2)
-				Enemy[i].hitbox.x = levelBorders[1].bordersHitbox.w - Enemy[i].hitbox.w / 2 - 2;
-			else if (Enemy[i].hitbox.x < levelBorders[0].bordersHitbox.x + Enemy[i].hitbox.w / 2 + 2)
-				Enemy[i].hitbox.x = levelBorders[0].bordersHitbox.x + Enemy[i].hitbox.w / 2 + 2;
 
-			if (Enemy[i].hitbox.y > levelBorders[0].bordersHitbox.h - Enemy[i].hitbox.h / 2 - 2)
-				Enemy[i].hitbox.y = levelBorders[0].bordersHitbox.h - Enemy[i].hitbox.h / 2 - 2;
-			else if (Enemy[i].hitbox.y < levelBorders[0].bordersHitbox.y + Enemy[i].hitbox.h / 2 + 2)
-				Enemy[i].hitbox.y = levelBorders[0].bordersHitbox.y + Enemy[i].hitbox.h / 2 + 2;
-		}
+		if (Enemy[i].hitbox.x > levelBorders[1].bordersHitbox.w - Enemy[i].hitbox.w / 2 - 2)
+			Enemy[i].hitbox.x = levelBorders[1].bordersHitbox.w - Enemy[i].hitbox.w / 2 - 2;
+		else if (Enemy[i].hitbox.x < levelBorders[0].bordersHitbox.x + Enemy[i].hitbox.w / 2 + 2)
+			Enemy[i].hitbox.x = levelBorders[0].bordersHitbox.x + Enemy[i].hitbox.w / 2 + 2;
+
+		if (Enemy[i].hitbox.y > levelBorders[0].bordersHitbox.h - Enemy[i].hitbox.h / 2 - 2)
+			Enemy[i].hitbox.y = levelBorders[0].bordersHitbox.h - Enemy[i].hitbox.h / 2 - 2;
+		else if (Enemy[i].hitbox.y < levelBorders[0].bordersHitbox.y + Enemy[i].hitbox.h / 2 + 2)
+			Enemy[i].hitbox.y = levelBorders[0].bordersHitbox.y + Enemy[i].hitbox.h / 2 + 2;
+
 	}
 }

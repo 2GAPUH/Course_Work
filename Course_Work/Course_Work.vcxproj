@@ -154,6 +154,7 @@
     <Image Include="Textures\BackGroundCave.png" />
     <Image Include="Textures\barrel1.png" />
     <Image Include="Textures\bobr.png" />
+    <Image Include="Textures\buff_DMG.png" />
     <Image Include="Textures\cobblestone20x20.png" />
     <Image Include="Textures\cobblestone40x40.png" />
     <Image Include="Textures\hero_bullet.png" />
@@ -162,6 +163,7 @@
     <Image Include="Textures\hero_run.png" />
     <Image Include="Textures\hpBar.png" />
     <Image Include="Textures\mainHero26x22.png" />
+    <Image Include="Textures\overheating.png" />
     <Image Include="Textures\pressure_plate.png" />
     <Image Include="Textures\trap_dart.png" />
     <Image Include="Textures\trap_spikes.png" />
