@@ -16,6 +16,18 @@
     <Filter Include="Картинки">
       <UniqueIdentifier>{466704e1-7260-4b13-9ca4-0ea331ebabe8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Сохранения">
+      <UniqueIdentifier>{1e856858-f1d2-4d56-b70e-e28e091f91d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Сохранения\1">
+      <UniqueIdentifier>{b1bf42da-c6e8-4740-baed-98d963aa4611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Сохранения\2">
+      <UniqueIdentifier>{fb5b0c81-8f0e-4014-bdbc-abe0c56ef8ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Сохранения\3">
+      <UniqueIdentifier>{62d8a728-370c-4caf-b56c-f84876fb61cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -106,6 +118,9 @@
     <Image Include="Textures\buff_DMG.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="Textures\krab.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt">
@@ -122,6 +137,9 @@
     </Text>
     <Text Include="Traps\Trap.txt">
       <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="Saves\1\main_hero.txt">
+      <Filter>Сохранения\1</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>

@@ -54,6 +54,15 @@
 
 #pragma endregion
 
+#pragma region KRAB_STATS
+
+#define KRAB_HP 200
+#define KRAB_DMG 5
+#define KRAB_SPEED 3
+#define KRAB_ATACK_CD 1000
+
+#pragma endregion
+
 #pragma region TRAPS_STATS
 
 #define TRAP_DART_WIDTH 24 

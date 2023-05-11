@@ -157,6 +157,7 @@
     <Image Include="Textures\buff_DMG.png" />
     <Image Include="Textures\cobblestone20x20.png" />
     <Image Include="Textures\cobblestone40x40.png" />
+    <Image Include="Textures\krab.png" />
     <Image Include="Textures\hero_bullet.png" />
     <Image Include="Textures\hero_comm.png" />
     <Image Include="Textures\hero_punch.png" />
@@ -175,6 +176,7 @@
     <Text Include="Enemys\Enemy1.txt" />
     <Text Include="Levels\Borders.txt" />
     <Text Include="Levels\Borders1.txt" />
+    <Text Include="Saves\1\main_hero.txt" />
     <Text Include="Traps\Trap.txt" />
   </ItemGroup>
   <ItemGroup>
