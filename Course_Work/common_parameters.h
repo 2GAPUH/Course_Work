@@ -28,7 +28,7 @@
 
 #pragma region HERO_STATS
 
-#define HERO_HP 500
+#define HERO_HP 100
 #define HERO_DAMAGE 40
 #define HERO_SHOOT_DAMAGE 50
 #define HERO_DASH_CD 700

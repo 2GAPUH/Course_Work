@@ -33,8 +33,8 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 		movedLaplas.y = Laplas->hitbox.y  - (levelHeight - window.h);
 	SDL_Point p = { 100, -100 };
 
-	Laplas->texture_rect.x = movedLaplas.x - (Laplas->texture_rect.w / 2.);
-	Laplas->texture_rect.y = movedLaplas.y + Laplas->hitbox.h / 2. - (Laplas->texture_rect.h);
+	Laplas->texture_rect.x = movedLaplas.x ;//- (Laplas->texture_rect.w / 2.)
+	Laplas->texture_rect.y = movedLaplas.y ;//+ Laplas->hitbox.h / 2. - (Laplas->texture_rect.h)
 
 	movedLaplas.x -= Laplas->hitbox.w / 2.;
 	movedLaplas.y -= Laplas->hitbox.h / 2.;
@@ -52,6 +52,8 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 	switch (Laplas->animationType)
 	{
 	case 0:
+		Laplas->texture_rect.x += -(Laplas->texture_rect.w / 2.);
+		Laplas->texture_rect.y += Laplas->hitbox.h / 2. - (Laplas->texture_rect.h);
 		if (Laplas->physic.gazeDirection < 0)
 			SDL_RenderCopyEx(ren, Laplas->animation.com.texture, &Laplas->animation.com.frame, &Laplas->texture_rect, 0, 0, SDL_FLIP_HORIZONTAL);
 		else if (Laplas->physic.gazeDirection > 0)
@@ -67,10 +69,20 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 		break;
 
 	case 1:
+
 		if (Laplas->physic.gazeDirection < 0)
+		{
+			Laplas->texture_rect.x += Laplas->hitbox.w / 2. -(Laplas->texture_rect.w / 2.);
+			Laplas->texture_rect.y += Laplas->hitbox.h / 2. - (Laplas->texture_rect.h);
 			SDL_RenderCopyEx(ren, Laplas->animation.run.texture, &Laplas->animation.run.frame, &Laplas->texture_rect, 0, 0, SDL_FLIP_HORIZONTAL);
+		}
 		else if (Laplas->physic.gazeDirection > 0)
+		{
+			Laplas->texture_rect.x +=  -(Laplas->texture_rect.w / 1.5);
+			Laplas->texture_rect.y += Laplas->hitbox.h / 2. - (Laplas->texture_rect.h);
 			SDL_RenderCopyEx(ren, Laplas->animation.run.texture, &Laplas->animation.run.frame, &Laplas->texture_rect, 0, 0, SDL_FLIP_NONE);
+		}
+
 		if (SDL_GetTicks() - Laplas->animation.run.frameTime > 62 * HERO_SPEED / Laplas->animation.run.frameCount)
 		{
 			Laplas->animation.run.frame.x += Laplas->animation.run.textureSize.w / Laplas->animation.run.frameCount;
@@ -83,9 +95,17 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 
 	case 2:
 		if (Laplas->physic.gazeDirection < 0)
+		{
+			Laplas->texture_rect.x += -(Laplas->texture_rect.w / 2.);
+			Laplas->texture_rect.y += Laplas->hitbox.h / 1.63 - (Laplas->texture_rect.h);
 			SDL_RenderCopyEx(ren, Laplas->animation.punch.texture, &Laplas->animation.punch.frame, &Laplas->texture_rect, 0, 0, SDL_FLIP_HORIZONTAL);
+		}
 		else if (Laplas->physic.gazeDirection > 0)
+		{
+			Laplas->texture_rect.x += -(Laplas->texture_rect.w / 2.);
+			Laplas->texture_rect.y += Laplas->hitbox.h / 1.63 - (Laplas->texture_rect.h);
 			SDL_RenderCopyEx(ren, Laplas->animation.punch.texture, &Laplas->animation.punch.frame, &Laplas->texture_rect, 0, 0, SDL_FLIP_NONE);
+		}
 		if (SDL_GetTicks() - Laplas->animation.punch.frameTime > HERO_ATACK_CD / Laplas->animation.punch.frameCount)
 		{
 			Laplas->animation.punch.frame.x += Laplas->animation.punch.textureSize.w / Laplas->animation.punch.frameCount;
@@ -98,9 +118,17 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 
 	case 3:
 		if (Laplas->physic.gazeDirection < 0)
+		{
+			Laplas->texture_rect.x += -(Laplas->texture_rect.w / 1.5);
+			Laplas->texture_rect.y += Laplas->hitbox.h / 2. - (Laplas->texture_rect.h);
 			SDL_RenderCopyEx(ren, Laplas->animation.shoot.texture, &Laplas->animation.shoot.frame, &Laplas->texture_rect, 0, 0, SDL_FLIP_HORIZONTAL);
+		}
 		else if (Laplas->physic.gazeDirection > 0)
+		{
+			Laplas->texture_rect.x += Laplas->hitbox.w / 2. - (Laplas->texture_rect.w / 2.);
+			Laplas->texture_rect.y += Laplas->hitbox.h / 2. - (Laplas->texture_rect.h);
 			SDL_RenderCopyEx(ren, Laplas->animation.shoot.texture, &Laplas->animation.shoot.frame, &Laplas->texture_rect, 0, 0, SDL_FLIP_NONE);
+		}
 		if (SDL_GetTicks() - Laplas->animation.shoot.frameTime > HERO_SHOOT_CD / Laplas->animation.shoot.frameCount)
 		{
 			Laplas->animation.shoot.frame.x += Laplas->animation.shoot.textureSize.w / Laplas->animation.shoot.frameCount;
@@ -115,7 +143,7 @@ void DrawMainHero(mainHero* Laplas, mainWindow window)
 
 }
 
-void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, mainWindow* window, mainRenderer* cobbleStone, mainRenderer* platform, mainRenderer* dart_trap)
+void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, mainWindow* window, mainRenderer* cobbleStone, mainRenderer* platform)
 {
 	SDL_Rect rect123;
 	SDL_Rect dopRect = {NULL, NULL, NULL, NULL};
@@ -187,7 +215,31 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 			break;
 
 		case 6:
-			SDL_RenderCopy(ren, dart_trap->texture, NULL, &rect123);
+			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
+			SDL_RenderFillRect(ren, &rect123);
+			rect1 = cobbleStone->textureSize;
+			dopRect = cobbleStone->textureSize;
+
+			for (int i = rect123.y; i < rect123.y + rect123.h; i += cobbleStone->textureSize.h)
+				for (int j = rect123.x; j < rect123.x + rect123.w; j += cobbleStone->textureSize.w)
+				{
+					if (j + cobbleStone->textureSize.w > rect123.x + rect123.w)
+						dopRect.w = rect123.x + rect123.w - j;
+					else
+						dopRect.w = cobbleStone->textureSize.w;
+
+					if (i + cobbleStone->textureSize.h > rect123.y + rect123.h)
+						dopRect.h = rect123.y + rect123.h - i;
+					else
+						dopRect.h = cobbleStone->textureSize.h;
+
+					rect1.x = j;
+					rect1.y = i;
+					rect1.w = dopRect.w;
+					rect1.h = dopRect.h;
+					SDL_RenderCopy(ren, cobbleStone->texture, &dopRect, &rect1);
+
+				}
 			break;
 		}
 	}
@@ -960,7 +1012,7 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\hero_comm.png", &Laplas.animation.com, 3);
 	GetTexture("Textures\\hero_run.png", &Laplas.animation.run, 8);
-	GetTexture("Textures\\hero_atack.png", &Laplas.animation.punch, 5);
+	GetTexture("Textures\\hero_atack3.png", &Laplas.animation.punch, 5);
 	GetTexture("Textures\\hero_shoot.png", &Laplas.animation.shoot, 3);
 	GetTexture("Textures\\hero_bullet.png", &Laplas.animation.bullet, 1);
 	Laplas.texture_rect.w = Laplas.texture_rect.h = Laplas.hitbox.h / 22. * 32;
@@ -1359,7 +1411,7 @@ int main(int argc, char* argv[])
 				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 		
 				//¬раги и стены
-				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_trap_with_dart);
+				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone, &texture_platform);
 				DrawEnemys(&enemysCount, levelEnemys, &Laplas, &window,  &texture_buff_DMG);
 				DrawTraps(&trapsCount, levelTraps, &Laplas, &window);
 				
