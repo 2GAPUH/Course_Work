@@ -32,6 +32,11 @@ void AddNewBullet(mainHero* Laplas)
 				Laplas->battle.shoot[i].bulletSpeed = HERO_BULLET_SPEED;
 				Laplas->battle.shoot[i].shootAtackCentere.x = Laplas->hitbox.x + Laplas->hitbox.w / 2;
 				Laplas->battle.shoot[i].shootAtackCentere.y = Laplas->hitbox.y;
+				if (Laplas->buffs.Rubber_bullet_active)
+				{
+					Laplas->battle.shoot[i].rebound_count = RUBBER_REBOUND_COUNT;
+				}
+				else Laplas->battle.shoot[i].rebound_count = NULL;
 			}
 			else if (Laplas->physic.gazeDirection < 0)
 			{
@@ -39,6 +44,11 @@ void AddNewBullet(mainHero* Laplas)
 				Laplas->battle.shoot[i].bulletSpeed = -HERO_BULLET_SPEED;
 				Laplas->battle.shoot[i].shootAtackCentere.x = Laplas->hitbox.x - Laplas->hitbox.w / 2;
 				Laplas->battle.shoot[i].shootAtackCentere.y = Laplas->hitbox.y;
+				if (Laplas->buffs.Rubber_bullet_active)
+				{
+					Laplas->battle.shoot[i].rebound_count = RUBBER_REBOUND_COUNT;
+				}
+				else Laplas->battle.shoot[i].rebound_count = NULL;
 			}
 
 			break;

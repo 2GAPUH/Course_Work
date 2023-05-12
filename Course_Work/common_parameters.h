@@ -33,7 +33,7 @@
 #define HERO_SHOOT_DAMAGE 50
 #define HERO_DASH_CD 700
 #define HERO_SPEED 7
-#define HERO_BULLET_SPEED 21
+#define HERO_BULLET_SPEED 10
 #define HERO_ATACK_CD 500
 #define HERO_SHOOT_CD 300 
 #define HERO_BULLET_WIDTH 18 
@@ -41,8 +41,10 @@
 #define HERO_AFTER_ATACK_PROTECTION 500 
 #define DMG_BUFF_DUARATION 30000
 #define DMG_BUFF_PERCENT 30
+#define ITEM_COUNT 10
 
 #define DMG_POTION_DROP_CHANCE 90
+#define RUBBER_REBOUND_COUNT 3;
 #pragma endregion
 
 #pragma region BEAVER_STATS
@@ -51,6 +53,7 @@
 #define BEAVER_DMG 10
 #define BEAVER_SPEED 5
 #define BEAVER_ATACK_CD 1500
+#define BEAVER_TRIGGERED_DISTANCE 200
 
 #pragma endregion
 
@@ -60,6 +63,7 @@
 #define KRAB_DMG 5
 #define KRAB_SPEED 3
 #define KRAB_ATACK_CD 1000
+#define KRAB_TRIGGERED_DISTANCE 100
 
 #pragma endregion
 
@@ -153,6 +157,8 @@ struct heroAnimation
 	mainRenderer punch;
 	mainRenderer shoot;
 	mainRenderer bullet;
+	mainRenderer rubber_bullet;
+
 };
 
 struct mainShoot
@@ -160,6 +166,7 @@ struct mainShoot
 	bool alive;
 	int bulletSpeed;
 	SDL_Point shootAtackCentere;
+	int rebound_count;
 };
 
 struct mainBattle
@@ -176,6 +183,8 @@ struct mainBuffs
 	int startDMG_buff;
 	int DMG_buffDuaration;
 	int DMG_buffPercent;
+
+	bool Rubber_bullet_active;
 };
 
 struct mainKeys
@@ -224,6 +233,18 @@ struct mainEnemys
 	statusEffect effect;
 	mainStatistic status;
 	mainRenderer render;
+	bool triggered;
+	int triggeredDistance;
+};
+
+struct mainItems
+{
+	int type;
+	bool alive;
+	SDL_Point position;
+	SDL_Rect hitbox;
+	mainRenderer render;
+	SDL_Rect grab_zone;
 };
 
 struct mainTraps

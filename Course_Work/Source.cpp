@@ -269,8 +269,12 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 				SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);
 			else if (levelEnemys[i].physic.gazeDirection < 0)
 				SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
-
-
+			else if (levelEnemys[i].physic.gazeDirection == 0)
+			{
+				SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+				break;
+			}
+			
 			if ((levelEnemys[i].physic.xMoveL || levelEnemys[i].physic.xMoveR) && (SDL_GetTicks() - levelEnemys[i].render.frameTime > 1000 / 30) && (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR != 0))
 			{
 				levelEnemys[i].render.frame.x += levelEnemys[i].render.textureSize.w / levelEnemys[i].render.frameCount;
@@ -286,7 +290,11 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 				SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);
 			else if (levelEnemys[i].physic.gazeDirection < 0)
 				SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
-
+			else if (levelEnemys[i].physic.gazeDirection == 0)
+			{
+				SDL_RenderCopyEx(ren, levelEnemys[i].render.texture, &levelEnemys[i].render.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+				break;
+			}
 
 			if ((levelEnemys[i].physic.xMoveL || levelEnemys[i].physic.xMoveR) && (SDL_GetTicks() - levelEnemys[i].render.frameTime > 1000 / 15) && (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR != 0))
 			{
@@ -303,6 +311,39 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 			break;
 		}
 
+	}
+}
+
+void DrawItem(mainHero* Laplas, mainItems items[], mainWindow* window)
+{
+	for (int i = 0; i < ITEM_COUNT; i++)
+	{
+		if (items[i].alive)
+		{
+			SDL_Rect movedItem = { items[i].hitbox.x - items[i].hitbox.w / 2,items[i].hitbox.y - items[i].hitbox.h / 2, items[i].hitbox.w, items[i].hitbox.h };
+
+			if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+				movedItem.x -= Laplas->hitbox.x - window->w / 2.f;
+			if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+				movedItem.x -= levelWidth - window->w;
+
+			if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+				movedItem.y -= Laplas->hitbox.y - window->h / 2.f;
+			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+				movedItem.y -= levelHeight - window->h;
+
+			//SDL_RenderFillRect(ren, &items[i].grab_zone);
+			SDL_RenderCopy(ren, items[i].render.texture, &items[i].render.frame, &movedItem);
+
+			if ((SDL_GetTicks() - items[i].render.frameTime > 1000 / 30))
+			{
+				items[i].render.frame.x += items[i].render.textureSize.w / items[i].render.frameCount;
+				items[i].render.frameTime = SDL_GetTicks();
+			}
+
+			if (items[i].render.frame.x >= items[i].render.textureSize.w)
+				items[i].render.frame.x = 0;
+		}
 	}
 }
 
@@ -348,10 +389,24 @@ void DrawHeroBullet(mainHero* Laplas, mainWindow* window)
 			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
 				rect123.y -= levelHeight - window->h;
 
-			if(Laplas->battle.shoot[i].bulletSpeed > 0)
-				SDL_RenderCopyEx(ren, Laplas->animation.bullet.texture, NULL, &rect123, 0, 0, SDL_FLIP_NONE);
+			if (Laplas->battle.shoot[i].bulletSpeed > 0)
+			{
+				if (!Laplas->buffs.Rubber_bullet_active)
+				{
+					SDL_RenderCopyEx(ren, Laplas->animation.bullet.texture, NULL, &rect123, 0, 0, SDL_FLIP_NONE);
+				}
+				else
+					SDL_RenderCopyEx(ren, Laplas->animation.rubber_bullet.texture, NULL, &rect123, 0, 0, SDL_FLIP_NONE);
+			}
 			else
-				SDL_RenderCopyEx(ren, Laplas->animation.bullet.texture, NULL, &rect123, 0, 0, SDL_FLIP_HORIZONTAL);
+			{
+				if (!Laplas->buffs.Rubber_bullet_active)
+				{
+					SDL_RenderCopyEx(ren, Laplas->animation.bullet.texture, NULL, &rect123, 0, 0, SDL_FLIP_HORIZONTAL);
+				}
+				else
+					SDL_RenderCopyEx(ren, Laplas->animation.rubber_bullet.texture, NULL, &rect123, 0, 0, SDL_FLIP_HORIZONTAL);
+			}
 		}
 }
 
@@ -485,7 +540,7 @@ mainHero InitHero()
 	Laplas.battle = { NULL, { NULL, NULL } , NULL, NULL };
 	Laplas.status = { HERO_DAMAGE, HERO_HP, ALIVE , HERO_START_AMUNITION, HERO_SHOOT_DAMAGE };
 	Laplas.animationType = NULL;
-	Laplas.buffs = { NULL, NULL, DMG_BUFF_DUARATION, DMG_BUFF_PERCENT };
+	Laplas.buffs = { NULL, NULL, DMG_BUFF_DUARATION, DMG_BUFF_PERCENT, NULL };
 	Laplas.keys = { NULL, NULL, NULL };
 
 
@@ -503,6 +558,8 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].status = { BEAVER_DMG, BEAVER_HP , ALIVE };
 			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
 			levelEnemys[i].render = *texture_beaver;
+			levelEnemys[i].triggered = NULL;
+			levelEnemys[i].triggeredDistance = BEAVER_TRIGGERED_DISTANCE;
 		}
 
 		else if (levelEnemys[i].type == 2)
@@ -512,6 +569,10 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].status = { BEAVER_DMG, BEAVER_HP , ALIVE };
 			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
 			levelEnemys[i].render = *texture_beaver;
+			levelEnemys[i].triggered = NULL;
+			levelEnemys[i].triggeredDistance = BEAVER_TRIGGERED_DISTANCE;
+
+
 		}
 
 		else if (levelEnemys[i].type == 3)
@@ -521,6 +582,8 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].status = { KRAB_DMG, KRAB_HP , ALIVE };
 			levelEnemys[i].effect.atackCD = KRAB_ATACK_CD;
 			levelEnemys[i].render = *texture_krab;
+			levelEnemys[i].triggered = NULL;
+			levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
 		}
 	}
 }
@@ -565,6 +628,22 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 			levelTraps[i].cooldown = NULL;
 			levelTraps[i].lastShoot = NULL;
 		}
+	}
+}
+
+void InitItems(mainItems item[])
+{
+	for (int i = 0; i < ITEM_COUNT; i++)
+	{
+		item[i].hitbox = { NULL, NULL, NULL, NULL };
+		item[i].alive = NULL;
+		item[i].position = { NULL, NULL };
+		item[i].render.frame = { NULL, NULL, NULL, NULL };
+		item[i].render.frameCount = NULL;
+		item[i].render.frameTime = NULL;
+		item[i].render.texture = NULL;
+		item[i].render.textureSize = { NULL, NULL, NULL, NULL };
+		item[i].grab_zone = { NULL, NULL, NULL, NULL };
 	}
 }
 
@@ -911,8 +990,18 @@ void HeroBulletHitboxInRange(mainHero* Laplas, int* bordersCount, mainBorders le
 		if (Laplas->battle.shoot[f].alive)
 		{
 			for (int g = 0; g < *bordersCount; g++)
+			{
 				if (HeroPhysicInRange(Laplas->battle.shoot[f].shootAtackCentere, levelBorders[g].bordersHitbox))
+				{
+					if (Laplas->buffs.Rubber_bullet_active && Laplas->battle.shoot[f].rebound_count > 0)
+					{
+						Laplas->battle.shoot[f].bulletSpeed *= -1;
+						Laplas->battle.shoot[f].rebound_count--;
+						continue;
+					}
 					Laplas->battle.shoot[f].alive = 0;
+				}
+			}
 		}
 	}
 }
@@ -935,15 +1024,28 @@ void HeroBulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
 	for(int i = 0; i < 10; i++)
 		if (Laplas->battle.shoot[i].alive)
 		{
-			if (Laplas->battle.shoot[i].shootAtackCentere.x > levelBorders[1].bordersHitbox.w - HERO_BULLET_WIDTH / 2 - 2)
+			if (Laplas->battle.shoot[i].shootAtackCentere.x > levelBorders[1].bordersHitbox.w - HERO_BULLET_WIDTH / 2)
+			{
+				if (Laplas->buffs.Rubber_bullet_active && Laplas->battle.shoot[i].rebound_count > 0)
+				{
+					Laplas->battle.shoot[i].bulletSpeed *= -1;
+					Laplas->battle.shoot[i].rebound_count--;
+					continue;
+				}
 				Laplas->battle.shoot[i].alive = 0;
-			else if (Laplas->battle.shoot[i].shootAtackCentere.x < levelBorders[0].bordersHitbox.x + HERO_BULLET_WIDTH / 2 + 2)
+			}
+			else if (Laplas->battle.shoot[i].shootAtackCentere.x < levelBorders[0].bordersHitbox.x + HERO_BULLET_WIDTH / 2 )
+			{
+				if (Laplas->buffs.Rubber_bullet_active && Laplas->battle.shoot[i].rebound_count > 0)
+				{
+					Laplas->battle.shoot[i].bulletSpeed *= -1;
+					Laplas->battle.shoot[i].rebound_count--;
+					continue;
+				}
 				Laplas->battle.shoot[i].alive = 0;
+			}
 
-			if (Laplas->battle.shoot[i].shootAtackCentere.y > levelBorders[0].bordersHitbox.h - HERO_BULLET_HIGHT / 2 - 2)
-				Laplas->battle.shoot[i].alive = 0;
-			else if (Laplas->battle.shoot[i].shootAtackCentere.y < levelBorders[0].bordersHitbox.y + HERO_BULLET_HIGHT / 2 + 2)
-				Laplas->battle.shoot[i].alive = 0;
+
 		}
 }
 
@@ -1130,6 +1232,7 @@ int main(int argc, char* argv[])
 	mainRenderer texture_trap_spikes;
 	mainRenderer texture_overheating;
 	mainRenderer texture_buff_DMG;
+	mainRenderer texture_buff_Rubber_Bullet;
 	TTF_Font* fontNovemBig = NULL;
 	TTF_Font* fontNovemSmall = NULL;
 
@@ -1150,7 +1253,8 @@ int main(int argc, char* argv[])
 	mainEnemys* levelEnemys = NULL;
 	mainTraps* levelTraps = NULL;
 	mainHero Laplas;
-	
+	mainItems items[ITEM_COUNT];
+
 	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
 	SDL_Point mouseClick = { NULL, NULL };
 	
@@ -1172,6 +1276,7 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\hero_atack3.png", &Laplas.animation.punch, 5);
 	GetTexture("Textures\\hero_shoot.png", &Laplas.animation.shoot, 3);
 	GetTexture("Textures\\hero_bullet.png", &Laplas.animation.bullet, 1);
+	GetTexture("Textures\\hero_rubber_bullet.png", &Laplas.animation.rubber_bullet, 1);
 	Laplas.texture_rect.w = Laplas.texture_rect.h = Laplas.hitbox.h / 22. * 32;
 
 	GetTexture("Textures\\bobr.png", &texture_beaver, 6);
@@ -1195,6 +1300,8 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\overheating.png", &texture_overheating, 1);
 
 	GetTexture("Textures\\buff_DMG.png", &texture_buff_DMG, 1);
+
+	GetTexture("Textures\\buff_Rubber_Bullet.png", &texture_buff_Rubber_Bullet, 12);
 
 
 
@@ -1253,7 +1360,17 @@ int main(int argc, char* argv[])
 
 	InitEnemys(levelEnemys, &enemysCount, &texture_beaver, &texture_krab);
 	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
+	InitItems(items);
 
+	//Временно
+	items[0].hitbox = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, texture_buff_Rubber_Bullet.textureSize.w / texture_buff_Rubber_Bullet.frameCount, texture_buff_Rubber_Bullet.textureSize.h };
+	items[0].alive = 1;
+	items[0].type = 1;
+	items[0].render = texture_buff_Rubber_Bullet;
+	items[0].grab_zone = { WINDOW_WIDTH / 2 - texture_buff_Rubber_Bullet.textureSize.w / texture_buff_Rubber_Bullet.frameCount * 3, 
+						   WINDOW_HEIGHT / 2 - texture_buff_Rubber_Bullet.textureSize.h * 2, 
+						   texture_buff_Rubber_Bullet.textureSize.w / texture_buff_Rubber_Bullet.frameCount * 6, 
+						   texture_buff_Rubber_Bullet.textureSize.h * 4 };
 
 	while (flag)
 	{
@@ -1433,23 +1550,34 @@ int main(int argc, char* argv[])
 				HeroBulletOutworldCheck(&Laplas, levelBorders);
 				TrapBulletOutworldCheck(levelTraps, &trapsCount, levelBorders);
 
+				//Срабатывание триггера обнаружения врагом
+				for (int i = 0; i < enemysCount; i++)
+					if (!levelEnemys[i].triggered && sqrt((Laplas.hitbox.x - levelEnemys[i].hitbox.x) * (Laplas.hitbox.x - levelEnemys[i].hitbox.x) +
+						(Laplas.hitbox.y - levelEnemys[i].hitbox.y) * (Laplas.hitbox.y - levelEnemys[i].hitbox.y)) < 
+						levelEnemys[i].triggeredDistance || levelEnemys[i].effect.underAtack)
+						levelEnemys[i].triggered = 1;
 
 				//Движение врагов
 				for (int i = 0; i < enemysCount; i++)
 				{
-					if (levelEnemys[i].hitbox.x < Laplas.hitbox.x)
+					if (levelEnemys[i].triggered)
 					{
-						levelEnemys[i].hitbox.x += levelEnemys[i].physic.speed;
-						levelEnemys[i].physic.xMoveR = 1;
-						levelEnemys[i].physic.xMoveL = 0;
-					}
-					else if (levelEnemys[i].hitbox.x > Laplas.hitbox.x)
-					{
-						levelEnemys[i].hitbox.x -= levelEnemys[i].physic.speed;
-						levelEnemys[i].physic.xMoveR = 0;
-						levelEnemys[i].physic.xMoveL = -1;
+						if (levelEnemys[i].hitbox.x + levelEnemys[i].physic.speed < Laplas.hitbox.x)
+						{
+							levelEnemys[i].hitbox.x += levelEnemys[i].physic.speed;
+							levelEnemys[i].physic.xMoveR = 1;
+							levelEnemys[i].physic.xMoveL = 0;
+						}
+						else if (levelEnemys[i].hitbox.x - levelEnemys[i].physic.speed > Laplas.hitbox.x)
+						{
+							levelEnemys[i].hitbox.x -= levelEnemys[i].physic.speed;
+							levelEnemys[i].physic.xMoveR = 0;
+							levelEnemys[i].physic.xMoveL = -1;
+						}
 					}
 				}
+
+
 
 				//Переход на другую локацию
 				if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[9].bordersHitbox))
@@ -1458,6 +1586,24 @@ int main(int argc, char* argv[])
 					levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy1.txt");
 					InitEnemys(levelEnemys, &enemysCount, &texture_beaver, &texture_krab);
 				}
+
+				#pragma endregion 
+
+				#pragma region LOGIC_CHECK
+
+				//Побдор предмета
+				for(int i = 0; i < ITEM_COUNT; i++)
+					if(Laplas.keys.pressed_E)
+						if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, items[i].grab_zone))
+						{
+							switch (items[i].type)
+							{
+							case 1:
+								Laplas.buffs.Rubber_bullet_active = 1;
+								break;
+							}
+							items[i].alive = 0;
+						}
 
 				#pragma endregion 
 
@@ -1603,6 +1749,8 @@ int main(int argc, char* argv[])
 				DrawHeroBullet(&Laplas, &window);
 				DrawTrapsBullet(&Laplas, &window, &trapsCount, levelTraps, &texture_trap_dart);
 
+				DrawItem(&Laplas, items, &window);
+
 				//ГГ
 				DrawMainHero(&Laplas, window);
 				
@@ -1612,6 +1760,7 @@ int main(int argc, char* argv[])
 				DrawAmmoBar(ammoBarTexture, &window);
 				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window);
 
+				
 
 
 				SDL_RenderPresent(ren);
@@ -1667,10 +1816,12 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_trap_spikes.texture);
 	SDL_DestroyTexture(texture_overheating.texture);
 	SDL_DestroyTexture(texture_buff_DMG.texture);
+	SDL_DestroyTexture(texture_buff_Rubber_Bullet.texture);
 
 
 	SDL_DestroyTexture(Laplas.animation.com.texture);
 	SDL_DestroyTexture(Laplas.animation.bullet.texture);
+	SDL_DestroyTexture(Laplas.animation.rubber_bullet.texture);
 	SDL_DestroyTexture(Laplas.animation.punch.texture);
 	SDL_DestroyTexture(Laplas.animation.run.texture);
 	SDL_DestroyTexture(Laplas.animation.shoot.texture);
