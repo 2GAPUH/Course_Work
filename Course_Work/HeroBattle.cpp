@@ -120,6 +120,7 @@ void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnem
 				{
 					Laplas->battle.shoot[j].alive = 0;
 					levelEnemys[i].effect.underAtack = 1;
+					levelEnemys[i].physic.impulse += 0.45;
 					levelEnemys[i].status.HP -= Laplas->status.Shoot_DMG;
 					if (levelEnemys[i].status.HP <= 0)
 					{

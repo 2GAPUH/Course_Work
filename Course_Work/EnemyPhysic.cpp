@@ -16,8 +16,8 @@ bool EnemyCheckBorders(mainEnemys* Enemy, SDL_Rect unit)
 	if (SegmentOverlay({ Enemy->hitbox.x ,Enemy->hitbox.y + Enemy->hitbox.h / 2 }, { Enemy->position.x, Enemy->position.y + Enemy->hitbox.h / 2 },
 		{ unit.x - Enemy->hitbox.w / 2, unit.y }, { unit.x + unit.w + Enemy->hitbox.w / 2, unit.y }, &intersect))
 	{
-		Enemy->hitbox.x = Enemy->position.x;
-		Enemy->hitbox.y = intersect.y - Enemy->hitbox.h / 2 - 1;
+		Enemy->position.x = Enemy->position.x;
+		Enemy->position.y = intersect.y - Enemy->hitbox.h / 2 - 1;
 		Enemy->physic.onBorder = 1;
 		//Enemy->physic.accelerationY = 0.1;
 		return 0;
@@ -27,8 +27,8 @@ bool EnemyCheckBorders(mainEnemys* Enemy, SDL_Rect unit)
 	if (SegmentOverlay({ Enemy->hitbox.x - Enemy->hitbox.w / 2 ,Enemy->hitbox.y }, { Enemy->position.x - Enemy->hitbox.w / 2, Enemy->position.y },
 		{ unit.x + unit.w, unit.y - Enemy->hitbox.h / 2 }, { unit.x + unit.w , unit.y + unit.h + Enemy->hitbox.h / 2 }, &intersect))
 	{
-		Enemy->hitbox.x = intersect.x + Enemy->hitbox.w / 2 + 1;
-		Enemy->hitbox.y = Enemy->position.y;
+		Enemy->position.x = intersect.x + Enemy->hitbox.w / 2 + 1;
+		Enemy->position.y = Enemy->position.y;
 		return 0;
 	}
 
@@ -36,8 +36,8 @@ bool EnemyCheckBorders(mainEnemys* Enemy, SDL_Rect unit)
 	if (SegmentOverlay({ Enemy->hitbox.x + Enemy->hitbox.w / 2 ,Enemy->hitbox.y }, { Enemy->position.x + Enemy->hitbox.w / 2, Enemy->position.y },
 		{ unit.x, unit.y - Enemy->hitbox.h / 2 }, { unit.x , unit.y + unit.h + Enemy->hitbox.h / 2 }, &intersect))
 	{
-		Enemy->hitbox.x = intersect.x - Enemy->hitbox.w / 2 - 1;
-		Enemy->hitbox.y = Enemy->position.y;
+		Enemy->position.x = intersect.x - Enemy->hitbox.w / 2 - 1;
+		Enemy->position.y = Enemy->position.y;
 		return 0;
 	}
 
@@ -45,8 +45,8 @@ bool EnemyCheckBorders(mainEnemys* Enemy, SDL_Rect unit)
 	if (SegmentOverlay({ Enemy->hitbox.x ,Enemy->hitbox.y - Enemy->hitbox.h / 2 }, { Enemy->position.x, Enemy->position.y - Enemy->hitbox.h / 2 },
 		{ unit.x - Enemy->hitbox.w / 2, unit.y + unit.h }, { unit.x + unit.w + Enemy->hitbox.w / 2, unit.y + unit.h }, &intersect))
 	{
-		Enemy->hitbox.x = Enemy->position.x;
-		Enemy->hitbox.y = intersect.y + Enemy->hitbox.h / 2 + 1;
+		Enemy->position.x = Enemy->position.x;
+		Enemy->position.y = intersect.y + Enemy->hitbox.h / 2 + 1;
 		Enemy->physic.impulse = 0.1;
 		Enemy->physic.accelerationY = 0.3;
 		return 0;
@@ -79,17 +79,27 @@ void EnemyPhysicXmovement(mainEnemys* Enemy)
 }
 
 //Прыжок
-void EnemyPhysicJump(mainEnemys* Enemy)
+void EnemyPhysicJump(mainEnemys* levelEnemys, int* enemysCount, mainHero* Laplas)
 {
-	if (Enemy->physic.impulse > 0.1)
-	{
-		Enemy->position.y -= 30 * Enemy->physic.impulse;
-		if (Enemy->physic.impulse > 0.1)
-			Enemy->physic.impulse -= 0.02;
-		else
-			Enemy->physic.accelerationY = 0.1;
-		Enemy->physic.onBorder = 0;
-	}
+	for(int i = 0; i < *enemysCount; i++)
+		if (levelEnemys[i].physic.impulse > 0.1)
+		{
+			if (levelEnemys[i].hitbox.x + levelEnemys[i].physic.speed < Laplas->hitbox.x)
+			{
+				levelEnemys[i].position.x -= levelEnemys[i].physic.speed * 2;
+			}
+			else if (levelEnemys[i].hitbox.x - levelEnemys[i].physic.speed > Laplas->hitbox.x)
+			{
+				levelEnemys[i].position.x += levelEnemys[i].physic.speed * 2;
+			}
+
+			levelEnemys[i].position.y -= 30 * levelEnemys[i].physic.impulse;
+			if (levelEnemys[i].physic.impulse > 0.1)
+				levelEnemys[i].physic.impulse -= 0.02;
+			else
+				levelEnemys[i].physic.accelerationY = 0.1;
+			levelEnemys[i].physic.onBorder = 0;
+		}
 }
 
 //Гравитация
@@ -110,23 +120,23 @@ void EnemyPhysicHitboxOverlay(int* bordersCount,int* enemysCount, mainEnemys Ene
 {
 	for (int i = 0; i < *enemysCount;i++)
 	{
-
-		
 		int check = 1;
-		for (int j = 0;j < *bordersCount;j++)
-		{
-			if (levelBorders[j].type == 1 || levelBorders[j].type == 2)
-				if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
-				{
-					check = 0;
-					break;
-				}
-		}
+		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
+			for (int j = 0; j < *bordersCount; j++)
+			{
+				if (levelBorders[j].type == 1 || levelBorders[j].type == 2)
+					if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
+					{
+						check = 0;
+					}
+			}
+
+		Enemy[i].hitbox.x = Enemy[i].position.x;
+		Enemy[i].hitbox.y = Enemy[i].position.y;
 
 		if (check == 1)
 		{
-			Enemy[i].hitbox.x = Enemy[i].position.x;
-			Enemy[i].hitbox.y = Enemy[i].position.y;
+			
 			Enemy[i].physic.onBorder = 0;
 		}
 		

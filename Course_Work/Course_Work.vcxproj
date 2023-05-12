@@ -155,6 +155,7 @@
     <Image Include="Textures\barrel1.png" />
     <Image Include="Textures\bobr.png" />
     <Image Include="Textures\buff_DMG.png" />
+    <Image Include="Textures\buff_Rubber_Bullet.png" />
     <Image Include="Textures\cobblestone20x20.png" />
     <Image Include="Textures\cobblestone40x40.png" />
     <Image Include="Textures\krab.png" />

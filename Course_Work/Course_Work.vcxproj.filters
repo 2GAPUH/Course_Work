@@ -121,6 +121,9 @@
     <Image Include="Textures\krab.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="Textures\buff_Rubber_Bullet.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt">
