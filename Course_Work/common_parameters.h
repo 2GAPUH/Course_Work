@@ -148,6 +148,7 @@ struct mainRenderer
 	SDL_Rect frame;
 	int frameTime;
 	int frameCount;
+	int angel;
 };
 
 struct heroAnimation
@@ -159,6 +160,13 @@ struct heroAnimation
 	mainRenderer bullet;
 	mainRenderer rubber_bullet;
 
+};
+
+struct enemysAnimation
+{
+	mainRenderer run;
+	mainRenderer atack;
+	mainRenderer preAtack;
 };
 
 struct mainShoot
@@ -198,6 +206,7 @@ struct mainHero
 {
 	SDL_Point position;
 	SDL_Rect hitbox;
+	SDL_Rect atack_hitbox;
 	SDL_Rect texture_rect;
 	mainPhysics physic;
 	statusEffect effect;
@@ -215,6 +224,7 @@ struct mainHero
 3 - атака пистолетом
 4 - дэш
 5 - нахождение в воздухе
+6 - преатака
 */
 
 
@@ -232,9 +242,10 @@ struct mainEnemys
 	mainPhysics physic;
 	statusEffect effect;
 	mainStatistic status;
-	mainRenderer render;
+	enemysAnimation animation;
 	bool triggered;
 	int triggeredDistance;
+	int animation_type;
 };
 
 struct mainItems

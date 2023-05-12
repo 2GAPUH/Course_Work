@@ -88,6 +88,7 @@ void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEne
 		{
 			levelEnemys[i].effect.underAtack = 1;
 			levelEnemys[i].status.HP -= Laplas->status.DMG;
+			levelEnemys[i].physic.impulse += 0.45;
 			if (levelEnemys[i].status.HP <= 0)
 			{
 				levelEnemys[i].status.alive = 0;
