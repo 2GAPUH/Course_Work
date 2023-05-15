@@ -305,7 +305,7 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 					SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
 					break;
 				}
-
+				levelEnemys[i].animation.run.angel += 10;
 
 				if ((levelEnemys[i].physic.xMoveL || levelEnemys[i].physic.xMoveR) && (SDL_GetTicks() - levelEnemys[i].animation.run.frameTime > 1000 / 30) && (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR != 0))
 				{
@@ -1294,6 +1294,7 @@ int main(int argc, char* argv[])
 	mainRenderer texture_trap_dart;
 	mainRenderer texture_trap_spikes;
 	mainRenderer texture_overheating;
+	mainRenderer texture_dark;
 	mainRenderer texture_buff_DMG;
 	mainRenderer texture_buff_Rubber_Bullet;
 	TTF_Font* fontNovemBig = NULL;
@@ -1363,6 +1364,8 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\trap_spikes.png", &texture_trap_spikes, 1);
 
 	GetTexture("Textures\\overheating.png", &texture_overheating, 1);
+
+	GetTexture("Textures\\dark.png", &texture_dark, 1);
 
 	GetTexture("Textures\\buff_DMG.png", &texture_buff_DMG, 1);
 
@@ -1839,7 +1842,7 @@ int main(int argc, char* argv[])
 				DrawFakeWalls(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone);
 
 				////Эффект бафа
-				//SDL_RenderCopy(ren, texture_overheating.texture, NULL, NULL);
+				//SDL_RenderCopy(ren, texture_dark.texture, NULL, NULL);
 
 				DrawAmmoBar(ammoBarTexture, &window);
 				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window);
@@ -1901,6 +1904,7 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_trap_dart.texture);
 	SDL_DestroyTexture(texture_trap_spikes.texture);
 	SDL_DestroyTexture(texture_overheating.texture);
+	SDL_DestroyTexture(texture_dark.texture);
 	SDL_DestroyTexture(texture_buff_DMG.texture);
 	SDL_DestroyTexture(texture_buff_Rubber_Bullet.texture);
 
