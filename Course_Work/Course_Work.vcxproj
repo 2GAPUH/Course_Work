@@ -175,9 +175,12 @@
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt" />
     <Text Include="Enemys\Enemy1.txt" />
+    <Text Include="Enemys\SaveRoomEnemys.txt" />
     <Text Include="Levels\Borders.txt" />
     <Text Include="Levels\Borders1.txt" />
+    <Text Include="Levels\SaveRoom1.txt" />
     <Text Include="Saves\1\main_hero.txt" />
+    <Text Include="Traps\SaveRoomTraps.txt" />
     <Text Include="Traps\Trap.txt" />
   </ItemGroup>
   <ItemGroup>

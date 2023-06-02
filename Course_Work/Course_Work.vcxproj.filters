@@ -144,6 +144,15 @@
     <Text Include="Saves\1\main_hero.txt">
       <Filter>Сохранения\1</Filter>
     </Text>
+    <Text Include="Levels\SaveRoom1.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="Enemys\SaveRoomEnemys.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="Traps\SaveRoomTraps.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <Font Include="Fonts\novem.ttf">

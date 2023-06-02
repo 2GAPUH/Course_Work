@@ -7,8 +7,8 @@
 #define WINDOW_HEIGHT 720
 #define WINDOW_WIDTH 1280
 #define FPS 60
-#define HERO_WIDHT 50
-#define HERO_HEIGHT 80
+#define HERO_WIDHT 70
+#define HERO_HEIGHT 112
 #define X_MOVE_L 0
 #define X_MOVE_R 0
 #define Y_MOVE 0
