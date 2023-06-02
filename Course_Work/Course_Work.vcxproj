@@ -137,18 +137,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Draw.cpp" />
     <ClCompile Include="EnemyPhysic.cpp" />
     <ClCompile Include="func.cpp" />
+    <ClCompile Include="GameLogic.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="HeroBattle.cpp" />
     <ClCompile Include="HeroPhysic.cpp" />
+    <ClCompile Include="LoadAndInit.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_parameters.h" />
+    <ClInclude Include="Draw.h" />
     <ClInclude Include="EnemyPhysic.h" />
     <ClInclude Include="func.h" />
+    <ClInclude Include="GameLogic.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="HeroBattle.h" />
     <ClInclude Include="HeroPhysic.h" />
+    <ClInclude Include="LoadAndInit.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\BackGroundCave.png" />
