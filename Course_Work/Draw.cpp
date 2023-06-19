@@ -393,7 +393,6 @@ void DrawTraps(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, mainWi
 {
 	for (int i = 0; i < *trapsCount; i++)
 	{
-
 		SDL_Rect movedTrap = { levelTraps[i].hitbox.x,levelTraps[i].hitbox.y, levelTraps[i].hitbox.w, levelTraps[i].hitbox.h };
 
 		if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
@@ -406,10 +405,32 @@ void DrawTraps(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, mainWi
 		if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
 			movedTrap.y -= levelHeight - window->h;
 
-		if (levelTraps[i].gazeDirection == 1)
-			SDL_RenderCopyEx(ren, levelTraps[i].render.texture, NULL, &movedTrap, 0, 0, SDL_FLIP_HORIZONTAL);
-		else if (levelTraps[i].gazeDirection == 0)
-			SDL_RenderCopyEx(ren, levelTraps[i].render.texture, NULL, &movedTrap, 0, 0, SDL_FLIP_NONE);
+		if (levelTraps[i].type == 1 || levelTraps[i].type == 2)
+		{
+			if (levelTraps[i].gazeDirection == 1)
+				SDL_RenderCopyEx(ren, levelTraps[i].render.texture, NULL, &movedTrap, 0, 0, SDL_FLIP_HORIZONTAL);
+			else if (levelTraps[i].gazeDirection == 0)
+				SDL_RenderCopyEx(ren, levelTraps[i].render.texture, NULL, &movedTrap, 0, 0, SDL_FLIP_NONE);
+		}
+
+		else if (levelTraps[i].type == 3)
+		{
+			SDL_Rect dopRect1 = levelTraps[i].render.textureSize;
+			SDL_Rect dopRect2 = movedTrap;
+			dopRect2.w = dopRect1.w;
+
+			while (true)
+			{
+				if (dopRect2.x + dopRect2.w >= movedTrap.x + movedTrap.w)
+				{
+					dopRect2.w = dopRect1.w = movedTrap.x + movedTrap.w -  dopRect2.x;
+					SDL_RenderCopyEx(ren, levelTraps[i].render.texture, &dopRect1, &dopRect2, 0, 0, SDL_FLIP_NONE);
+					break;
+				}
+				SDL_RenderCopyEx(ren, levelTraps[i].render.texture, &dopRect1, &dopRect2, 0, 0, SDL_FLIP_NONE);
+				dopRect2.x += dopRect2.w;
+			}
+		}
 
 	}
 }
