@@ -27,6 +27,10 @@ mainBorders* LoadLevel(mainBorders* levelBorders, int* bordersCount, mainHero* L
 		fscanf_s(f, "%d", &levelBorders[i].bordersHitbox.y);
 		fscanf_s(f, "%d", &levelBorders[i].bordersHitbox.w);
 		fscanf_s(f, "%d", &levelBorders[i].bordersHitbox.h);
+		levelBorders[i].alive = 1;
+		levelBorders[i].active = 0;
+		levelBorders[i].timer = 0;
+		
 	}
 
 

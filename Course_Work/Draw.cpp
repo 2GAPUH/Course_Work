@@ -128,7 +128,7 @@ void DrawMainHero(mainHero* Laplas, mainWindow window, SDL_Renderer *ren, int le
 }
 
 void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, mainWindow* window, mainRenderer* cobbleStone, 
-	mainRenderer* platform, mainRenderer* trampline, SDL_Renderer* ren, int levelWidth, int levelHeight)
+	mainRenderer* platform, mainRenderer* trampline, mainRenderer* tmp_Platform, SDL_Renderer* ren, int levelWidth, int levelHeight)
 {
 	SDL_Rect rect123;
 	SDL_Rect dopRect = { NULL, NULL, NULL, NULL };
@@ -199,6 +199,13 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 			SDL_SetRenderDrawColor(ren, 120, 0, 120, 255);
 			//SDL_RenderFillRect(ren, &rect123);
 			SDL_RenderCopy(ren, trampline->texture, NULL, &rect123);
+			break;
+
+		case 7:
+			SDL_SetRenderDrawColor(ren, 120, 0, 120, 255);
+			//SDL_RenderFillRect(ren, &rect123);
+			if(levelBorders[i].alive)
+				SDL_RenderCopy(ren, tmp_Platform->texture, NULL, &rect123);
 			break;
 
 		}

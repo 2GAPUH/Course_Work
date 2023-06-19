@@ -7,7 +7,7 @@
 
 void DrawMainHero(mainHero* Laplas, mainWindow window, SDL_Renderer* ren, int levelWidth, int levelHeight);
 void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, mainWindow* window, mainRenderer* cobbleStone,
-	mainRenderer* platform, mainRenderer* trampline, SDL_Renderer* ren, int levelWidth, int levelHeight);
+	mainRenderer* platform, mainRenderer* trampline, mainRenderer* tmp_Platform, SDL_Renderer* ren, int levelWidth, int levelHeight);
 void DrawFakeWalls(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, mainWindow* window, mainRenderer* cobbleStone
 	, SDL_Renderer* ren, int levelWidth, int levelHeight);
 void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, mainWindow* window, mainRenderer* texture_buff_DMG

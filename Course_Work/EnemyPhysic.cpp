@@ -116,20 +116,60 @@ void EnemyPhysicGravity(mainEnemys Enemy[], int* enemysCount)
 }
 
 //Проверка на наложение хитбоксов
-void EnemyPhysicHitboxOverlay(int* bordersCount,int* enemysCount, mainEnemys Enemy[], mainBorders levelBorders[])
+void EnemyPhysicHitboxOverlay(int* bordersCount,int* enemysCount, mainEnemys Enemy[], mainBorders levelBorders[],int deltaTime, mainHero* Laplas)
 {
 	for (int i = 0; i < *enemysCount;i++)
 	{
 		int check = 1;
-		if (levelBorders[i].type == 1 || levelBorders[i].type == 2)
-			for (int j = 0; j < *bordersCount; j++)
+		for (int j = 0; j < *bordersCount; j++)
+		{
+			if (levelBorders[j].type == 1 || levelBorders[j].type == 2)
 			{
-				if (levelBorders[j].type == 1 || levelBorders[j].type == 2)
-					if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
-					{
-						check = 0;
-					}
+				if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
+				{
+					check = 0;
+				}
 			}
+
+			else if ((levelBorders[j].type == 4 && (Laplas->position.y < Enemy[i].position.y || !Enemy[i].triggered)))
+			{
+				if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
+				{
+					check = 0;
+				}
+			}
+
+
+			else if (levelBorders[j].type == 5)
+			{
+				if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
+				{
+					Enemy[i].physic.impulse  = 1;
+				}
+			}
+
+			else if ((levelBorders[j].type == 7 && levelBorders[i].alive))
+			{
+				if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
+				{
+					check = 0;
+
+					if (!levelBorders[j].active)
+					{
+						levelBorders[j].active = 1;
+						levelBorders[j].timer = deltaTime;
+					}
+				}
+				if (deltaTime - levelBorders[j].timer > TMP_PLATFORM_LIFE_TIME && levelBorders[j].active)
+					levelBorders[j].alive = 0;
+			}
+
+			else if (levelBorders[j].type == 7 && !levelBorders[i].alive && deltaTime - levelBorders[i].timer > TMP_PLATFORM_LIFE_TIME * 4)
+			{
+				levelBorders[j].active = 0;
+				levelBorders[j].alive = 1;
+			}
+		}
 
 		Enemy[i].hitbox.x = Enemy[i].position.x;
 		Enemy[i].hitbox.y = Enemy[i].position.y;

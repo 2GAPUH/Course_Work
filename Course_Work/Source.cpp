@@ -89,6 +89,8 @@ int main(int argc, char* argv[])
 
 	GameState gameState = MAIN_MENU;
 	Settings settings = { 5, 1 };
+	int tmp;
+
 
 	mainRenderer texture_backGround;
 	mainRenderer texture_cobbleStone;
@@ -101,6 +103,7 @@ int main(int argc, char* argv[])
 	mainRenderer texture_beaver_atack;
 	mainRenderer texture_krab;
 	mainRenderer texture_platform;
+	mainRenderer texture_tmp_platform;
 	mainRenderer texture_trampline;
 	mainRenderer texture_trap_with_dart;
 	mainRenderer texture_pressure_plate;
@@ -168,6 +171,8 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\cobblestone20x20.png", &texture_cobbleStone_fake, 1, ren);
 
 	GetTexture("Textures\\woodenPlatform.png", &texture_platform, 1, ren);
+
+	GetTexture("Textures\\tmp_platform.png", &texture_tmp_platform, 1, ren);
 	
 	GetTexture("Textures\\trap_with_dart.png", &texture_trap_with_dart, 1, ren);
 
@@ -252,6 +257,30 @@ int main(int argc, char* argv[])
 						   WINDOW_HEIGHT / 2 - texture_buff_Rubber_Bullet.textureSize.h * 2, 
 						   texture_buff_Rubber_Bullet.textureSize.w / texture_buff_Rubber_Bullet.frameCount * 6, 
 						   texture_buff_Rubber_Bullet.textureSize.h * 4 };
+
+
+
+	//mainRoom mainMap[MAP_SIZE][MAP_SIZE];
+	//for (int i = 0; i < MAP_SIZE; i++)
+	//	for (int j = 0; j < MAP_SIZE; j++)
+	//	{
+	//		mainMap[i][j].type = 0;
+	//		mainMap[i][j].left = 0;
+	//		mainMap[i][j].right = 0;
+	//		mainMap[i][j].top = 0;
+	//		mainMap[i][j].down = 0;
+	//	}
+
+	//mainMap[MAP_SIZE / 2][0].type = -1;
+	//mainMap[MAP_SIZE / 2][0].right = 1;
+	//Laplas.curRoom.i = MAP_SIZE / 2;
+	//Laplas.curRoom.j = MAP_SIZE / 2;
+
+	//twoParam tmpCurRoom = Laplas.curRoom;
+ //
+	//tmp = rand() % (MAP_SIZE - 3) + 2;
+	//for(int i = 1; i < tmp; i ++)
+	//	mainMap[MAP_SIZE/2][i] = 
 
 	while (flag)
 	{
@@ -418,9 +447,9 @@ int main(int argc, char* argv[])
 				HeroPhysicGravity(&Laplas);
 				EnemyPhysicGravity(levelEnemys, &enemysCount);
 
-				//Проверка на наложение хитбоксов
-				HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders, &trapsCount, levelTraps);
-				EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders);
+				//Проверка коллизии
+				HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders, &trapsCount, levelTraps, deltaTime);
+				EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders, deltaTime, &Laplas);
 
 				//Проверка пуль на касание с стеной
 				TrapBulletHitboxInRange(levelTraps, &trapsCount, &bordersCount, levelBorders);
@@ -451,10 +480,10 @@ int main(int argc, char* argv[])
 					{
 						if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[i].bordersHitbox))
 						{
-							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders.txt", &levelWidth, &levelHeight);
-							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy.txt");
+							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders2.txt", &levelWidth, &levelHeight);
+							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy2.txt");
 							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab);
-							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap.txt");
+							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap2.txt");
 							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 						}
 					}
@@ -469,13 +498,11 @@ int main(int argc, char* argv[])
 				#pragma endregion 
 
 				#pragma region BATTLE
-
-
 				HeroCommonAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
 
 				HeroShootAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
 
-				
+				HeroDashAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
 
 				//Удаление врагов с поле боя
 				EnemyDeath(&enemysCount, levelEnemys);
@@ -498,7 +525,7 @@ int main(int argc, char* argv[])
 				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 		
 				//Враги и стены
-				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_trampline, ren, levelWidth, levelHeight);
+				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_trampline, &texture_tmp_platform, ren, levelWidth, levelHeight);
 				DrawEnemys(&enemysCount, levelEnemys, &Laplas, &window,  &texture_buff_DMG, ren, levelWidth, levelHeight);
 				DrawTraps(&trapsCount, levelTraps, &Laplas, &window, ren, levelWidth, levelHeight);
 
@@ -587,6 +614,7 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_beaver_preatack.texture);
 	SDL_DestroyTexture(texture_beaver_atack.texture);
 	SDL_DestroyTexture(texture_platform.texture);
+	SDL_DestroyTexture(texture_tmp_platform.texture);
 	SDL_DestroyTexture(texture_trap_with_dart.texture);
 	SDL_DestroyTexture(texture_pressure_plate.texture);
 	SDL_DestroyTexture(texture_trap_dart.texture);

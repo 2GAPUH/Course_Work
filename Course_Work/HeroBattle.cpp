@@ -131,3 +131,32 @@ void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnem
 			}
 		}
 }
+
+void HeroDashAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[])
+{
+	if (Laplas->battle.commonAtack && Laplas->animationType != 3 && Laplas->effect.timeAtackCD + Laplas->effect.atackCD > *deltaTime)
+	{
+		Laplas->animationType = 2;
+	}
+	else if (Laplas->animationType != 3)
+	{
+		Laplas->battle.commonAtack = 0;
+		for (int i = 0; i < *enemysCount; i++)
+			levelEnemys[i].effect.underAtack = 0;
+		Laplas->animationType = 0;
+	}
+
+	for (int i = 0; i < *enemysCount; i++)
+	{
+		if (Laplas->battle.commonAtack && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas->hitbox, &levelEnemys[i].hitbox))
+		{
+			levelEnemys[i].effect.underAtack = 1;
+			levelEnemys[i].status.HP -= Laplas->status.DMG;
+			levelEnemys[i].physic.impulse += 0.45;
+			if (levelEnemys[i].status.HP <= 0)
+			{
+				levelEnemys[i].status.alive = 0;
+			}
+		}
+	}
+}

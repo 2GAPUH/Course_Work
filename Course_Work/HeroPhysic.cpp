@@ -5,7 +5,7 @@
 #include "common_parameters.h"
 #include <math.h>
 #include <stdio.h>
-
+#include <time.h>
 
 bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
 {
@@ -133,7 +133,7 @@ void HeroPhysicGravity(mainHero* Laplas)
 }
 
 //Проверка на наложение хитбоксов
-void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[], int* trapsCount, mainTraps levelTraps[])
+void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[], int* trapsCount, mainTraps levelTraps[], int deltaTime)
 {
 	int check = 1;
 	for (int i = 0;i  < *bordersCount;i++)
@@ -155,11 +155,36 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 		}
 
 
-		else if(levelBorders[i].type == 5)
+		else if (levelBorders[i].type == 5)
+		{
 			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
 			{
 				Laplas->physic.impulse = 1;
 			}
+		}
+
+		else if ((levelBorders[i].type == 7 && !Laplas->keys.pressed_S && Laplas->physic.impulse < 0.1 && levelBorders[i].alive))
+		{
+			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+			{
+				check = 0;
+
+				if (!levelBorders[i].active)
+				{
+					levelBorders[i].active = 1;
+					levelBorders[i].timer = deltaTime;
+				}
+			}
+			if (deltaTime - levelBorders[i].timer > TMP_PLATFORM_LIFE_TIME && levelBorders[i].active)
+				levelBorders[i].alive = 0;
+		}
+		else if (levelBorders[i].type == 7 && !levelBorders[i].alive && deltaTime - levelBorders[i].timer > TMP_PLATFORM_LIFE_TIME * 4)
+		{
+			levelBorders[i].active = 0;
+			levelBorders[i].alive = 1;
+		}
+
+
 	}
 
 	for (int i = 0; i < *trapsCount; i++)

@@ -28,6 +28,15 @@
     <Filter Include="Сохранения\3">
       <UniqueIdentifier>{62d8a728-370c-4caf-b56c-f84876fb61cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\Borders">
+      <UniqueIdentifier>{7e7d112c-15a1-45a4-8c1b-35161ba091bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы ресурсов\Enemys">
+      <UniqueIdentifier>{5f8fe34f-f8e0-462d-a517-dc46633664e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы ресурсов\Traps">
+      <UniqueIdentifier>{c3913da3-3f02-4766-9cea-482b68c44835}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -150,32 +159,98 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Enemys\Enemy.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
-    <Text Include="Enemys\Enemy1.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
-    <Text Include="Levels\Borders.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
-    <Text Include="Levels\Borders1.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
-    <Text Include="Traps\Trap.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
     <Text Include="Saves\1\main_hero.txt">
       <Filter>Сохранения\1</Filter>
     </Text>
+    <Text Include="Traps\Trap.txt">
+      <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
+    <Text Include="Levels\Borders.txt">
+      <Filter>Файлы ресурсов\Borders</Filter>
+    </Text>
+    <Text Include="Levels\Borders1.txt">
+      <Filter>Файлы ресурсов\Borders</Filter>
+    </Text>
+    <Text Include="Enemys\Enemy.txt">
+      <Filter>Файлы ресурсов\Enemys</Filter>
+    </Text>
+    <Text Include="Enemys\Enemy1.txt">
+      <Filter>Файлы ресурсов\Enemys</Filter>
+    </Text>
     <Text Include="Levels\SaveRoom1.txt">
-      <Filter>Файлы ресурсов</Filter>
+      <Filter>Файлы ресурсов\Borders</Filter>
     </Text>
     <Text Include="Enemys\SaveRoomEnemys.txt">
-      <Filter>Файлы ресурсов</Filter>
+      <Filter>Файлы ресурсов\Enemys</Filter>
     </Text>
     <Text Include="Traps\SaveRoomTraps.txt">
-      <Filter>Файлы ресурсов</Filter>
+      <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
+    <Text Include="Traps\Trap1.txt">
+      <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
+    <Text Include="Levels\Borders2.txt">
+      <Filter>Файлы ресурсов\Borders</Filter>
+    </Text>
+    <Text Include="Levels\Borders3.txt">
+      <Filter>Файлы ресурсов\Borders</Filter>
+    </Text>
+    <Text Include="Levels\Borders4.txt">
+      <Filter>Файлы ресурсов\Borders</Filter>
+    </Text>
+    <Text Include="Levels\Borders5.txt">
+      <Filter>Файлы ресурсов\Borders</Filter>
+    </Text>
+    <Text Include="Levels\Borders6.txt">
+      <Filter>Файлы ресурсов\Borders</Filter>
+    </Text>
+    <Text Include="Levels\Borders7.txt">
+      <Filter>Файлы ресурсов\Borders</Filter>
+    </Text>
+    <Text Include="Levels\Borders8.txt">
+      <Filter>Файлы ресурсов\Borders</Filter>
+    </Text>
+    <Text Include="Enemys\Enemy2.txt">
+      <Filter>Файлы ресурсов\Enemys</Filter>
+    </Text>
+    <Text Include="Enemys\Enemy3.txt">
+      <Filter>Файлы ресурсов\Enemys</Filter>
+    </Text>
+    <Text Include="Enemys\Enemy4.txt">
+      <Filter>Файлы ресурсов\Enemys</Filter>
+    </Text>
+    <Text Include="Enemys\Enemy5.txt">
+      <Filter>Файлы ресурсов\Enemys</Filter>
+    </Text>
+    <Text Include="Enemys\Enemy6.txt">
+      <Filter>Файлы ресурсов\Enemys</Filter>
+    </Text>
+    <Text Include="Enemys\Enemy7.txt">
+      <Filter>Файлы ресурсов\Enemys</Filter>
+    </Text>
+    <Text Include="Enemys\Enemy8.txt">
+      <Filter>Файлы ресурсов\Enemys</Filter>
+    </Text>
+    <Text Include="Traps\Trap2.txt">
+      <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
+    <Text Include="Traps\Trap3.txt">
+      <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
+    <Text Include="Traps\Trap4.txt">
+      <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
+    <Text Include="Traps\Trap5.txt">
+      <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
+    <Text Include="Traps\Trap6.txt">
+      <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
+    <Text Include="Traps\Trap7.txt">
+      <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
+    <Text Include="Traps\Trap8.txt">
+      <Filter>Файлы ресурсов\Traps</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>

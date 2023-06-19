@@ -183,13 +183,35 @@
   <ItemGroup>
     <Text Include="Enemys\Enemy.txt" />
     <Text Include="Enemys\Enemy1.txt" />
+    <Text Include="Enemys\Enemy2.txt" />
+    <Text Include="Enemys\Enemy3.txt" />
+    <Text Include="Enemys\Enemy4.txt" />
+    <Text Include="Enemys\Enemy5.txt" />
+    <Text Include="Enemys\Enemy6.txt" />
+    <Text Include="Enemys\Enemy7.txt" />
+    <Text Include="Enemys\Enemy8.txt" />
     <Text Include="Enemys\SaveRoomEnemys.txt" />
     <Text Include="Levels\Borders.txt" />
     <Text Include="Levels\Borders1.txt" />
+    <Text Include="Levels\Borders2.txt" />
+    <Text Include="Levels\Borders3.txt" />
+    <Text Include="Levels\Borders4.txt" />
+    <Text Include="Levels\Borders5.txt" />
+    <Text Include="Levels\Borders6.txt" />
+    <Text Include="Levels\Borders7.txt" />
+    <Text Include="Levels\Borders8.txt" />
     <Text Include="Levels\SaveRoom1.txt" />
     <Text Include="Saves\1\main_hero.txt" />
     <Text Include="Traps\SaveRoomTraps.txt" />
     <Text Include="Traps\Trap.txt" />
+    <Text Include="Traps\Trap1.txt" />
+    <Text Include="Traps\Trap2.txt" />
+    <Text Include="Traps\Trap3.txt" />
+    <Text Include="Traps\Trap4.txt" />
+    <Text Include="Traps\Trap5.txt" />
+    <Text Include="Traps\Trap6.txt" />
+    <Text Include="Traps\Trap7.txt" />
+    <Text Include="Traps\Trap8.txt" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Fonts\novem.ttf" />

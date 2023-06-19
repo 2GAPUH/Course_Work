@@ -25,6 +25,9 @@
 #define TIMER_TEXT_SIZE 50
 #define AMMUNITION_TEXT_SIZE 30
 #define HERO_START_AMUNITION 30
+#define TMP_PLATFORM_LIFE_TIME 2500
+#define MAP_SIZE 5
+#define MAP_TYPE_COUNT 5
 
 #pragma region HERO_STATS
 
@@ -53,7 +56,7 @@
 #define BEAVER_DMG 10
 #define BEAVER_SPEED 5
 #define BEAVER_ATACK_CD 1500
-#define BEAVER_TRIGGERED_DISTANCE 400
+#define BEAVER_TRIGGERED_DISTANCE 100
 
 #pragma endregion
 
@@ -63,7 +66,7 @@
 #define KRAB_DMG 5
 #define KRAB_SPEED 3
 #define KRAB_ATACK_CD 1000
-#define KRAB_TRIGGERED_DISTANCE 500
+#define KRAB_TRIGGERED_DISTANCE 100
 
 #pragma endregion
 
@@ -106,6 +109,11 @@ struct Settings
 {
 	int volume;
 	int skin;
+};
+
+struct twoParam
+{
+	int i, j;
 };
 
 struct mainStatistic
@@ -216,6 +224,7 @@ struct mainHero
 	int animationType;
 	mainBuffs buffs;
 	mainKeys keys;
+	twoParam curRoom;
 };
 /*
 0 - стойка
@@ -232,6 +241,9 @@ struct mainBorders
 {
 	int type;
 	SDL_Rect bordersHitbox;
+	int timer;
+	int alive;
+	bool active;
 };
 
 struct mainEnemys
@@ -256,6 +268,7 @@ struct mainItems
 	SDL_Rect hitbox;
 	mainRenderer render;
 	SDL_Rect grab_zone;
+	twoParam room;
 };
 
 struct mainTraps
@@ -271,3 +284,8 @@ struct mainTraps
 	int cooldown;
 };
 
+struct mainRoom
+{
+	int type;
+	bool top, down, left, right;
+};
