@@ -354,27 +354,26 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 	}
 }
 
-void DrawItem(mainHero* Laplas, mainItems items[], mainWindow* window, SDL_Renderer* ren, int levelWidth, int levelHeight)
+void DrawItem(mainHero* Laplas, mainItems items[], mainWindow* window, SDL_Renderer* ren, int levelWidth, int levelHeight, 
+	int* itemsCount)
 {
-	for (int i = 0; i < ITEM_COUNT; i++)
+	for (int i = 0; i < *itemsCount; i++)
 	{
 		if (items[i].alive)
 		{
-			SDL_Rect movedItem = { items[i].hitbox.x - items[i].hitbox.w / 2,items[i].hitbox.y - items[i].hitbox.h / 2, items[i].hitbox.w, items[i].hitbox.h };
+			SDL_Rect rect123 = items[i].hitbox;
 
 			if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
-				movedItem.x -= Laplas->hitbox.x - window->w / 2.f;
+				rect123.x -= Laplas->hitbox.x - window->w / 2.f;
 			if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
-				movedItem.x -= levelWidth - window->w;
+				rect123.x -= levelWidth - window->w;
 
 			if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
-				movedItem.y -= Laplas->hitbox.y - window->h / 2.f;
+				rect123.y -= Laplas->hitbox.y - window->h / 2.f;
 			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
-				movedItem.y -= levelHeight - window->h;
+				rect123.y -= levelHeight - window->h;
 
-			//SDL_RenderFillRect(ren, &items[i].grab_zone);
-			SDL_RenderCopy(ren, items[i].render.texture, &items[i].render.frame, &movedItem);
-
+			SDL_RenderCopy(ren, items[i].render.texture, &items[i].render.frame, &rect123);
 			if ((SDL_GetTicks() - items[i].render.frameTime > 1000 / 30))
 			{
 				items[i].render.frame.x += items[i].render.textureSize.w / items[i].render.frameCount;

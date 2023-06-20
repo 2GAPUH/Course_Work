@@ -46,6 +46,8 @@ void GetTexture(const char filePath[], mainRenderer* texture, int frameCount, SD
 
 	texture->frameCount = frameCount;
 
+	texture->frameTime = 0;
+
 	SDL_FreeSurface(surface);
 }
 
@@ -91,7 +93,6 @@ int main(int argc, char* argv[])
 	Settings settings = { 5, 1 };
 	int tmp;
 
-
 	mainRenderer texture_backGround;
 	mainRenderer texture_cobbleStone;
 	mainRenderer texture_cobbleStone_fake;
@@ -112,7 +113,8 @@ int main(int argc, char* argv[])
 	mainRenderer texture_overheating;
 	mainRenderer texture_dark;
 	mainRenderer texture_buff_DMG;
-	mainRenderer texture_buff_Rubber_Bullet;
+	mainRenderer texture_item_Rubber_Bullet;
+	mainRenderer texture_barrel;
 	TTF_Font* fontNovemBig = NULL;
 	TTF_Font* fontNovemSmall = NULL;
 
@@ -124,6 +126,7 @@ int main(int argc, char* argv[])
 	int bordersCount = NULL;
 	int enemysCount = NULL;
 	int trapsCount = NULL;
+	int itemsCount = NULL;
 	int lastTime = 0;
 	int temp = 0;
 	int timeInGame = clock();
@@ -132,9 +135,9 @@ int main(int argc, char* argv[])
 	mainBorders* levelBorders = NULL;
 	mainEnemys* levelEnemys = NULL;
 	mainTraps* levelTraps = NULL;
+	mainItems* levelItems = NULL;
 	mainHero Laplas;
-	mainItems items[ITEM_COUNT];
-
+	
 	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
 	SDL_Point mouseClick = { NULL, NULL };
 	
@@ -186,11 +189,13 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\dark.png", &texture_dark, 1, ren);
 
-	GetTexture("Textures\\buff_DMG.png", &texture_buff_DMG, 1, ren);
-
 	GetTexture("Textures\\trampline.png", &texture_trampline, 1, ren);
 
-	GetTexture("Textures\\buff_Rubber_Bullet.png", &texture_buff_Rubber_Bullet, 12, ren);
+	GetTexture("Textures\\buff_Rubber_Bullet.png", &texture_item_Rubber_Bullet, 12, ren);
+
+	GetTexture("Textures\\buff_DMG.png", &texture_buff_DMG, 1, ren);
+
+	GetTexture("Textures\\barrel.png", &texture_barrel, 1, ren);
 
 	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1, ren);
 	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1, ren);
@@ -243,22 +248,11 @@ int main(int argc, char* argv[])
 	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\SaveRoom1.txt", &levelWidth, &levelHeight);
 	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\SaveRoomEnemys.txt");
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\SaveRoomTraps.txt");
+	levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
 
 	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab);
 	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
-	InitItems(items);
-
-	//Временно
-	items[0].hitbox = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, texture_buff_Rubber_Bullet.textureSize.w / texture_buff_Rubber_Bullet.frameCount, texture_buff_Rubber_Bullet.textureSize.h };
-	items[0].alive = 1;
-	items[0].type = 1;
-	items[0].render = texture_buff_Rubber_Bullet;
-	items[0].grab_zone = { WINDOW_WIDTH / 2 - texture_buff_Rubber_Bullet.textureSize.w / texture_buff_Rubber_Bullet.frameCount * 3, 
-						   WINDOW_HEIGHT / 2 - texture_buff_Rubber_Bullet.textureSize.h * 2, 
-						   texture_buff_Rubber_Bullet.textureSize.w / texture_buff_Rubber_Bullet.frameCount * 6, 
-						   texture_buff_Rubber_Bullet.textureSize.h * 4 };
-
-
+	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel);
 
 	//mainRoom mainMap[MAP_SIZE][MAP_SIZE];
 	//for (int i = 0; i < MAP_SIZE; i++)
@@ -481,11 +475,13 @@ int main(int argc, char* argv[])
 					{
 						if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[i].bordersHitbox))
 						{
-							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
-							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
+							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders1.txt", &levelWidth, &levelHeight);
+							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy1.txt");
 							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab);
-							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
+							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap1.txt");
 							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
+							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
+							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel);
 						}
 					}
 
@@ -494,7 +490,7 @@ int main(int argc, char* argv[])
 				#pragma region LOGIC_CHECK
 
 				//Подбор предмета
-				ItemEquip(&Laplas, items);
+				ItemEquip(&Laplas, levelItems);
 
 				#pragma endregion 
 
@@ -549,7 +545,7 @@ int main(int argc, char* argv[])
 				DrawHeroBullet(&Laplas, &window, ren, levelWidth, levelHeight);
 				DrawTrapsBullet(&Laplas, &window, &trapsCount, levelTraps, &texture_trap_dart, ren, levelWidth, levelHeight);
 
-				DrawItem(&Laplas, items, &window, ren, levelWidth, levelHeight);
+				DrawItem(&Laplas, levelItems, &window, ren, levelWidth, levelHeight, &itemsCount);
 
 				//ГГ
 				DrawMainHero(&Laplas, window, ren, levelWidth, levelHeight);
@@ -604,6 +600,7 @@ int main(int argc, char* argv[])
 	free(levelBorders);
 	free(levelEnemys);
 	free(levelTraps);
+	free(levelItems);
 	TTF_CloseFont(fontNovemBig);
 	TTF_CloseFont(fontNovemSmall);
 
@@ -623,7 +620,8 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_overheating.texture);
 	SDL_DestroyTexture(texture_dark.texture);
 	SDL_DestroyTexture(texture_buff_DMG.texture);
-	SDL_DestroyTexture(texture_buff_Rubber_Bullet.texture);
+	SDL_DestroyTexture(texture_item_Rubber_Bullet.texture);
+	SDL_DestroyTexture(texture_barrel.texture);
 
 
 	SDL_DestroyTexture(Laplas.animation.com.texture);

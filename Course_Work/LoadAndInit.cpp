@@ -93,6 +93,36 @@ mainTraps* LoadTraps(mainTraps* levelTraps, int* trapsCount, const char levelNam
 	return levelTraps;
 }
 
+mainItems* LoadItems(mainItems* levelItems, int* itemsCount, const char levelName[])
+{
+	FILE* f;
+	fopen_s(&f, levelName, "r");
+
+	fscanf_s(f, "%d", itemsCount);
+
+	levelItems = (mainItems*)realloc(levelItems, sizeof(mainItems) * (*itemsCount));
+
+	for (int i = 0; i < *itemsCount; i++)
+	{
+		fscanf_s(f, "%d", &levelItems[i].type);
+
+		fscanf_s(f, "%d", &levelItems[i].hitbox.x);
+		fscanf_s(f, "%d", &levelItems[i].hitbox.y);
+		fscanf_s(f, "%d", &levelItems[i].hitbox.w);
+		fscanf_s(f, "%d", &levelItems[i].hitbox.h);
+
+		fscanf_s(f, "%d", &levelItems[i].alive);
+		if (GetNumInRange(0, 100) < levelItems[i].alive)
+			levelItems[i].alive = 1;
+		else
+			levelItems[i].alive = 0;
+	}
+
+	fclose(f);
+
+	return levelItems;
+}
+
 mainHero InitHero()
 {
 	mainHero Laplas;
@@ -211,19 +241,32 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 	}
 }
 
-void InitItems(mainItems item[])
+void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet, 
+	mainRenderer* texture_barrel)
 {
-	for (int i = 0; i < ITEM_COUNT; i++)
+	for (int i = 0; i < *itemsCount; i++)
 	{
-		item[i].hitbox = { NULL, NULL, NULL, NULL };
-		item[i].alive = NULL;
-		item[i].position = { NULL, NULL };
-		item[i].render.frame = { NULL, NULL, NULL, NULL };
-		item[i].render.frameCount = NULL;
-		item[i].render.frameTime = NULL;
-		item[i].render.texture = NULL;
-		item[i].render.textureSize = { NULL, NULL, NULL, NULL };
-		item[i].grab_zone = { NULL, NULL, NULL, NULL };
+		if (levelItems[i].alive)
+		{
+			levelItems[i].position = { levelItems[i].hitbox.x + levelItems[i].hitbox.w/2, levelItems[i].hitbox.y + levelItems[i].hitbox.h / 2 };
+			levelItems[i].grab_zone = { levelItems[i].hitbox.x - levelItems[i].hitbox.w, levelItems[i].hitbox.y - levelItems[i].hitbox.h, levelItems[i].hitbox.w * 2, levelItems[i].hitbox.h * 2 };
+
+			switch (levelItems[i].type)
+			{
+			case 1:
+				levelItems[i].render = *texture_barrel;
+				break;
+
+			case 2:
+				levelItems[i].render = *texture_buff_DMG;
+				break;
+
+			case 3:
+				levelItems[i].render = *texture_item_Rubber_Bullet;
+				break;
+			}
+			
+		}
 	}
 }
 

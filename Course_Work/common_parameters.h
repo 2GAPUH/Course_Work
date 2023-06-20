@@ -3,6 +3,7 @@
 #include <SDL_Image.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define WINDOW_HEIGHT 720
 #define WINDOW_WIDTH 1280
@@ -269,7 +270,6 @@ struct mainItems
 	SDL_Rect hitbox;
 	mainRenderer render;
 	SDL_Rect grab_zone;
-	twoParam room;
 };
 
 struct mainTraps
@@ -290,3 +290,8 @@ struct mainRoom
 	int type;
 	bool top, down, left, right;
 };
+
+int inline GetNumInRange(int leftBord, int rightBord)
+{
+	return rand() % (rightBord - leftBord + 1) + leftBord;
+}

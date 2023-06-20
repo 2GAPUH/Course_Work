@@ -12,7 +12,8 @@ void DrawFakeWalls(int bordersCount, mainBorders levelBorders[], mainHero* Lapla
 	, SDL_Renderer* ren, int levelWidth, int levelHeight);
 void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, mainWindow* window, mainRenderer* texture_buff_DMG
 	, SDL_Renderer* ren, int levelWidth, int levelHeight);
-void DrawItem(mainHero* Laplas, mainItems items[], mainWindow* window, SDL_Renderer* ren, int levelWidth, int levelHeight);
+void DrawItem(mainHero* Laplas, mainItems items[], mainWindow* window, SDL_Renderer* ren, int levelWidth, int levelHeight, 
+	int* itemsCount);
 void DrawTraps(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, mainWindow* window, SDL_Renderer* ren, int levelWidth, int levelHeight);
 void DrawHeroBullet(mainHero* Laplas, mainWindow* window, SDL_Renderer* ren, int levelWidth, int levelHeight);
 void DrawTrapsBullet(mainHero* Laplas, mainWindow* window, int* trapsCount, mainTraps levelTraps[], mainRenderer* trap_dart
