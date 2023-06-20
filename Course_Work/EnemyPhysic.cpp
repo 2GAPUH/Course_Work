@@ -131,7 +131,7 @@ void EnemyPhysicHitboxOverlay(int* bordersCount,int* enemysCount, mainEnemys Ene
 				}
 			}
 
-			else if ((levelBorders[j].type == 4 && (Laplas->position.y < Enemy[i].position.y || !Enemy[i].triggered)))
+			else if (((levelBorders[j].type == 4 || levelBorders[j].type == 8) && (Laplas->position.y < Enemy[i].position.y || !Enemy[i].triggered)))
 			{
 				if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
 				{

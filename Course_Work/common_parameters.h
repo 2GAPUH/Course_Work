@@ -74,9 +74,9 @@
 
 #define TRAP_DART_WIDTH 40
 #define TRAP_DART_HIGHT 18 
-#define TRAP_DART_DMG 50 
+#define TRAP_DART_DMG 45 
 #define TRAP_SPIKES_DMG 5 
-#define TRAPS_BULLET_SPEED 10
+#define TRAPS_BULLET_SPEED 20
 #define TRAPS_DART_CD 5000
 
 
@@ -208,6 +208,7 @@ struct mainKeys
 	bool pressed_S;
 	bool pressed_Space;
 	bool pressed_E;
+	int time_pressed_S;
 };
 
 struct mainHero

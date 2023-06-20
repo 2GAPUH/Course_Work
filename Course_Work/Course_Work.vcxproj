@@ -191,6 +191,15 @@
     <Text Include="Enemys\Enemy7.txt" />
     <Text Include="Enemys\Enemy8.txt" />
     <Text Include="Enemys\SaveRoomEnemys.txt" />
+    <Text Include="Items\Item.txt" />
+    <Text Include="Items\Item1.txt" />
+    <Text Include="Items\Item2.txt" />
+    <Text Include="Items\Item3.txt" />
+    <Text Include="Items\Item4.txt" />
+    <Text Include="Items\Item5.txt" />
+    <Text Include="Items\Item6.txt" />
+    <Text Include="Items\Item7.txt" />
+    <Text Include="Items\Item8.txt" />
     <Text Include="Levels\Borders.txt" />
     <Text Include="Levels\Borders1.txt" />
     <Text Include="Levels\Borders2.txt" />

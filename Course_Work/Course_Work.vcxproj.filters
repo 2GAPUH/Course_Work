@@ -37,6 +37,9 @@
     <Filter Include="Файлы ресурсов\Traps">
       <UniqueIdentifier>{c3913da3-3f02-4766-9cea-482b68c44835}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\Items">
+      <UniqueIdentifier>{a11ee364-fca3-47c8-b8b9-ac27193cee24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -251,6 +254,33 @@
     </Text>
     <Text Include="Traps\Trap8.txt">
       <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
+    <Text Include="Items\Item.txt">
+      <Filter>Файлы ресурсов\Items</Filter>
+    </Text>
+    <Text Include="Items\Item1.txt">
+      <Filter>Файлы ресурсов\Items</Filter>
+    </Text>
+    <Text Include="Items\Item2.txt">
+      <Filter>Файлы ресурсов\Items</Filter>
+    </Text>
+    <Text Include="Items\Item3.txt">
+      <Filter>Файлы ресурсов\Items</Filter>
+    </Text>
+    <Text Include="Items\Item4.txt">
+      <Filter>Файлы ресурсов\Items</Filter>
+    </Text>
+    <Text Include="Items\Item5.txt">
+      <Filter>Файлы ресурсов\Items</Filter>
+    </Text>
+    <Text Include="Items\Item6.txt">
+      <Filter>Файлы ресурсов\Items</Filter>
+    </Text>
+    <Text Include="Items\Item7.txt">
+      <Filter>Файлы ресурсов\Items</Filter>
+    </Text>
+    <Text Include="Items\Item8.txt">
+      <Filter>Файлы ресурсов\Items</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>

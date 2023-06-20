@@ -146,7 +146,7 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 			}
 		}
 		
-		else if((levelBorders[i].type == 4 && !Laplas->keys.pressed_S && Laplas->physic.impulse < 0.1 ))
+		else if(((levelBorders[i].type == 4 || levelBorders[i].type == 8) && !Laplas->keys.pressed_S  && Laplas->physic.impulse < 0.1))
 		{
 			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
 			{
@@ -157,7 +157,8 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 
 		else if (levelBorders[i].type == 5)
 		{
-			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+			mainHero copy = *Laplas;
+			if (!HeroCheckBorders(&copy, levelBorders[i].bordersHitbox))
 			{
 				Laplas->physic.impulse = 1;
 			}

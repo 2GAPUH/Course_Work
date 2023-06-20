@@ -16,7 +16,7 @@ void HeroBulletHitboxInRange(mainHero* Laplas, int* bordersCount, mainBorders le
 		{
 			for (int g = 0; g < *bordersCount; g++)
 			{
-				if (levelBorders[g].type != 6 && HeroPhysicInRange(Laplas->battle.shoot[f].shootAtackCentere, levelBorders[g].bordersHitbox))
+				if (levelBorders[g].type != 6 && levelBorders[g].type != 5 && HeroPhysicInRange(Laplas->battle.shoot[f].shootAtackCentere, levelBorders[g].bordersHitbox))
 				{
 					if (Laplas->buffs.Rubber_bullet_active && Laplas->battle.shoot[f].rebound_count > 0)
 					{
@@ -38,7 +38,7 @@ void TrapBulletHitboxInRange(mainTraps levelTraps[], int* trapsCount, int* borde
 		if (levelTraps[f].shoot.alive)
 		{
 			for (int g = 0; g < *bordersCount; g++)
-				if (HeroPhysicInRange(levelTraps[f].shoot.shootAtackCentere, levelBorders[g].bordersHitbox))
+				if (levelBorders[g].type != 6 && levelBorders[g].type != 5 && HeroPhysicInRange(levelTraps[f].shoot.shootAtackCentere, levelBorders[g].bordersHitbox))
 					levelTraps[f].shoot.alive = 0;
 		}
 	}

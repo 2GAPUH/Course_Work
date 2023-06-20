@@ -190,8 +190,6 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 			break;
 
 		case 4:
-			SDL_SetRenderDrawColor(ren, 200, 200, 0, 255);
-			//SDL_RenderFillRect(ren, &rect123);
 			SDL_RenderCopy(ren, platform->texture, NULL, &rect123);
 			break;
 

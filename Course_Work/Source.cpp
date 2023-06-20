@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
 	int trapsCount = NULL;
 	int lastTime = 0;
 	int temp = 0;
-	int deltaTime = clock();
+	int timeInGame = clock();
 	int check = 1;
 
 	mainBorders* levelBorders = NULL;
@@ -294,7 +294,8 @@ int main(int argc, char* argv[])
 			isRunning = true;
 			while (isRunning)
 			{
-				deltaTime += clock() - deltaTime;
+				timeInGame += 17;
+			
 
 				#pragma region BUTTON_CHECK
 				while (SDL_PollEvent(&ev))
@@ -344,9 +345,9 @@ int main(int argc, char* argv[])
 
 
 						case SDL_SCANCODE_LSHIFT:
-							if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
+							if (timeInGame - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
 							{
-								Laplas.effect.timeDashCD = deltaTime;
+								Laplas.effect.timeDashCD = timeInGame;
 								Laplas.physic.accelerationX = 8;
 							}
 							break;
@@ -393,9 +394,9 @@ int main(int argc, char* argv[])
 					case SDL_MOUSEBUTTONDOWN:
 						if (ev.button.button == SDL_BUTTON_X2)
 						{
-							if (deltaTime - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
+							if (timeInGame - Laplas.effect.timeDashCD > Laplas.effect.dashCD)
 							{
-								Laplas.effect.timeDashCD = deltaTime;
+								Laplas.effect.timeDashCD = timeInGame;
 								Laplas.physic.accelerationX = 8;
 							}
 						}
@@ -407,7 +408,7 @@ int main(int argc, char* argv[])
 						{
 							if (!Laplas.battle.commonAtack && !Laplas.battle.shootAtack)
 							{
-								Laplas.effect.timeAtackCD = deltaTime;
+								Laplas.effect.timeAtackCD = timeInGame;
 								Laplas.battle.commonAtack = 1;
 							}
 						}
@@ -415,7 +416,7 @@ int main(int argc, char* argv[])
 						{
 							if (Laplas.status.ammunition > 0 && !Laplas.battle.shootAtack && !Laplas.battle.commonAtack)
 							{
-								Laplas.effect.timeShootCD = deltaTime;
+								Laplas.effect.timeShootCD = timeInGame;
 								Laplas.battle.shootAtack = 1;
 								Laplas.status.ammunition -= 1;
 								AddNewBullet(&Laplas);
@@ -448,8 +449,8 @@ int main(int argc, char* argv[])
 				EnemyPhysicGravity(levelEnemys, &enemysCount);
 
 				//Проверка коллизии
-				HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders, &trapsCount, levelTraps, deltaTime);
-				EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders, deltaTime, &Laplas);
+				HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders, &trapsCount, levelTraps, timeInGame);
+				EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders, timeInGame, &Laplas);
 
 				//Проверка пуль на касание с стеной
 				TrapBulletHitboxInRange(levelTraps, &trapsCount, &bordersCount, levelBorders);
@@ -480,10 +481,10 @@ int main(int argc, char* argv[])
 					{
 						if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[i].bordersHitbox))
 						{
-							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders2.txt", &levelWidth, &levelHeight);
-							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy2.txt");
+							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
+							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
 							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab);
-							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap2.txt");
+							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
 							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 						}
 					}
@@ -498,23 +499,23 @@ int main(int argc, char* argv[])
 				#pragma endregion 
 
 				#pragma region BATTLE
-				HeroCommonAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
+				HeroCommonAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys);
 
-				HeroShootAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
+				HeroShootAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys);
 
-				HeroDashAtack(&Laplas, &deltaTime, &enemysCount, levelEnemys);
+				HeroDashAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys);
 
 				//Удаление врагов с поле боя
 				EnemyDeath(&enemysCount, levelEnemys);
 
 				//Активация ловушки
-				TrapActivate(&trapsCount, levelTraps, &Laplas, &deltaTime);
+				TrapActivate(&trapsCount, levelTraps, &Laplas, &timeInGame);
 					
 				//Атака ловушкой по ГГ
-				TrapAtack(&trapsCount, levelTraps, &Laplas, &deltaTime);
+				TrapAtack(&trapsCount, levelTraps, &Laplas, &timeInGame);
 
 				//Сброс резиста от дамага
-				if (Laplas.effect.lastDamage + Laplas.effect.afterAtackResist < deltaTime)
+				if (Laplas.effect.lastDamage + Laplas.effect.afterAtackResist < timeInGame)
 					Laplas.effect.underAtack = 0;
 
 				#pragma endregion 
@@ -530,12 +531,12 @@ int main(int argc, char* argv[])
 				DrawTraps(&trapsCount, levelTraps, &Laplas, &window, ren, levelWidth, levelHeight);
 
 				//Отрисовка таймера
-				if (lastTime != deltaTime / 1000 % 60)
+				if (lastTime != timeInGame / 1000 % 60)
 				{
-					lastTime = deltaTime / 1000 % 60;
-					sprintf_s(timer_text, "%02i:%02i", deltaTime / 60000, lastTime);
+					lastTime = timeInGame / 1000 % 60;
+					sprintf_s(timer_text, "%02i:%02i", timeInGame / 60000, lastTime);
 					SDL_DestroyTexture(texture_timer.texture);
-					texture_timer = CreateTimerFromText(timer_text, fontNovemBig, { 100, 100, 100, 255 });
+					texture_timer = CreateTimerFromText(timer_text, fontNovemBig, { 220, 20, 60, 255 });
 				}
 
 				//Отрисовка кол-ва боеприпасов
