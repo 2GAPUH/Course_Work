@@ -387,6 +387,18 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 			if (levelEnemys[i].animation.run.frame.x >= levelEnemys[i].animation.run.textureSize.w || (!levelEnemys[i].physic.xMoveL && !levelEnemys[i].physic.xMoveR) || (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR == 0))
 				levelEnemys[i].animation.run.frame.x = 0;
 			break;
+
+		case 4:
+			if (levelEnemys[i].physic.gazeDirection > 0)
+				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);
+			else if (levelEnemys[i].physic.gazeDirection < 0)
+				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+			else if (levelEnemys[i].physic.gazeDirection == 0)
+			{
+				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+				break;
+			}
+			break;
 		}
 
 		if (levelEnemys[i].effect.poisoned)

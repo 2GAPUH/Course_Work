@@ -116,6 +116,7 @@ int main(int argc, char* argv[])
 	mainRenderer texture_item_Rubber_Bullet;
 	mainRenderer texture_item_acid;
 	mainRenderer texture_acid_effect;
+	mainRenderer texture_tower;
 
 	mainRenderer texture_item_Ball;
 	mainRenderer texture_barrel;
@@ -217,6 +218,9 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
 
 	GetTexture("Textures\\acid_effect.png", &texture_acid_effect, 1, ren);
+
+	GetTexture("Textures\\tower.png", &texture_tower, 1, ren);
+
 	#pragma endregion
 
 	#pragma region TIMER_TEXTURE
@@ -267,7 +271,7 @@ int main(int argc, char* argv[])
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\SaveRoomTraps.txt");
 	levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
 
-	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect);
+	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower);
 	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, &texture_item_acid);
 
@@ -494,7 +498,7 @@ int main(int argc, char* argv[])
 						{
 							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
 							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
-							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect);
+							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower);
 							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
 							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item3.txt");
@@ -662,7 +666,7 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(Laplas.animation.punch.texture);
 	SDL_DestroyTexture(Laplas.animation.run.texture);
 	SDL_DestroyTexture(Laplas.animation.shoot.texture);
-	
+	SDL_DestroyTexture(texture_tower.texture);
 	
 	SDL_DestroyTexture(texture_platform.texture);
 	SDL_DestroyTexture(hpBarEdgingTexture.texture);

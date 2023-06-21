@@ -104,7 +104,7 @@ void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas
 {
 	for (int i = 0; i < *enemysCount; i++)
 	{
-		if (levelEnemys[i].triggered && levelEnemys[i].animation_type != 6)
+		if (levelEnemys[i].triggered && levelEnemys[i].animation_type != 6 && levelEnemys[i].type != 4)
 		{
 			if (levelEnemys[i].hitbox.x + levelEnemys[i].physic.speed < Laplas->hitbox.x)
 			{

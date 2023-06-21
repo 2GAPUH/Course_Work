@@ -145,7 +145,7 @@ mainHero InitHero()
 }
 
 void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* texture_beaver_run, mainRenderer* texture_beaver_atack, 
-	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect)
+	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect, mainRenderer* texture_tower)
 {
 	for (int i = 0; i < *enemysCount; i++)
 	{
@@ -196,6 +196,22 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 
+		}
+
+		else if (levelEnemys[i].type == 4)
+		{
+			{
+				levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+				levelEnemys[i].effect.underAtack = NULL;
+				levelEnemys[i].status = { KRAB_DMG, KRAB_HP , ALIVE };
+				levelEnemys[i].effect.atackCD = KRAB_ATACK_CD;
+				levelEnemys[i].animation.run = *texture_tower;
+				levelEnemys[i].animation.atack = *texture_tower;
+				levelEnemys[i].animation.preAtack = *texture_tower;
+				levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
+				levelEnemys[i].animation_type = NULL;
+
+			}
 		}
 	}
 }
