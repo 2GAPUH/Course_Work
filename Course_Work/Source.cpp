@@ -494,6 +494,9 @@ int main(int argc, char* argv[])
 				//Подбор предмета
 				ItemEquip(&Laplas, levelItems, &itemsCount,timeInGame);
 
+				//Проверка таймера зелий
+				BuffsStateCheck(&Laplas, timeInGame);
+
 				#pragma endregion 
 
 				#pragma region BATTLE

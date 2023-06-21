@@ -17,3 +17,4 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[]);
 void TrapActivate(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, int* deltaTime);
 void TrapAtack(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, int* deltaTime);
+void BuffsStateCheck(mainHero* Laplas, int timeInGame);

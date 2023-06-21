@@ -146,6 +146,7 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 						Laplas->buffs.buffDMGpercent = DMG_BUFF_PERCENT;
 						Laplas->buffs.buffDuaration = DMG_BUFF_DUARATION;
 						Laplas->buffs.buffDMGstart = timeInGame;
+						Laplas->status.DMG = HERO_DAMAGE * DMG_BUFF_PERCENT;
 						break;
 
 					case 2:
@@ -170,6 +171,12 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 
 				items[i].alive = 0;
 			}
+}
+
+void BuffsStateCheck(mainHero* Laplas, int timeInGame)
+{
+	if (Laplas->buffs.buffDMGstart + Laplas->buffs.buffDuaration < timeInGame)
+		Laplas->buffs.buffDMGactive = 0;
 }
 
 void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[])
