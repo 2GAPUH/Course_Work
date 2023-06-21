@@ -374,7 +374,7 @@ void DrawItem(mainHero* Laplas, mainItems items[], mainWindow* window, SDL_Rende
 				rect123.y -= levelHeight - window->h;
 
 			SDL_RenderCopy(ren, items[i].render.texture, &items[i].render.frame, &rect123);
-			if ((SDL_GetTicks() - items[i].render.frameTime > 1000 / 30))
+			if ((SDL_GetTicks() - items[i].render.frameTime > 1000. / 30))
 			{
 				items[i].render.frame.x += items[i].render.textureSize.w / items[i].render.frameCount;
 				items[i].render.frameTime = SDL_GetTicks();

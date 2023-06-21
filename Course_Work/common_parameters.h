@@ -265,6 +265,7 @@ struct mainEnemys
 struct mainItems
 {
 	int type;
+	int dop_type;
 	bool alive;
 	SDL_Point position;
 	SDL_Rect hitbox;

@@ -16,6 +16,6 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_dart_trap, mainRenderer* texture_pressure_plate,
 	mainRenderer* texture_trap_spikes);
 void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet,
-	mainRenderer* texture_barrel);
+	mainRenderer* texture_barrel, mainRenderer* texture_item_Ball);
 void dopLoadHero(mainHero* Laplas);
 void loadLaplas(mainHero* Laplas, const char path[], int* deltatime);

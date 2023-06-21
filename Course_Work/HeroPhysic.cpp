@@ -44,7 +44,7 @@ bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
 		{ unit.x - Laplas->hitbox.w / 2, unit.y + unit.h }, { unit.x + unit.w + Laplas->hitbox.w / 2, unit.y + unit.h }, &intersect))
 	{
 		Laplas->position.x = Laplas->position.x;
-		Laplas->position.y = intersect.y + Laplas->hitbox.h / 2 + 1;
+		Laplas->position.y = intersect.y + Laplas->hitbox.h / 2 + 2;
 		Laplas->physic.impulse = 0.1;
 		Laplas->physic.accelerationY = 0.3;
 		return 0;

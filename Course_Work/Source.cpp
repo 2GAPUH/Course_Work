@@ -79,7 +79,7 @@ mainRenderer CreateAmmunitionFromText(const char str[], TTF_Font* font, SDL_Colo
 
 int main(int argc, char* argv[])
 {
-	int seed = 100;
+	int seed = 1000;
 	srand(seed);
 	bool flag = 1;
 	Init(&win, &ren, &win_surface);
@@ -114,6 +114,7 @@ int main(int argc, char* argv[])
 	mainRenderer texture_dark;
 	mainRenderer texture_buff_DMG;
 	mainRenderer texture_item_Rubber_Bullet;
+	mainRenderer texture_item_Ball;
 	mainRenderer texture_barrel;
 	TTF_Font* fontNovemBig = NULL;
 	TTF_Font* fontNovemSmall = NULL;
@@ -191,7 +192,9 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\trampline.png", &texture_trampline, 1, ren);
 
-	GetTexture("Textures\\buff_Rubber_Bullet.png", &texture_item_Rubber_Bullet, 12, ren);
+	GetTexture("Textures\\buff_Rubber_Bullet.png", &texture_item_Rubber_Bullet, 36, ren);
+
+	GetTexture("Textures\\ball.png", &texture_item_Ball, 1, ren);
 
 	GetTexture("Textures\\buff_DMG.png", &texture_buff_DMG, 1, ren);
 
@@ -250,9 +253,11 @@ int main(int argc, char* argv[])
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\SaveRoomTraps.txt");
 	levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
 
+
+
 	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab);
 	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
-	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel);
+	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball);
 
 	//mainRoom mainMap[MAP_SIZE][MAP_SIZE];
 	//for (int i = 0; i < MAP_SIZE; i++)
@@ -475,13 +480,13 @@ int main(int argc, char* argv[])
 					{
 						if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[i].bordersHitbox))
 						{
-							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders1.txt", &levelWidth, &levelHeight);
-							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy1.txt");
+							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
+							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
 							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab);
-							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap1.txt");
+							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
 							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
-							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
-							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel);
+							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item3.txt");
+							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball);
 						}
 					}
 
@@ -549,11 +554,11 @@ int main(int argc, char* argv[])
 
 				//ГГ
 				DrawMainHero(&Laplas, window, ren, levelWidth, levelHeight);
-				
+
 				DrawFakeWalls(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone_fake, ren, levelWidth, levelHeight);
 
 				////Эффект бафа
-				//SDL_RenderCopy(ren, texture_dark.texture, NULL, NULL);
+				//SDL_RenderCopy(ren, texture_overheating.texture, NULL, NULL);
 
 				DrawAmmoBar(ammoBarTexture, &window, ren);
 				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window, ren);
@@ -561,7 +566,6 @@ int main(int argc, char* argv[])
 				//Отрисовка пуль
 				SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
 				SDL_RenderCopy(ren, texture_ammunition.texture, NULL, &texture_ammunition.textureSize);
-
 
 				SDL_RenderPresent(ren);
 
@@ -621,6 +625,7 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_dark.texture);
 	SDL_DestroyTexture(texture_buff_DMG.texture);
 	SDL_DestroyTexture(texture_item_Rubber_Bullet.texture);
+	SDL_DestroyTexture(texture_item_Ball.texture);
 	SDL_DestroyTexture(texture_barrel.texture);
 
 

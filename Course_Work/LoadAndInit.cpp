@@ -112,7 +112,7 @@ mainItems* LoadItems(mainItems* levelItems, int* itemsCount, const char levelNam
 		fscanf_s(f, "%d", &levelItems[i].hitbox.h);
 
 		fscanf_s(f, "%d", &levelItems[i].alive);
-		if (GetNumInRange(0, 100) < levelItems[i].alive)
+		if (GetNumInRange(0, 10) < levelItems[i].alive)
 			levelItems[i].alive = 1;
 		else
 			levelItems[i].alive = 0;
@@ -242,7 +242,7 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 }
 
 void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet, 
-	mainRenderer* texture_barrel)
+	mainRenderer* texture_barrel, mainRenderer* texture_item_Ball)
 {
 	for (int i = 0; i < *itemsCount; i++)
 	{
@@ -251,6 +251,9 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 			levelItems[i].position = { levelItems[i].hitbox.x + levelItems[i].hitbox.w/2, levelItems[i].hitbox.y + levelItems[i].hitbox.h / 2 };
 			levelItems[i].grab_zone = { levelItems[i].hitbox.x - levelItems[i].hitbox.w, levelItems[i].hitbox.y - levelItems[i].hitbox.h, levelItems[i].hitbox.w * 2, levelItems[i].hitbox.h * 2 };
 
+			int l;
+			
+
 			switch (levelItems[i].type)
 			{
 			case 1:
@@ -258,12 +261,39 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 				break;
 
 			case 2:
-				levelItems[i].render = *texture_buff_DMG;
+				l = GetNumInRange(1, 1);
+				switch (l)
+				{
+				case 1:
+					levelItems[i].render = *texture_buff_DMG;
+					levelItems[i].dop_type = 1;
+					break;
+
+				case 2:
+					levelItems[i].dop_type = 2;
+					break;
+				}
+
+
 				break;
 
 			case 3:
-				levelItems[i].render = *texture_item_Rubber_Bullet;
+				l = GetNumInRange(1, 2);
+				switch (l)
+				{
+				case 1:
+					levelItems[i].render = *texture_item_Ball;
+					levelItems[i].dop_type = 1;
+					break;
+
+				case 2:
+					levelItems[i].render = *texture_item_Rubber_Bullet;
+					levelItems[i].dop_type = 2;
+					break;
+				}
+				
 				break;
+
 			}
 			
 		}

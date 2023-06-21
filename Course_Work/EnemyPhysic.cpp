@@ -46,7 +46,7 @@ bool EnemyCheckBorders(mainEnemys* Enemy, SDL_Rect unit)
 		{ unit.x - Enemy->hitbox.w / 2, unit.y + unit.h }, { unit.x + unit.w + Enemy->hitbox.w / 2, unit.y + unit.h }, &intersect))
 	{
 		Enemy->position.x = Enemy->position.x;
-		Enemy->position.y = intersect.y + Enemy->hitbox.h / 2 + 1;
+		Enemy->position.y = intersect.y + Enemy->hitbox.h / 2 + 2;
 		Enemy->physic.impulse = 0.1;
 		Enemy->physic.accelerationY = 0.3;
 		return 0;
