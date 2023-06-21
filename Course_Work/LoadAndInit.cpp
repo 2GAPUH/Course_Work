@@ -145,10 +145,15 @@ mainHero InitHero()
 }
 
 void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* texture_beaver_run, mainRenderer* texture_beaver_atack, 
-	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run)
+	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect)
 {
 	for (int i = 0; i < *enemysCount; i++)
 	{
+		levelEnemys[i].animation.acid_effect = *texture_acid_effect;
+		levelEnemys[i].effect.poisoned = 0;
+		levelEnemys[i].effect.poisonLastDamage = 0;
+		levelEnemys[i].triggered = NULL;
+
 		if (levelEnemys[i].type == 1)
 		{
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
@@ -158,9 +163,9 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].animation.run = *texture_beaver_run;
 			levelEnemys[i].animation.atack = *texture_beaver_atack;
 			levelEnemys[i].animation.preAtack = *texture_beaver_preAtack;
-			levelEnemys[i].triggered = NULL;
 			levelEnemys[i].triggeredDistance = BEAVER_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
+
 
 		}
 
@@ -173,7 +178,6 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].animation.run = *texture_beaver_run;
 			levelEnemys[i].animation.atack = *texture_beaver_atack;
 			levelEnemys[i].animation.preAtack = *texture_beaver_preAtack;
-			levelEnemys[i].triggered = NULL;
 			levelEnemys[i].triggeredDistance = BEAVER_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 
@@ -189,7 +193,6 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].animation.run = *texture_krab_run;
 			levelEnemys[i].animation.atack = *texture_krab_run;
 			levelEnemys[i].animation.preAtack = *texture_krab_run;
-			levelEnemys[i].triggered = NULL;
 			levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 
@@ -242,7 +245,7 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 }
 
 void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet, 
-	mainRenderer* texture_barrel, mainRenderer* texture_item_Ball)
+	mainRenderer* texture_barrel, mainRenderer* texture_item_Ball, mainRenderer* texture_item_acid)
 {
 	for (int i = 0; i < *itemsCount; i++)
 	{
@@ -278,7 +281,7 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 				break;
 
 			case 3:
-				l = GetNumInRange(1, 2);
+				l = GetNumInRange(3, 3);
 				switch (l)
 				{
 				case 1:
@@ -289,6 +292,11 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 				case 2:
 					levelItems[i].render = *texture_item_Rubber_Bullet;
 					levelItems[i].dop_type = 2;
+					break;
+
+				case 3:
+					levelItems[i].render = *texture_item_acid;
+					levelItems[i].dop_type = 3;
 					break;
 				}
 				

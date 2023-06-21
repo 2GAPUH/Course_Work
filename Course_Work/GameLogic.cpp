@@ -166,6 +166,9 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 					case 2:
 						Laplas->buffs.itemRubberBulletActive = 1;
 						break;
+
+					case 3:
+						Laplas->buffs.itemAcid = 1;
 					}
 					break;
 				}

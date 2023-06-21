@@ -29,6 +29,8 @@
 #define TMP_PLATFORM_LIFE_TIME 1000
 #define MAP_SIZE 5
 #define MAP_TYPE_COUNT 5
+#define POISON_CD 1500
+#define POISON_DMG 1
 
 #pragma region HERO_STATS
 
@@ -147,7 +149,8 @@ struct statusEffect
 	bool underAtack;
 	int afterAtackResist;
 	int lastDamage;
-
+	bool poisoned;
+	int poisonLastDamage;
 };
 
 struct mainRenderer
@@ -178,6 +181,7 @@ struct enemysAnimation
 	mainRenderer run;
 	mainRenderer atack;
 	mainRenderer preAtack;
+	mainRenderer acid_effect;
 };
 
 struct mainShoot
@@ -207,6 +211,8 @@ struct mainBuffs
 	bool itemRubberBulletActive;
 
 	bool itemBallActive;
+
+	bool itemAcid;
 };
 
 struct mainKeys

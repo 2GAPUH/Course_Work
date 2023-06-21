@@ -68,7 +68,7 @@ bool CheckShootHitbox(SDL_Point* shoot, SDL_Rect* enemy)
 		return 0;
 }
 
-void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[])
+void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[], int timeInGame)
 {
 	if (Laplas->battle.commonAtack && Laplas->animationType != 3 &&Laplas->effect.timeAtackCD + Laplas->effect.atackCD > *deltaTime)
 	{
@@ -86,6 +86,12 @@ void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEne
 	{
 		if (Laplas->battle.commonAtack && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas->hitbox, &levelEnemys[i].hitbox))
 		{
+			if (Laplas->buffs.itemAcid)
+			{
+				levelEnemys[i].effect.poisoned = 1;
+				levelEnemys[i].status.HP -= POISON_DMG;
+				levelEnemys[i].effect.poisonLastDamage = timeInGame;
+			}
 			levelEnemys[i].effect.underAtack = 1;
 			levelEnemys[i].status.HP -= Laplas->status.DMG;
 			levelEnemys[i].physic.impulse += 0.45;

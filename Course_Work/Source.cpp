@@ -114,6 +114,9 @@ int main(int argc, char* argv[])
 	mainRenderer texture_dark;
 	mainRenderer texture_buff_DMG;
 	mainRenderer texture_item_Rubber_Bullet;
+	mainRenderer texture_item_acid;
+	mainRenderer texture_acid_effect;
+
 	mainRenderer texture_item_Ball;
 	mainRenderer texture_barrel;
 	TTF_Font* fontNovemBig = NULL;
@@ -193,6 +196,8 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\buff_Rubber_Bullet.png", &texture_item_Rubber_Bullet, 36, ren);
 
+	GetTexture("Textures\\acid.png", &texture_item_acid, 29, ren);
+
 	texture_item_Ball = Laplas.animation.ball;
 
 	GetTexture("Textures\\buff_DMG.png", &texture_buff_DMG, 1, ren);
@@ -210,6 +215,8 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1, ren);
 	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
 	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
+
+	GetTexture("Textures\\acid_effect.png", &texture_acid_effect, 1, ren);
 	#pragma endregion
 
 	#pragma region TIMER_TEXTURE
@@ -260,9 +267,9 @@ int main(int argc, char* argv[])
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\SaveRoomTraps.txt");
 	levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
 
-	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab);
+	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect);
 	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
-	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball);
+	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, &texture_item_acid);
 
 	//mainRoom mainMap[MAP_SIZE][MAP_SIZE];
 	//for (int i = 0; i < MAP_SIZE; i++)
@@ -487,11 +494,11 @@ int main(int argc, char* argv[])
 						{
 							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
 							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
-							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab);
+							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect);
 							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
 							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item3.txt");
-							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball);
+							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, &texture_item_acid);
 						}
 					}
 
@@ -505,10 +512,19 @@ int main(int argc, char* argv[])
 				//Проверка таймера зелий
 				BuffsStateCheck(&Laplas, timeInGame);
 
+				//Проверка статуса врага
+				for(int i = 0; i < enemysCount; i ++)
+					if(levelEnemys[i].status.alive && levelEnemys[i].effect.poisoned && levelEnemys[i].status.HP > 2)
+						if (levelEnemys[i].effect.poisonLastDamage + POISON_CD < timeInGame)
+						{
+							levelEnemys[i].effect.poisonLastDamage = timeInGame;
+							levelEnemys[i].status.HP -= POISON_DMG;
+						}
+
 				#pragma endregion 
 
 				#pragma region BATTLE
-				HeroCommonAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys);
+				HeroCommonAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys, timeInGame);
 
 				HeroShootAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys);
 
@@ -635,9 +651,10 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(Laplas.animation.dark.texture);
 	SDL_DestroyTexture(texture_buff_DMG.texture);
 	SDL_DestroyTexture(texture_item_Rubber_Bullet.texture);
+	SDL_DestroyTexture(texture_item_acid.texture);
 	SDL_DestroyTexture(texture_item_Ball.texture);
 	SDL_DestroyTexture(texture_barrel.texture);
-
+	SDL_DestroyTexture(texture_acid_effect.texture);
 
 	SDL_DestroyTexture(Laplas.animation.com.texture);
 	SDL_DestroyTexture(Laplas.animation.bullet.texture);

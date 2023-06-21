@@ -322,6 +322,7 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 		if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
 			movedEnemy.y -= levelHeight - window->h;
 
+
 		//SDL_RenderFillRect(ren, &movedEnemy);
 
 		switch (levelEnemys[i].type)
@@ -388,6 +389,8 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 			break;
 		}
 
+		if (levelEnemys[i].effect.poisoned)
+			SDL_RenderCopy(ren, levelEnemys[i].animation.acid_effect.texture, NULL, &movedEnemy);
 	}
 }
 

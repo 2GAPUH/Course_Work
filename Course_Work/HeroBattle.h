@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 bool CheckAtackHitbox(SDL_Rect* hero, SDL_Rect* enemy);
-void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[]);
+void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[], int timeInGame);
 void AddNewBullet(mainHero* Laplas);
 bool CheckShootHitbox(SDL_Point* shoot, SDL_Rect* enemy);
 void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[]);
