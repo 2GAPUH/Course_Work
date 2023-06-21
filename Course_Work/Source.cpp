@@ -202,6 +202,14 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1, ren);
 	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1, ren);
 	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
+
+	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1, ren);
+	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1, ren);
+	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
+	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1, ren);
+	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1, ren);
+	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
+	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
 	#pragma endregion
 
 	#pragma region TIMER_TEXTURE

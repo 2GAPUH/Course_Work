@@ -43,7 +43,7 @@
 #define HERO_BULLET_WIDTH 18 
 #define HERO_BULLET_HIGHT 4 
 #define HERO_AFTER_ATACK_PROTECTION 500 
-#define DMG_BUFF_DUARATION 5000
+#define DMG_BUFF_DUARATION 30000
 #define DMG_BUFF_PERCENT 30
 #define ITEM_COUNT 10
 
@@ -296,6 +296,17 @@ struct mainRoom
 {
 	int type;
 	bool top, down, left, right;
+};
+
+struct textureSkill
+{
+	mainRenderer figure;
+	mainRenderer iconHealth;
+	mainRenderer iconStrength;
+	mainRenderer iconLucky;
+	mainRenderer iconBullets;
+	mainRenderer iconWeapon;
+	mainRenderer iconPotion;
 };
 
 int inline GetNumInRange(int leftBord, int rightBord)
