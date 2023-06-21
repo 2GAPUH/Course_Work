@@ -168,7 +168,9 @@ struct heroAnimation
 	mainRenderer shoot;
 	mainRenderer bullet;
 	mainRenderer rubber_bullet;
-
+	mainRenderer ball;
+	mainRenderer DMG_Buff;
+	mainRenderer dark;
 };
 
 struct enemysAnimation
@@ -196,12 +198,15 @@ struct mainBattle
 
 struct mainBuffs
 {
-	bool DMG_buff_active;
-	int startDMG_buff;
-	int DMG_buffDuaration;
-	int DMG_buffPercent;
+	int buffDuaration;
 
-	bool Rubber_bullet_active;
+	bool buffDMGactive;
+	int buffDMGstart;
+	int buffDMGpercent;
+
+	bool itemRubberBulletActive;
+
+	bool itemBallActive;
 };
 
 struct mainKeys
@@ -211,6 +216,7 @@ struct mainKeys
 	bool pressed_E;
 	int time_pressed_S;
 };
+
 
 struct mainHero
 {

@@ -18,7 +18,7 @@ void HeroBulletHitboxInRange(mainHero* Laplas, int* bordersCount, mainBorders le
 			{
 				if (levelBorders[g].type != 6 && levelBorders[g].type != 5 && HeroPhysicInRange(Laplas->battle.shoot[f].shootAtackCentere, levelBorders[g].bordersHitbox))
 				{
-					if (Laplas->buffs.Rubber_bullet_active && Laplas->battle.shoot[f].rebound_count > 0)
+					if (Laplas->buffs.itemRubberBulletActive && Laplas->battle.shoot[f].rebound_count > 0)
 					{
 						Laplas->battle.shoot[f].bulletSpeed *= -1;
 						Laplas->battle.shoot[f].rebound_count--;
@@ -51,7 +51,7 @@ void HeroBulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
 		{
 			if (Laplas->battle.shoot[i].shootAtackCentere.x > levelBorders[1].bordersHitbox.w - HERO_BULLET_WIDTH / 2)
 			{
-				if (Laplas->buffs.Rubber_bullet_active && Laplas->battle.shoot[i].rebound_count > 0)
+				if (Laplas->buffs.itemRubberBulletActive && Laplas->battle.shoot[i].rebound_count > 0)
 				{
 					Laplas->battle.shoot[i].bulletSpeed *= -1;
 					Laplas->battle.shoot[i].rebound_count--;
@@ -61,7 +61,7 @@ void HeroBulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
 			}
 			else if (Laplas->battle.shoot[i].shootAtackCentere.x < levelBorders[0].bordersHitbox.x + HERO_BULLET_WIDTH / 2)
 			{
-				if (Laplas->buffs.Rubber_bullet_active && Laplas->battle.shoot[i].rebound_count > 0)
+				if (Laplas->buffs.itemRubberBulletActive && Laplas->battle.shoot[i].rebound_count > 0)
 				{
 					Laplas->battle.shoot[i].bulletSpeed *= -1;
 					Laplas->battle.shoot[i].rebound_count--;
@@ -122,18 +122,52 @@ void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas
 	}
 }
 
-void ItemEquip(mainHero* Laplas, mainItems items[])
+
+/*
+2.1 DMG_Buff
+2.2 Empty
+
+3.1 Ball
+3.2 Rubber bullet
+*/
+void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInGame)
 {
-	for (int i = 0; i < ITEM_COUNT; i++)
-		if (Laplas->keys.pressed_E)
+	for (int i = 0; i < *itemsCount; i++)
+		if (Laplas->keys.pressed_E && items[i].alive)
 			if (HeroPhysicInRange({ Laplas->hitbox.x, Laplas->hitbox.y }, items[i].grab_zone))
 			{
 				switch (items[i].type)
 				{
-				case 1:
-					Laplas->buffs.Rubber_bullet_active = 1;
+				case 2:
+					switch (items[i].dop_type)
+					{
+					case 1:
+						Laplas->buffs.buffDMGactive = 1;
+						Laplas->buffs.buffDMGpercent = DMG_BUFF_PERCENT;
+						Laplas->buffs.buffDuaration = DMG_BUFF_DUARATION;
+						Laplas->buffs.buffDMGstart = timeInGame;
+						break;
+
+					case 2:
+						//Empty
+						break;
+					}
+					break;
+
+				case 3:
+					switch (items[i].dop_type)
+					{
+					case 1:
+						Laplas->buffs.itemBallActive = 1;
+						break;
+
+					case 2:
+						Laplas->buffs.itemRubberBulletActive = 1;
+						break;
+					}
 					break;
 				}
+
 				items[i].alive = 0;
 			}
 }
@@ -188,7 +222,7 @@ void TrapActivate(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, int
 				levelTraps[t - 1].shoot.alive = 1;
 			}
 		}
-		else if (levelTraps[t].type == 3 && levelTraps[t].triggered)
+		else if (levelTraps[t].type == 3 && levelTraps[t].triggered && !Laplas->buffs.itemBallActive)
 		{
 			Laplas->status.HP -= levelTraps[t].DMG;
 		}
@@ -206,7 +240,13 @@ void TrapAtack(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, int* d
 				levelTraps[j].shoot.alive = 0;
 				Laplas->effect.underAtack = 1;
 				Laplas->effect.lastDamage = *deltaTime;
-				Laplas->status.HP -= levelTraps[j].DMG;
+				if (!Laplas->buffs.itemBallActive)
+				{
+					Laplas->status.HP -= levelTraps[j].DMG;
+				}
+				else
+					Laplas->buffs.itemBallActive = 0;
+
 				if (Laplas->status.HP <= 0)
 				{
 					Laplas->status.alive = 0;

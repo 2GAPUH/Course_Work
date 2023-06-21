@@ -59,12 +59,14 @@ void DrawMainHero(mainHero* Laplas, mainWindow window, SDL_Renderer *ren, int le
 			Laplas->texture_rect.x += Laplas->hitbox.w / 2. - (Laplas->texture_rect.w / 2.);
 			Laplas->texture_rect.y += Laplas->hitbox.h / 2. - (Laplas->texture_rect.h);
 			SDL_RenderCopyEx(ren, Laplas->animation.run.texture, &Laplas->animation.run.frame, &Laplas->texture_rect, 0, 0, SDL_FLIP_HORIZONTAL);
+			Laplas->animation.ball.angel -= 5;
 		}
 		else if (Laplas->physic.gazeDirection > 0)
 		{
 			Laplas->texture_rect.x += -(Laplas->texture_rect.w / 1.5);
 			Laplas->texture_rect.y += Laplas->hitbox.h / 2. - (Laplas->texture_rect.h);
 			SDL_RenderCopyEx(ren, Laplas->animation.run.texture, &Laplas->animation.run.frame, &Laplas->texture_rect, 0, 0, SDL_FLIP_NONE);
+			Laplas->animation.ball.angel += 5;
 		}
 
 		if (SDL_GetTicks() - Laplas->animation.run.frameTime > 62 * HERO_SPEED / Laplas->animation.run.frameCount)
@@ -263,8 +265,47 @@ void DrawFakeWalls(int bordersCount, mainBorders levelBorders[], mainHero* Lapla
 		}
 }
 
-void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, mainWindow* window, mainRenderer* texture_buff_DMG
-	, SDL_Renderer* ren, int levelWidth, int levelHeight)
+void DrawBuffsEffect(SDL_Renderer* ren, mainHero* Laplas, int levelWidth, int levelHeight, mainWindow* window)
+{
+	SDL_Rect movedEffect = { -window->w + Laplas->hitbox.x, -window->h+Laplas->hitbox.y, window->w*2, window->h*2};
+
+	if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+		movedEffect.x -= Laplas->hitbox.x - window->w / 2.f;
+	if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+		movedEffect.x -= levelWidth - window->w;
+
+	if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+		movedEffect.y -= Laplas->hitbox.y - window->h / 2.f;
+	if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+		movedEffect.y -= levelHeight - window->h;
+
+	if(Laplas->buffs.buffDMGactive)
+		SDL_RenderCopy(ren, Laplas->animation.DMG_Buff.texture, NULL, &movedEffect);
+}
+
+void DrawItemsEffect(SDL_Renderer* ren, mainHero* Laplas, int levelWidth, int levelHeight, mainWindow* window)
+{
+	if (Laplas->buffs.itemBallActive)
+	{
+		SDL_Rect movedItem = {Laplas->hitbox.x - Laplas->hitbox.w * 1.6, Laplas->hitbox.y - Laplas->hitbox.h*1.3, HERO_HEIGHT*2.1, HERO_HEIGHT*2.1 };
+
+		if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+			movedItem.x -= Laplas->hitbox.x - window->w / 2.f;
+		if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+			movedItem.x -= levelWidth - window->w;
+
+		if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+			movedItem.y -= Laplas->hitbox.y - window->h / 2.f;
+		if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+			movedItem.y -= levelHeight - window->h;
+
+		SDL_RenderCopyEx(ren, Laplas->animation.ball.texture, NULL, &movedItem, Laplas->animation.ball.angel, NULL, SDL_FLIP_NONE);
+	}
+		
+}
+
+void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, mainWindow* window, mainRenderer* , SDL_Renderer* ren, 
+	int levelWidth, int levelHeight)
 {
 	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0; i < *enemysCount; i++)
@@ -344,10 +385,6 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 
 			if (levelEnemys[i].animation.run.frame.x >= levelEnemys[i].animation.run.textureSize.w || (!levelEnemys[i].physic.xMoveL && !levelEnemys[i].physic.xMoveR) || (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR == 0))
 				levelEnemys[i].animation.run.frame.x = 0;
-			break;
-
-		case 5:
-			SDL_RenderCopy(ren, texture_buff_DMG->texture, NULL, &movedEnemy);
 			break;
 		}
 
@@ -451,7 +488,7 @@ void DrawHeroBullet(mainHero* Laplas, mainWindow* window, SDL_Renderer* ren, int
 
 			if (Laplas->battle.shoot[i].bulletSpeed > 0)
 			{
-				if (!Laplas->buffs.Rubber_bullet_active)
+				if (!Laplas->buffs.itemRubberBulletActive)
 				{
 					SDL_RenderCopyEx(ren, Laplas->animation.bullet.texture, NULL, &rect123, 0, 0, SDL_FLIP_NONE);
 				}
@@ -460,7 +497,7 @@ void DrawHeroBullet(mainHero* Laplas, mainWindow* window, SDL_Renderer* ren, int
 			}
 			else
 			{
-				if (!Laplas->buffs.Rubber_bullet_active)
+				if (!Laplas->buffs.itemRubberBulletActive)
 				{
 					SDL_RenderCopyEx(ren, Laplas->animation.bullet.texture, NULL, &rect123, 0, 0, SDL_FLIP_HORIZONTAL);
 				}

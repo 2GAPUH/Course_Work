@@ -354,10 +354,10 @@ void loadLaplas(mainHero* Laplas, const char path[], int* deltatime)
 	fscanf_s(f, "%d ", &Laplas->status.Shoot_DMG);
 
 
-	fscanf_s(f, "%d ", &Laplas->buffs.DMG_buff_active);
-	fscanf_s(f, "%d ", &Laplas->buffs.startDMG_buff);
-	fscanf_s(f, "%d ", &Laplas->buffs.DMG_buffDuaration);
-	fscanf_s(f, "%d ", &Laplas->buffs.DMG_buffPercent);
+	fscanf_s(f, "%d ", &Laplas->buffs.buffDMGactive);
+	fscanf_s(f, "%d ", &Laplas->buffs.buffDMGstart);
+	fscanf_s(f, "%d ", &Laplas->buffs.buffDuaration);
+	fscanf_s(f, "%d ", &Laplas->buffs.buffDMGpercent);
 
 	fclose(f);
 }

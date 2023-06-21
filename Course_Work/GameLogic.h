@@ -13,7 +13,7 @@ void HeroBulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[]);
 void TrapBulletOutworldCheck(mainTraps levelTraps[], int* trapsCount, mainBorders levelBorders[]);
 void EnemyTrigger(mainEnemys levelEnemys[], mainHero* Laplas, int* enemysCount);
 void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas);
-void ItemEquip(mainHero* Laplas, mainItems items[]);
+void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInGame);
 void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[]);
 void TrapActivate(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, int* deltaTime);
 void TrapAtack(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, int* deltaTime);

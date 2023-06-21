@@ -79,7 +79,7 @@ mainRenderer CreateAmmunitionFromText(const char str[], TTF_Font* font, SDL_Colo
 
 int main(int argc, char* argv[])
 {
-	int seed = 1000;
+	int seed = 100;
 	srand(seed);
 	bool flag = 1;
 	Init(&win, &ren, &win_surface);
@@ -161,6 +161,9 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\hero_shoot.png", &Laplas.animation.shoot, 3, ren);
 	GetTexture("Textures\\hero_bullet.png", &Laplas.animation.bullet, 1, ren);
 	GetTexture("Textures\\hero_rubber_bullet.png", &Laplas.animation.rubber_bullet, 1, ren);
+	GetTexture("Textures\\ball.png", &Laplas.animation.ball, 1, ren);
+	GetTexture("Textures\\overheating.png", &Laplas.animation.DMG_Buff, 1, ren);
+	GetTexture("Textures\\dark.png", &Laplas.animation.dark, 1, ren);
 	Laplas.texture_rect.w = Laplas.texture_rect.h = Laplas.hitbox.h / 22. * 32;
 
 	GetTexture("Textures\\bobr_run.png", &texture_beaver_run, 6, ren);
@@ -186,15 +189,11 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\trap_spikes.png", &texture_trap_spikes, 1, ren);
 
-	GetTexture("Textures\\overheating.png", &texture_overheating, 1, ren);
-
-	GetTexture("Textures\\dark.png", &texture_dark, 1, ren);
-
 	GetTexture("Textures\\trampline.png", &texture_trampline, 1, ren);
 
 	GetTexture("Textures\\buff_Rubber_Bullet.png", &texture_item_Rubber_Bullet, 36, ren);
 
-	GetTexture("Textures\\ball.png", &texture_item_Ball, 1, ren);
+	texture_item_Ball = Laplas.animation.ball;
 
 	GetTexture("Textures\\buff_DMG.png", &texture_buff_DMG, 1, ren);
 
@@ -252,8 +251,6 @@ int main(int argc, char* argv[])
 	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\SaveRoomEnemys.txt");
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\SaveRoomTraps.txt");
 	levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
-
-
 
 	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab);
 	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
@@ -495,7 +492,7 @@ int main(int argc, char* argv[])
 				#pragma region LOGIC_CHECK
 
 				//Подбор предмета
-				ItemEquip(&Laplas, levelItems);
+				ItemEquip(&Laplas, levelItems, &itemsCount,timeInGame);
 
 				#pragma endregion 
 
@@ -555,10 +552,12 @@ int main(int argc, char* argv[])
 				//ГГ
 				DrawMainHero(&Laplas, window, ren, levelWidth, levelHeight);
 
+				DrawItemsEffect(ren, &Laplas, levelWidth, levelHeight, &window);
+
 				DrawFakeWalls(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone_fake, ren, levelWidth, levelHeight);
 
 				////Эффект бафа
-				//SDL_RenderCopy(ren, texture_overheating.texture, NULL, NULL);
+				DrawBuffsEffect(ren, &Laplas, levelWidth, levelHeight, &window);
 
 				DrawAmmoBar(ammoBarTexture, &window, ren);
 				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window, ren);
@@ -621,8 +620,8 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_pressure_plate.texture);
 	SDL_DestroyTexture(texture_trap_dart.texture);
 	SDL_DestroyTexture(texture_trap_spikes.texture);
-	SDL_DestroyTexture(texture_overheating.texture);
-	SDL_DestroyTexture(texture_dark.texture);
+	SDL_DestroyTexture(Laplas.animation.DMG_Buff.texture);
+	SDL_DestroyTexture(Laplas.animation.dark.texture);
 	SDL_DestroyTexture(texture_buff_DMG.texture);
 	SDL_DestroyTexture(texture_item_Rubber_Bullet.texture);
 	SDL_DestroyTexture(texture_item_Ball.texture);

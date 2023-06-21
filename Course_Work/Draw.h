@@ -20,3 +20,5 @@ void DrawTrapsBullet(mainHero* Laplas, mainWindow* window, int* trapsCount, main
 	, SDL_Renderer* ren, int levelWidth, int levelHeight);
 void DrawAmmoBar(mainRenderer ammoBarTexture, mainWindow* window, SDL_Renderer* ren);
 void DrawLifeBar(mainHero laplas, mainRenderer hpBarTexture, mainRenderer hpBarEdgingTexture, mainWindow* window, SDL_Renderer* ren);
+void DrawBuffsEffect(SDL_Renderer* ren, mainHero* Laplas, int levelWidth, int levelHeight, mainWindow* window);
+void DrawItemsEffect(SDL_Renderer* ren, mainHero* Laplas, int levelWidth, int levelHeight, mainWindow* window);
