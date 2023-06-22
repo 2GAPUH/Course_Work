@@ -77,9 +77,11 @@ mainRenderer CreateAmmunitionFromText(const char str[], TTF_Font* font, SDL_Colo
 	return texture;
 }
 
+
+
 int main(int argc, char* argv[])
 {
-	int seed = 100;
+	int seed = 1002139123;
 	srand(seed);
 	bool flag = 1;
 	Init(&win, &ren, &win_surface);
@@ -117,6 +119,11 @@ int main(int argc, char* argv[])
 	mainRenderer texture_item_acid;
 	mainRenderer texture_acid_effect;
 	mainRenderer texture_tower;
+	mainRenderer texture_tower_bullet;
+	mainRenderer texture_buff_lucky;
+	mainRenderer texture_buff_speed;
+	mainRenderer texture_kebab;
+
 
 	mainRenderer texture_item_Ball;
 	mainRenderer texture_barrel;
@@ -197,11 +204,18 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\buff_Rubber_Bullet.png", &texture_item_Rubber_Bullet, 36, ren);
 
+
+
+
+
 	GetTexture("Textures\\acid.png", &texture_item_acid, 29, ren);
 
 	texture_item_Ball = Laplas.animation.ball;
 
 	GetTexture("Textures\\buff_DMG.png", &texture_buff_DMG, 1, ren);
+	GetTexture("Textures\\potion_speed.png", &texture_buff_speed, 1, ren);
+	GetTexture("Textures\\potion_lucky.png", &texture_buff_lucky, 1, ren);
+	GetTexture("Textures\\kebab.png", &texture_kebab, 1, ren);
 
 	GetTexture("Textures\\barrel.png", &texture_barrel, 1, ren);
 
@@ -217,9 +231,10 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
 	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
 
-	GetTexture("Textures\\acid_effect.png", &texture_acid_effect, 1, ren);
+	GetTexture("Textures\\acid_effect.png", &texture_acid_effect, 5, ren);
 
 	GetTexture("Textures\\tower.png", &texture_tower, 1, ren);
+	GetTexture("Textures\\tower_bullet.png", &texture_tower_bullet, 1, ren);
 
 	#pragma endregion
 
@@ -271,9 +286,9 @@ int main(int argc, char* argv[])
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\SaveRoomTraps.txt");
 	levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
 
-	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower);
+	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet);
 	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
-	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, &texture_item_acid);
+	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky);
 
 	//mainRoom mainMap[MAP_SIZE][MAP_SIZE];
 	//for (int i = 0; i < MAP_SIZE; i++)
@@ -498,11 +513,11 @@ int main(int argc, char* argv[])
 						{
 							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
 							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
-							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower);
+							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet);
 							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
 							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item3.txt");
-							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, &texture_item_acid);
+							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky);
 						}
 					}
 
@@ -542,6 +557,58 @@ int main(int argc, char* argv[])
 					
 				//Атака ловушкой по ГГ
 				TrapAtack(&trapsCount, levelTraps, &Laplas, &timeInGame);
+
+
+				for (int t = 0; t < enemysCount; t++)
+					if (levelEnemys[t].type == 4 && !levelEnemys[t].shoot.alive && levelEnemys[t].effect.atackCD + levelEnemys[t].shoot.lastShoot < timeInGame)
+					{
+						levelEnemys[t].shoot.lastShoot = timeInGame;
+						if (levelEnemys[t].hitbox.x < Laplas.hitbox.x)
+						{
+							levelEnemys[t].shoot.shootAtackCentere.x = levelEnemys[t].hitbox.x + levelEnemys[t].hitbox.w / 2;
+							levelEnemys[t].shoot.shootAtackCentere.y = levelEnemys[t].hitbox.y + levelEnemys[t].hitbox.h / 2;
+							levelEnemys[t].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
+							levelEnemys[t].shoot.alive = 1;
+						}
+						else
+						{
+							levelEnemys[t].shoot.shootAtackCentere.x = levelEnemys[t].hitbox.x - levelEnemys[t].hitbox.w / 2;
+							levelEnemys[t].shoot.shootAtackCentere.y = levelEnemys[t].hitbox.y + levelEnemys[t].hitbox.h / 2;
+							levelEnemys[t].shoot.bulletSpeed = -TRAPS_BULLET_SPEED;
+							levelEnemys[t].shoot.alive = 1;
+						}
+					}
+					else if (levelEnemys[t].type == 4 && !Laplas.buffs.itemBallActive)
+					{
+						Laplas.status.HP -= levelEnemys[t].status.DMG;
+					}
+
+
+				for (int j = 0; j < enemysCount; j++)
+					if (levelEnemys[j].shoot.alive)
+					{
+						levelEnemys[j].shoot.shootAtackCentere.x += levelEnemys[j].shoot.bulletSpeed;
+
+						if (!Laplas.effect.underAtack && CheckShootHitbox(&levelEnemys[j].shoot.shootAtackCentere, &Laplas.hitbox))
+						{
+							levelEnemys[j].shoot.alive = 0;
+							Laplas.effect.underAtack = 1;
+							Laplas.effect.lastDamage = timeInGame;
+							if (!Laplas.buffs.itemBallActive)
+							{
+								Laplas.status.HP -= levelEnemys[j].status.DMG;
+							}
+							else
+								Laplas.buffs.itemBallActive = 0;
+									  
+							if (Laplas.status.HP <= 0)
+							{		  
+								Laplas.status.alive = 0;
+							}
+						}
+
+					}
+
 
 				//Сброс резиста от дамага
 				if (Laplas.effect.lastDamage + Laplas.effect.afterAtackResist < timeInGame)
@@ -654,6 +721,8 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(Laplas.animation.DMG_Buff.texture);
 	SDL_DestroyTexture(Laplas.animation.dark.texture);
 	SDL_DestroyTexture(texture_buff_DMG.texture);
+	SDL_DestroyTexture(texture_buff_speed.texture);
+	SDL_DestroyTexture(texture_buff_lucky.texture);
 	SDL_DestroyTexture(texture_item_Rubber_Bullet.texture);
 	SDL_DestroyTexture(texture_item_acid.texture);
 	SDL_DestroyTexture(texture_item_Ball.texture);
@@ -667,6 +736,7 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(Laplas.animation.run.texture);
 	SDL_DestroyTexture(Laplas.animation.shoot.texture);
 	SDL_DestroyTexture(texture_tower.texture);
+	SDL_DestroyTexture(texture_tower_bullet.texture);
 	
 	SDL_DestroyTexture(texture_platform.texture);
 	SDL_DestroyTexture(hpBarEdgingTexture.texture);

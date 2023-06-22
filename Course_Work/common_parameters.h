@@ -45,8 +45,8 @@
 #define HERO_BULLET_WIDTH 18 
 #define HERO_BULLET_HIGHT 4 
 #define HERO_AFTER_ATACK_PROTECTION 500 
-#define DMG_BUFF_DUARATION 30000
-#define DMG_BUFF_PERCENT 30
+#define DMG_BUFF_DUARATION 5000
+#define DMG_BUFF_PERCENT 1.30
 #define ITEM_COUNT 10
 
 #define DMG_POTION_DROP_CHANCE 90
@@ -57,7 +57,7 @@
 
 #define BEAVER_HP 100
 #define BEAVER_DMG 10
-#define BEAVER_SPEED 5
+#define BEAVER_SPEED 8
 #define BEAVER_ATACK_CD 1500
 #define BEAVER_TRIGGERED_DISTANCE 100
 
@@ -182,6 +182,7 @@ struct enemysAnimation
 	mainRenderer atack;
 	mainRenderer preAtack;
 	mainRenderer acid_effect;
+	mainRenderer bullet;
 };
 
 struct mainShoot
@@ -190,6 +191,7 @@ struct mainShoot
 	int bulletSpeed;
 	SDL_Point shootAtackCentere;
 	int rebound_count;
+	int lastShoot;
 };
 
 struct mainBattle
@@ -206,7 +208,15 @@ struct mainBuffs
 
 	bool buffDMGactive;
 	int buffDMGstart;
-	int buffDMGpercent;
+	double buffDMGpercent;
+
+	bool buffLuckyActive;
+	int buffLuckyStart;
+	double buffLuckyPercent;
+
+	bool buffSpeedActive;
+	int buffSpeedStart;
+	double buffSpeedPercent;
 
 	bool itemRubberBulletActive;
 
@@ -272,6 +282,7 @@ struct mainEnemys
 	bool triggered;
 	int triggeredDistance;
 	int animation_type;
+	mainShoot shoot;
 };
 
 struct mainItems

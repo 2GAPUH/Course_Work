@@ -399,10 +399,35 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 				break;
 			}
 			break;
+
+			SDL_Rect movedEnemy = { levelEnemys[i].shoot.shootAtackCentere.x - 32,levelEnemys[i].shoot.shootAtackCentere.y -32, 64, 64};
+
+			if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+				movedEnemy.x -= Laplas->hitbox.x - window->w / 2.f;
+			if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+				movedEnemy.x -= levelWidth - window->w;
+
+			if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+				movedEnemy.y -= Laplas->hitbox.y - window->h / 2.f;
+			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+				movedEnemy.y -= levelHeight - window->h;
+
+			SDL_RenderCopyEx(ren, levelEnemys[i].animation.bullet.texture, &levelEnemys[i].animation.bullet.textureSize, &movedEnemy, 0, 0, SDL_FLIP_NONE);
 		}
 
 		if (levelEnemys[i].effect.poisoned)
-			SDL_RenderCopy(ren, levelEnemys[i].animation.acid_effect.texture, NULL, &movedEnemy);
+		{
+			SDL_RenderCopy(ren, levelEnemys[i].animation.acid_effect.texture, &levelEnemys[i].animation.acid_effect.frame, &movedEnemy);
+
+			if (SDL_GetTicks() - levelEnemys[i].animation.acid_effect.frameTime > 1000 / 15)
+			{
+				levelEnemys[i].animation.acid_effect.frame.x += levelEnemys[i].animation.acid_effect.textureSize.w / levelEnemys[i].animation.acid_effect.frameCount;
+				levelEnemys[i].animation.acid_effect.frameTime = SDL_GetTicks();
+			}
+
+			if (levelEnemys[i].animation.acid_effect.frame.x >= levelEnemys[i].animation.acid_effect.textureSize.w )
+				levelEnemys[i].animation.acid_effect.frame.x = 0;
+		}
 	}
 }
 

@@ -145,7 +145,7 @@ mainHero InitHero()
 }
 
 void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* texture_beaver_run, mainRenderer* texture_beaver_atack, 
-	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect, mainRenderer* texture_tower)
+	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect, mainRenderer* texture_tower, mainRenderer* texture_tower_bullet)
 {
 	for (int i = 0; i < *enemysCount; i++)
 	{
@@ -210,6 +210,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 				levelEnemys[i].animation.preAtack = *texture_tower;
 				levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
 				levelEnemys[i].animation_type = NULL;
+				levelEnemys[i].animation.bullet = *texture_tower_bullet;
 
 			}
 		}
@@ -261,7 +262,7 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 }
 
 void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet, 
-	mainRenderer* texture_barrel, mainRenderer* texture_item_Ball, mainRenderer* texture_item_acid)
+	mainRenderer* texture_barrel, mainRenderer* texture_item_Ball, mainRenderer* texture_item_acid, mainRenderer* texture_buff_speed, mainRenderer*  texture_buff_lucky)
 {
 	for (int i = 0; i < *itemsCount; i++)
 	{
@@ -280,7 +281,7 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 				break;
 
 			case 2:
-				l = GetNumInRange(1, 1);
+				l = GetNumInRange(1, 3);
 				switch (l)
 				{
 				case 1:
@@ -289,7 +290,13 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 					break;
 
 				case 2:
+					levelItems[i].render = *texture_buff_speed;
 					levelItems[i].dop_type = 2;
+					break;
+
+				case 3:
+					levelItems[i].render = *texture_buff_lucky;
+					levelItems[i].dop_type = 3;
 					break;
 				}
 
@@ -297,7 +304,7 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 				break;
 
 			case 3:
-				l = GetNumInRange(3, 3);
+				l = GetNumInRange(1, 3);
 				switch (l)
 				{
 				case 1:
