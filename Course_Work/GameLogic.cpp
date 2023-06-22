@@ -151,7 +151,18 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 						break;
 
 					case 2:
-						//Empty
+						Laplas->buffs.buffSpeedActive = 1;
+						Laplas->buffs.buffSpeedPercent = DMG_BUFF_PERCENT;
+						Laplas->buffs.buffDuaration = DMG_BUFF_DUARATION;
+						Laplas->buffs.buffSpeedStart = timeInGame;
+						Laplas->physic.speed = HERO_SPEED * DMG_BUFF_PERCENT;
+						break;
+
+					case 3:
+						Laplas->buffs.buffLuckyActive = 1;
+						Laplas->buffs.buffLuckyPercent = DMG_BUFF_PERCENT;
+						Laplas->buffs.buffDuaration = DMG_BUFF_DUARATION;
+						Laplas->buffs.buffLuckyStart = timeInGame;
 						break;
 					}
 					break;
@@ -202,6 +213,17 @@ void BuffsStateCheck(mainHero* Laplas, int timeInGame)
 		Laplas->buffs.buffDMGactive = 0;
 		Laplas->status.Shoot_DMG = HERO_SHOOT_DAMAGE;
 		Laplas->status.DMG = HERO_DAMAGE;
+	}
+
+	if (Laplas->buffs.buffLuckyStart + Laplas->buffs.buffDuaration < timeInGame)
+	{
+		Laplas->buffs.buffLuckyActive = 0;
+	}
+
+	if (Laplas->buffs.buffSpeedStart + Laplas->buffs.buffDuaration < timeInGame)
+	{
+		Laplas->buffs.buffSpeedActive = 0;
+		Laplas->physic.speed = HERO_SPEED;
 	}
 }
 
