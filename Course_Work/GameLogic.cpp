@@ -160,15 +160,33 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 					switch (items[i].dop_type)
 					{
 					case 1:
-						Laplas->buffs.itemBallActive = 1;
+						if ((items[i].cost <= Laplas->status.money)) {
+							Laplas->status.money -= items[i].cost;
+							Laplas->buffs.itemBallActive = 1;
+						}
+						else {
+							//print not enought money
+						}
 						break;
 
 					case 2:
-						Laplas->buffs.itemRubberBulletActive = 1;
+						if ((items[i].cost <= Laplas->status.money)) {
+							Laplas->status.money -= items[i].cost;
+							Laplas->buffs.itemRubberBulletActive = 1;
+						}
+						else {
+							//print not enought money
+						}
 						break;
 
 					case 3:
-						Laplas->buffs.itemAcid = 1;
+						if ((items[i].cost <= Laplas->status.money)) {
+							Laplas->status.money -= items[i].cost;
+							Laplas->buffs.itemAcid = 1;
+						}
+						else {
+							//print not enought money
+						}
 					}
 					break;
 				}

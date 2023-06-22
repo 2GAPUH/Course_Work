@@ -126,6 +126,8 @@ struct mainStatistic
 	bool alive;
 	int ammunition;
 	int Shoot_DMG;
+	int money;
+	int souls;
 };
 
 struct mainPhysics
@@ -279,6 +281,7 @@ struct mainItems
 	int type;
 	int dop_type;
 	bool alive;
+	int cost;
 	SDL_Point position;
 	SDL_Rect hitbox;
 	mainRenderer render;

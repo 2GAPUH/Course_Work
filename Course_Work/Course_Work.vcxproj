@@ -161,6 +161,9 @@
   <ItemGroup>
     <Image Include="Textures\BackGroundCave.png" />
     <Image Include="Textures\barrel1.png" />
+    <Image Include="Textures\black_char_idle-Sheet.png" />
+    <Image Include="Textures\black_char_punch_spritelist.png" />
+    <Image Include="Textures\black_char_run_spritelist.png" />
     <Image Include="Textures\bobr.png" />
     <Image Include="Textures\buff_DMG.png" />
     <Image Include="Textures\buff_Rubber_Bullet.png" />
@@ -178,6 +181,9 @@
     <Image Include="Textures\trap_dart.png" />
     <Image Include="Textures\trap_spikes.png" />
     <Image Include="Textures\trap_with_dart.png" />
+    <Image Include="Textures\white_char_idle-Sheet.png" />
+    <Image Include="Textures\white_char_punch_spritelist.png" />
+    <Image Include="Textures\white_char_run_spritelist.png" />
     <Image Include="Textures\woodenPlatform.png" />
   </ItemGroup>
   <ItemGroup>

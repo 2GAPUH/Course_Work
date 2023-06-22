@@ -160,6 +160,24 @@
     <Image Include="Textures\buff_Rubber_Bullet.png">
       <Filter>Картинки</Filter>
     </Image>
+    <Image Include="Textures\black_char_run_spritelist.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="Textures\white_char_idle-Sheet.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="Textures\white_char_punch_spritelist.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="Textures\white_char_run_spritelist.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="Textures\black_char_idle-Sheet.png">
+      <Filter>Картинки</Filter>
+    </Image>
+    <Image Include="Textures\black_char_punch_spritelist.png">
+      <Filter>Картинки</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Saves\1\main_hero.txt">
