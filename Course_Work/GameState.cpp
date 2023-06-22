@@ -235,10 +235,10 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 					settings->volume++;
 				}
 
-				if (SDL_PointInFRect(&mousePoint, &skinLeftButton) && settings->skin > 0) {
+				if (SDL_PointInFRect(&mousePoint, &skinLeftButton) && settings->skin > 1) {
 					settings->skin--;
 				}
-				else if (SDL_PointInFRect(&mousePoint, &skinRightButton) && settings->skin < 5) {
+				else if (SDL_PointInFRect(&mousePoint, &skinRightButton) && settings->skin < 3) {
 					settings->skin++;
 				}
 

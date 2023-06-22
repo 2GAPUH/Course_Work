@@ -310,16 +310,19 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 				case 1:
 					levelItems[i].render = *texture_item_Ball;
 					levelItems[i].dop_type = 1;
+					levelItems[i].cost = 100;
 					break;
 
 				case 2:
 					levelItems[i].render = *texture_item_Rubber_Bullet;
 					levelItems[i].dop_type = 2;
+					levelItems[i].cost = 300;
 					break;
 
 				case 3:
 					levelItems[i].render = *texture_item_acid;
 					levelItems[i].dop_type = 3;
+					levelItems[i].cost = 200;
 					break;
 				}
 				

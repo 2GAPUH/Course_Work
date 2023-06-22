@@ -166,10 +166,29 @@ int main(int argc, char* argv[])
 
 	#pragma region TEXTURES_LOAD
 
-	GetTexture("Textures\\hero_comm.png", &Laplas.animation.com, 3, ren);
-	GetTexture("Textures\\hero_run.png", &Laplas.animation.run, 8, ren);
-	GetTexture("Textures\\hero_atack3.png", &Laplas.animation.punch, 5, ren);
-	GetTexture("Textures\\hero_shoot.png", &Laplas.animation.shoot, 3, ren);
+	switch (settings.skin) {
+	case 1:
+		GetTexture("Textures\\hero_comm.png", &Laplas.animation.com, 3, ren);
+		GetTexture("Textures\\hero_run.png", &Laplas.animation.run, 8, ren);
+		GetTexture("Textures\\hero_atack3.png", &Laplas.animation.punch, 5, ren);
+		GetTexture("Textures\\hero_shoot.png", &Laplas.animation.shoot, 3, ren);
+		break;
+	case 2:
+		GetTexture("Textures\\white_hero_shoot.png", &Laplas.animation.shoot, 3, ren);
+		GetTexture("Textures\\black_hero_comm.png", &Laplas.animation.com, 3, ren);
+		GetTexture("Textures\\black_hero_run.png", &Laplas.animation.run, 8, ren);
+		break;
+	case 3:
+		GetTexture("Textures\\white_hero_comm.png", &Laplas.animation.com, 3, ren);
+		GetTexture("Textures\\white_hero_run.png", &Laplas.animation.run, 8, ren);
+		GetTexture("Textures\\white_hero_atack3.png", &Laplas.animation.punch, 5, ren);
+		break;
+	}
+
+	
+	
+	
+	
 	GetTexture("Textures\\hero_bullet.png", &Laplas.animation.bullet, 1, ren);
 	GetTexture("Textures\\hero_rubber_bullet.png", &Laplas.animation.rubber_bullet, 1, ren);
 	GetTexture("Textures\\ball.png", &Laplas.animation.ball, 1, ren);
@@ -322,6 +341,29 @@ int main(int argc, char* argv[])
 
 		case IN_GAME:
 			isRunning = true;
+			SDL_DestroyTexture(Laplas.animation.com.texture);
+			SDL_DestroyTexture(Laplas.animation.run.texture);
+			SDL_DestroyTexture(Laplas.animation.punch.texture);
+			SDL_DestroyTexture(Laplas.animation.shoot.texture);
+			switch (settings.skin) {
+			case 1:
+				GetTexture("Textures\\hero_comm.png", &Laplas.animation.com, 3, ren);
+				GetTexture("Textures\\hero_run.png", &Laplas.animation.run, 8, ren);
+				GetTexture("Textures\\hero_atack3.png", &Laplas.animation.punch, 5, ren);
+				GetTexture("Textures\\hero_shoot.png", &Laplas.animation.shoot, 3, ren);
+				break;
+			case 2:
+				GetTexture("Textures\\black_hero_atack3.png", &Laplas.animation.punch, 5, ren);
+				GetTexture("Textures\\black_hero_comm.png", &Laplas.animation.com, 3, ren);
+				GetTexture("Textures\\black_hero_run.png", &Laplas.animation.run, 8, ren);
+				break;
+			case 3:
+				GetTexture("Textures\\white_hero_comm.png", &Laplas.animation.com, 3, ren);
+				GetTexture("Textures\\white_hero_run.png", &Laplas.animation.run, 8, ren);
+				GetTexture("Textures\\white_hero_atack3.png", &Laplas.animation.punch, 5, ren);
+				break;
+			}
+
 			while (isRunning)
 			{
 				timeInGame += 17;
