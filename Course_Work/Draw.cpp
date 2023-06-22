@@ -558,3 +558,11 @@ void DrawAmmoBar(mainRenderer ammoBarTexture, mainWindow* window, SDL_Renderer* 
 	SDL_FRect ammoBar = { float(window->w / 25.8), float(window->h) - float(window->h / 7.4), float(window->w / 6),  float(window->h / 11.07) };
 	SDL_RenderCopyF(ren, ammoBarTexture.texture, NULL, &ammoBar);
 }
+
+void DrawEnemyHP(mainHero laplas, mainEnemys* levelEnemys, int enemysCount) {
+	mainEnemys closerEnemy = levelEnemys[0];
+	for (int i = 0; i < enemysCount; i++)
+	{
+
+	}
+}
