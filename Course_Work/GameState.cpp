@@ -182,6 +182,10 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 
 	SDL_FRect skinLeftButton;
 	SDL_FRect skinRightButton;
+	SDL_FRect skinPreview;
+	mainRenderer skinTexture;
+	int lastSkin = -1;
+
 
 	SDL_FRect exitButton;
 
@@ -189,6 +193,22 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 
 	while (true)
 	{
+		if (settings->skin != lastSkin)
+		{
+			switch (settings->skin) {
+			case 1:
+				GetTextureDop("Textures\\hero_skin.png", &skinTexture, 1, ren);
+				break;
+			case 2:
+				GetTextureDop("Textures\\black_hero_skin.png", &skinTexture, 1, ren);
+				break;
+			case 3:
+				GetTextureDop("Textures\\white_hero_skin.png", &skinTexture, 1, ren);
+				break;
+			}
+			lastSkin = settings->skin;
+		}
+
 		SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
 
 		volumeLeftButton = { float(window->w / 3.12), float(window->h / 3.), float(window->w / 25.6), float(window->h / 14.4) };
@@ -197,8 +217,11 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 
 		skinLeftButton = { float(window->w / 3.12), float(window->h / 1.63), float(window->w / 25.6), float(window->h / 14.4) };
 		skinRightButton = { float(window->w / 1.66),float(window->h / 1.63), float(window->w / 25.6), float(window->h / 14.4) };
+		skinPreview = { float(window->w/2 - skinTexture.textureSize.w/1.5),float(window->h / 1.8), float(skinTexture.textureSize.w), float(skinTexture.textureSize.h) };
 
 		exitButton = { float(window->w / 2.37),float(window->h / 1.2), float(window->w / 8.), float(window->h / 8.) };
+
+		
 
 		SDL_RenderCopyF(ren, minusButtonTexture.texture, NULL, &volumeLeftButton);
 		SDL_RenderCopyF(ren, plusButtonTexture.texture, NULL, &volumeRightButton);
@@ -207,11 +230,12 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 
 		SDL_RenderCopyF(ren, minusButtonTexture.texture, NULL, &skinLeftButton);
 		SDL_RenderCopyF(ren, plusButtonTexture.texture, NULL, &skinRightButton);
+		SDL_RenderCopyF(ren, skinTexture.texture, NULL, &skinPreview);
+
 
 		SDL_RenderCopyF(ren, ButtonTexture.texture, NULL, &exitButton);
 
 		SDL_RenderPresent(ren);
-
 
 
 		while (SDL_PollEvent(&ev))
@@ -252,6 +276,7 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 					SDL_DestroyTexture(plusButtonTexture.texture);
 					SDL_DestroyTexture(minusButtonTexture.texture);
 					SDL_DestroyTexture(volumeBarTexture.texture);
+					SDL_DestroyTexture(skinTexture.texture);
 
 					return;
 				}

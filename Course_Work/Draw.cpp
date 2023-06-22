@@ -428,6 +428,23 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 			if (levelEnemys[i].animation.acid_effect.frame.x >= levelEnemys[i].animation.acid_effect.textureSize.w )
 				levelEnemys[i].animation.acid_effect.frame.x = 0;
 		}
+
+		if (levelEnemys[i].type==4 && levelEnemys[i].shoot.alive)
+		{
+			SDL_Rect movedEnemy = { levelEnemys[i].shoot.shootAtackCentere.x - levelEnemys[i].animation.bullet.textureSize.w/2,levelEnemys[i].shoot.shootAtackCentere.y - levelEnemys[i].animation.bullet.textureSize.h / 2, levelEnemys[i].animation.bullet.textureSize.w, levelEnemys[i].animation.bullet.textureSize.h };
+
+			if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+				movedEnemy.x -= Laplas->hitbox.x - window->w / 2.f;
+			if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+				movedEnemy.x -= levelWidth - window->w;
+
+			if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+				movedEnemy.y -= Laplas->hitbox.y - window->h / 2.f;
+			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+				movedEnemy.y -= levelHeight - window->h;
+
+			SDL_RenderCopy(ren, levelEnemys[i].animation.bullet.texture, NULL, &movedEnemy);
+		}
 	}
 }
 
@@ -584,10 +601,26 @@ void DrawAmmoBar(mainRenderer ammoBarTexture, mainWindow* window, SDL_Renderer* 
 	SDL_RenderCopyF(ren, ammoBarTexture.texture, NULL, &ammoBar);
 }
 
-void DrawEnemyHP(mainHero laplas, mainEnemys* levelEnemys, int enemysCount) {
+void DrawEnemyHP(mainHero Laplas, mainEnemys* levelEnemys, int enemysCount, mainRenderer hpBarTexture, mainRenderer enemyHpBarEdgingTexture, mainWindow* window, SDL_Renderer* ren) {
 	mainEnemys closerEnemy = levelEnemys[0];
+	int minDistance = sqrt((Laplas.hitbox.x - levelEnemys[0].hitbox.x) * (Laplas.hitbox.x - levelEnemys[0].hitbox.x) +
+		(Laplas.hitbox.y - levelEnemys[0].hitbox.y) * (Laplas.hitbox.y - levelEnemys[0].hitbox.y)) <
+		levelEnemys[0].triggeredDistance;
+	int curDistance;
 	for (int i = 0; i < enemysCount; i++)
 	{
-
+		curDistance = sqrt((Laplas.hitbox.x - levelEnemys[i].hitbox.x) * (Laplas.hitbox.x - levelEnemys[i].hitbox.x) +
+			(Laplas.hitbox.y - levelEnemys[i].hitbox.y) * (Laplas.hitbox.y - levelEnemys[i].hitbox.y)) <
+			levelEnemys[i].triggeredDistance;
+		if (minDistance > curDistance)
+		{
+			minDistance = curDistance;
+			closerEnemy = levelEnemys[i];
+		}
 	}
+
+	SDL_FRect hpBar = { float(window->w / 4), float(window->h / 16), float(window->w / 32.8) * closerEnemy.status.HP / 10,  float(window->h / 16) };
+	SDL_FRect hpBarEdging = { float(window->w / 4.1), float(window->h / 16), float(window->w / 32) * closerEnemy.status.startHP/10,  float(window->h / 16) };
+	SDL_RenderCopyF(ren, hpBarTexture.texture, NULL, &hpBar);
+	SDL_RenderCopyF(ren, enemyHpBarEdgingTexture.texture, NULL, &hpBarEdging);
 }

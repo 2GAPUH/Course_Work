@@ -135,7 +135,7 @@ mainHero InitHero()
 	Laplas.animation.run = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
 	Laplas.animation.punch = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
 	Laplas.battle = { NULL, { NULL, NULL } , NULL, NULL };
-	Laplas.status = { HERO_DAMAGE, HERO_HP, ALIVE , HERO_START_AMUNITION, HERO_SHOOT_DAMAGE };
+	Laplas.status = { HERO_HP, HERO_DAMAGE, HERO_HP, ALIVE , HERO_START_AMUNITION, HERO_SHOOT_DAMAGE };
 	Laplas.animationType = NULL;
 	Laplas.buffs = { NULL, NULL, DMG_BUFF_DUARATION, DMG_BUFF_PERCENT, NULL };
 	Laplas.keys = { NULL, NULL, NULL };
@@ -158,7 +158,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		{
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
-			levelEnemys[i].status = { BEAVER_DMG, BEAVER_HP , ALIVE };
+			levelEnemys[i].status = { BEAVER_HP, BEAVER_DMG, BEAVER_HP , ALIVE };
 			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
 			levelEnemys[i].animation.run = *texture_beaver_run;
 			levelEnemys[i].animation.atack = *texture_beaver_atack;
@@ -173,7 +173,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		{
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
-			levelEnemys[i].status = { BEAVER_DMG, BEAVER_HP , ALIVE };
+			levelEnemys[i].status = { BEAVER_HP, BEAVER_DMG, BEAVER_HP , ALIVE };
 			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
 			levelEnemys[i].animation.run = *texture_beaver_run;
 			levelEnemys[i].animation.atack = *texture_beaver_atack;
@@ -188,7 +188,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		{
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
-			levelEnemys[i].status = { KRAB_DMG, KRAB_HP , ALIVE };
+			levelEnemys[i].status = { KRAB_HP, KRAB_DMG, KRAB_HP , ALIVE };
 			levelEnemys[i].effect.atackCD = KRAB_ATACK_CD;
 			levelEnemys[i].animation.run = *texture_krab_run;
 			levelEnemys[i].animation.atack = *texture_krab_run;
@@ -203,7 +203,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			{
 				levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 				levelEnemys[i].effect.underAtack = NULL;
-				levelEnemys[i].status = { KRAB_DMG, KRAB_HP , ALIVE };
+				levelEnemys[i].status = { KRAB_HP, KRAB_DMG, KRAB_HP , ALIVE };
 				levelEnemys[i].effect.atackCD = KRAB_ATACK_CD;
 				levelEnemys[i].animation.run = *texture_tower;
 				levelEnemys[i].animation.atack = *texture_tower;
@@ -211,6 +211,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 				levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
 				levelEnemys[i].animation_type = NULL;
 				levelEnemys[i].animation.bullet = *texture_tower_bullet;
+				levelEnemys[i].shoot.alive = 0;
 
 			}
 		}

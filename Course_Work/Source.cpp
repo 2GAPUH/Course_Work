@@ -133,6 +133,7 @@ int main(int argc, char* argv[])
 	
 	mainRenderer hpBarTexture;
 	mainRenderer hpBarEdgingTexture;
+	mainRenderer enemyHpBarEdgingTexture;
 	mainRenderer ammoBarTexture;
 
 	int bordersCount = NULL;
@@ -244,6 +245,7 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1, ren);
 	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1, ren);
+	GetTexture("Textures\\enemy_outside_life_bar.png", &enemyHpBarEdgingTexture, 1, ren);
 	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
 	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1, ren);
 	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1, ren);
@@ -527,6 +529,7 @@ int main(int argc, char* argv[])
 				//Проверка пуль на касание с стеной
 				TrapBulletHitboxInRange(levelTraps, &trapsCount, &bordersCount, levelBorders);
 				HeroBulletHitboxInRange(&Laplas, &bordersCount, levelBorders);
+				EnemysBulletHitboxInRange(levelEnemys, &enemysCount, &bordersCount, levelBorders);
 
 				//Выход за границы мира
 				HeroPhysicOutworldCheck(&Laplas, levelBorders);
@@ -620,10 +623,6 @@ int main(int argc, char* argv[])
 							levelEnemys[t].shoot.alive = 1;
 						}
 					}
-					else if (levelEnemys[t].type == 4 && !Laplas.buffs.itemBallActive)
-					{
-						Laplas.status.HP -= levelEnemys[t].status.DMG;
-					}
 
 
 				for (int j = 0; j < enemysCount; j++)
@@ -701,7 +700,11 @@ int main(int argc, char* argv[])
 
 				DrawAmmoBar(ammoBarTexture, &window, ren);
 				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window, ren);
-
+				if (enemysCount>0)
+				{
+					DrawEnemyHP(Laplas, levelEnemys, enemysCount, hpBarTexture, enemyHpBarEdgingTexture, &window, ren);
+				}
+				
 				//Отрисовка пуль
 				SDL_RenderCopy(ren, texture_timer.texture, NULL, &texture_timer.textureSize);
 				SDL_RenderCopy(ren, texture_ammunition.texture, NULL, &texture_ammunition.textureSize);
@@ -782,6 +785,7 @@ int main(int argc, char* argv[])
 	
 	SDL_DestroyTexture(texture_platform.texture);
 	SDL_DestroyTexture(hpBarEdgingTexture.texture);
+	SDL_DestroyTexture(enemyHpBarEdgingTexture.texture);
 	SDL_DestroyTexture(hpBarTexture.texture);
 	SDL_DestroyTexture(ammoBarTexture.texture);
 

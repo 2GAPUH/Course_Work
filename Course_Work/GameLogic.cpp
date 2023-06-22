@@ -44,6 +44,19 @@ void TrapBulletHitboxInRange(mainTraps levelTraps[], int* trapsCount, int* borde
 	}
 }
 
+void EnemysBulletHitboxInRange(mainEnemys levelEnemys[], int* enemysCount, int* bordersCount, mainBorders levelBorders[])
+{
+	for (int f = 0; f < *enemysCount; f++)
+	{
+		if (levelEnemys[f].shoot.alive && levelEnemys[f].type == 4)
+		{
+			for (int g = 0; g < *bordersCount; g++)
+				if (levelBorders[g].type != 6 && levelBorders[g].type != 5 && HeroPhysicInRange(levelEnemys[f].shoot.shootAtackCentere, levelBorders[g].bordersHitbox))
+					levelEnemys[f].shoot.alive = 0;
+		}
+	}
+}
+
 void HeroBulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
 {
 	for (int i = 0; i < 10; i++)

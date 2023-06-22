@@ -121,6 +121,7 @@ struct twoParam
 
 struct mainStatistic
 {
+	int startHP;
 	int DMG;
 	int HP;
 	bool alive;
@@ -275,6 +276,7 @@ struct mainBorders
 struct mainEnemys
 {
 	int type;
+	int distanceToHero;
 	SDL_Point position;
 	SDL_Rect hitbox;
 	mainPhysics physic;

@@ -9,6 +9,7 @@
 bool HeroPhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox);
 void HeroBulletHitboxInRange(mainHero* Laplas, int* bordersCount, mainBorders levelBorders[]);
 void TrapBulletHitboxInRange(mainTraps levelTraps[], int* trapsCount, int* bordersCount, mainBorders levelBorders[]);
+void EnemysBulletHitboxInRange(mainEnemys levelEnemys[], int* enemysCount, int* bordersCount, mainBorders levelBorders[]);
 void HeroBulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[]);
 void TrapBulletOutworldCheck(mainTraps levelTraps[], int* trapsCount, mainBorders levelBorders[]);
 void EnemyTrigger(mainEnemys levelEnemys[], mainHero* Laplas, int* enemysCount);

@@ -178,6 +178,7 @@
     <Image Include="Textures\mainHero26x22.png" />
     <Image Include="Textures\overheating.png" />
     <Image Include="Textures\pressure_plate.png" />
+    <Image Include="Textures\tower_bullet.png" />
     <Image Include="Textures\trap_dart.png" />
     <Image Include="Textures\trap_spikes.png" />
     <Image Include="Textures\trap_with_dart.png" />
