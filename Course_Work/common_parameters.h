@@ -320,13 +320,13 @@ struct mainRoom
 	bool top, down, left, right;
 };
 
-struct textureSkill
+struct mainTextureSkill
 {
 	mainRenderer figure;
 	mainRenderer iconHealth;
 	mainRenderer iconStrength;
 	mainRenderer iconLucky;
-	mainRenderer iconBullets;
+	mainRenderer iconAmmo;
 	mainRenderer iconWeapon;
 	mainRenderer iconPotion;
 };

@@ -123,6 +123,7 @@ int main(int argc, char* argv[])
 	mainRenderer texture_buff_lucky;
 	mainRenderer texture_buff_speed;
 	mainRenderer texture_kebab;
+	mainRenderer texture_skill_figure;
 
 
 	mainRenderer texture_item_Ball;
@@ -150,6 +151,7 @@ int main(int argc, char* argv[])
 	mainTraps* levelTraps = NULL;
 	mainItems* levelItems = NULL;
 	mainHero Laplas;
+	mainTextureSkill texture_skill;
 	
 	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
 	SDL_Point mouseClick = { NULL, NULL };
@@ -257,6 +259,15 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\tower.png", &texture_tower, 1, ren);
 	GetTexture("Textures\\tower_bullet.png", &texture_tower_bullet, 1, ren);
 
+	GetTexture("Textures\\skill_potion.png", &texture_skill.iconPotion, 1, ren);
+	GetTexture("Textures\\skill_lucky.png", &texture_skill.iconLucky, 1, ren);
+	GetTexture("Textures\\skill_gun.png", &texture_skill.iconWeapon, 1, ren);
+	GetTexture("Textures\\skill_strength.png", &texture_skill.iconStrength, 1, ren);
+	GetTexture("Textures\\skill_health.png", &texture_skill.iconHealth, 1, ren);
+	GetTexture("Textures\\skill_patron.png", &texture_skill.iconAmmo, 1, ren);
+	GetTexture("Textures\\skill_figure.png", &texture_skill.figure, 1, ren);
+	texture_skill_figure = texture_skill.figure;
+
 	#pragma endregion
 
 	#pragma region TIMER_TEXTURE
@@ -309,7 +320,8 @@ int main(int argc, char* argv[])
 
 	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet);
 	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
-	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky);
+	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, 
+		&texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure);
 
 	//mainRoom mainMap[MAP_SIZE][MAP_SIZE];
 	//for (int i = 0; i < MAP_SIZE; i++)
@@ -562,7 +574,8 @@ int main(int argc, char* argv[])
 							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
 							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item3.txt");
-							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky);
+							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, 
+								&texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure);
 						}
 					}
 
@@ -584,6 +597,9 @@ int main(int argc, char* argv[])
 							levelEnemys[i].effect.poisonLastDamage = timeInGame;
 							levelEnemys[i].status.HP -= POISON_DMG;
 						}
+
+
+				CheckSkillFigure(&Laplas, &itemsCount, levelItems, &window, ren, win, &texture_skill);
 
 				#pragma endregion 
 
@@ -787,7 +803,15 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(hpBarEdgingTexture.texture);
 	SDL_DestroyTexture(enemyHpBarEdgingTexture.texture);
 	SDL_DestroyTexture(hpBarTexture.texture);
-	SDL_DestroyTexture(ammoBarTexture.texture);
+
+	SDL_DestroyTexture(texture_skill.iconAmmo.texture);
+	SDL_DestroyTexture(texture_skill.iconHealth.texture);
+	SDL_DestroyTexture(texture_skill.iconLucky.texture);
+	SDL_DestroyTexture(texture_skill.iconPotion.texture);
+	SDL_DestroyTexture(texture_skill.iconStrength.texture);
+	SDL_DestroyTexture(texture_skill.iconWeapon.texture);
+	SDL_DestroyTexture(texture_skill.figure.texture);
+
 
 	DeInit(0, &win, &ren, &win_surface);
 	

@@ -263,7 +263,8 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 }
 
 void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet, 
-	mainRenderer* texture_barrel, mainRenderer* texture_item_Ball, mainRenderer* texture_item_acid, mainRenderer* texture_buff_speed, mainRenderer*  texture_buff_lucky)
+	mainRenderer* texture_barrel, mainRenderer* texture_item_Ball, mainRenderer* texture_item_acid, mainRenderer* texture_buff_speed, 
+	mainRenderer*  texture_buff_lucky, mainRenderer* texture_skill_figure)
 {
 	for (int i = 0; i < *itemsCount; i++)
 	{
@@ -327,6 +328,10 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 					break;
 				}
 				
+				break;
+
+			case 5:
+				levelItems[i].render = *texture_skill_figure;
 				break;
 
 			}

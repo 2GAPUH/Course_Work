@@ -1,5 +1,71 @@
 #include "GameState.h"
 
+
+void SkillLeveling(mainHero* Laplas,  mainWindow* window, SDL_Renderer* ren, SDL_Window* win, mainTextureSkill* texture_skill)
+{
+	SDL_Rect luckyButton = { int(window->w * (2. / 16.)) , int(window->h * (1. / 9.)), int(window->w * 3 / 16.) ,int(window->h * 3 / 9.) };
+	SDL_Rect potionButton = { int(window->w * (6.5 / 16.)), luckyButton.y,   luckyButton.w ,luckyButton.h };
+	SDL_Rect healthButton = { int(window->w * (11. / 16.)), luckyButton.y,   luckyButton.w ,luckyButton.h };
+	SDL_Rect strengthButton = { luckyButton.x  , int(window->h * (5. / 9.))  , luckyButton.w ,luckyButton.h }; 
+	SDL_Rect ammoButton = { potionButton.x , strengthButton.y , luckyButton.w ,luckyButton.h };
+	SDL_Rect weaponButton = { healthButton.x , ammoButton.y , luckyButton.w ,luckyButton.h };
+	
+	SDL_Event ev;
+	
+
+	while (true)
+	{
+		while (SDL_PollEvent(&ev))
+		{
+			switch (ev.type)
+			{
+			case SDL_WINDOWEVENT:
+				if (ev.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					SDL_GetWindowSize(win, &window->w, &window->h);
+					luckyButton =    { int(window->w * (2. / 16.)) , int(window->h * (1. / 9.)), int(window->w * 3 / 16.) ,int(window->h * 3 / 9.) };
+					potionButton =   { int(window->w * (6.5 / 16.)), luckyButton.y,   luckyButton.w ,luckyButton.h };
+					healthButton =   { int(window->w * (11. / 16.)), luckyButton.y,   luckyButton.w ,luckyButton.h };
+					strengthButton = { luckyButton.x  , int(window->h * (5. / 9.))  , luckyButton.w ,luckyButton.h };
+					ammoButton =     { potionButton.x , strengthButton.y , luckyButton.w ,luckyButton.h };
+					weaponButton =   { healthButton.x , ammoButton.y , luckyButton.w ,luckyButton.h };
+				}
+				break;
+
+			case SDL_KEYUP:
+				switch (ev.key.keysym.scancode)
+				{
+				case SDL_SCANCODE_ESCAPE:
+					return;
+					break;
+				}
+				break;
+
+			case SDL_MOUSEBUTTONUP:
+				SDL_Point mousePoint = { ev.button.x,ev.button.y };
+				break;
+				
+			}
+		}
+		
+
+
+		SDL_RenderCopy(ren, texture_skill->iconLucky.texture, NULL, &luckyButton);
+		SDL_RenderCopy(ren, texture_skill->iconPotion.texture, NULL, &potionButton);
+		SDL_RenderCopy(ren, texture_skill->iconHealth.texture, NULL, &healthButton);
+		SDL_RenderCopy(ren, texture_skill->iconStrength.texture, NULL, &strengthButton);
+		SDL_RenderCopy(ren, texture_skill->iconAmmo.texture, NULL, &ammoButton);
+		SDL_RenderCopy(ren, texture_skill->iconWeapon.texture, NULL, &weaponButton);
+
+		SDL_RenderPresent(ren);
+
+		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+		SDL_RenderClear(ren);
+	}
+
+
+}
+
 void GetTextureDop(const char filePath[], mainRenderer* texture, int frameCount, SDL_Renderer* ren)
 {
 	SDL_Surface* surface = NULL;

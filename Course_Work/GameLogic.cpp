@@ -1,4 +1,7 @@
 #include "GameLogic.h"
+#include "HeroBattle.h"
+#include "GameState.h"
+
 
 bool HeroPhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
 {
@@ -143,6 +146,21 @@ void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas
 3.1 Ball
 3.2 Rubber bullet
 */
+
+void CheckSkillFigure(mainHero* Laplas, int* itemsCount, mainItems levelItems[], mainWindow* window, SDL_Renderer* ren, SDL_Window* win,
+	mainTextureSkill* texture_skill)
+{
+	for (int i = 0; i < *itemsCount; i++)
+		if (levelItems[i].type == 5)
+			if (Laplas->keys.pressed_E)
+				if (HeroPhysicInRange({ Laplas->hitbox.x, Laplas->hitbox.y }, levelItems[i].grab_zone))
+				{
+					SkillLeveling(Laplas, window, ren, win, texture_skill);
+					Laplas->keys.pressed_E = 0;
+					return;
+				}
+}
+
 void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInGame)
 {
 	for (int i = 0; i < *itemsCount; i++)
@@ -152,6 +170,7 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 				switch (items[i].type)
 				{
 				case 2:
+					items[i].alive = 0;
 					switch (items[i].dop_type)
 					{
 					case 1:
@@ -177,10 +196,15 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 						Laplas->buffs.buffDuaration = DMG_BUFF_DUARATION;
 						Laplas->buffs.buffLuckyStart = timeInGame;
 						break;
+
+					case 4:
+						break;
+
 					}
 					break;
 
 				case 3:
+					items[i].alive = 0;
 					switch (items[i].dop_type)
 					{
 					case 1:
@@ -213,9 +237,13 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 						}
 					}
 					break;
+
+				case 5:
+					//SkillLeveling();
+					break;
 				}
 
-				items[i].alive = 0;
+				
 			}
 }
 
