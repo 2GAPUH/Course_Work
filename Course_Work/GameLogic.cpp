@@ -253,8 +253,8 @@ void BuffsStateCheck(mainHero* Laplas, int timeInGame)
 	if (Laplas->buffs.buffDMGstart + Laplas->buffs.buffDuaration < timeInGame)
 	{
 		Laplas->buffs.buffDMGactive = 0;
-		Laplas->status.Shoot_DMG = Laplas->status.Shoot_DMG * (Laplas->status.lvlWeapon/15. + 1);
-		Laplas->status.DMG = Laplas->status.DMG * (Laplas->status.lvlStrength / 10. + 1);
+		Laplas->status.Shoot_DMG = HERO_SHOOT_DAMAGE * (Laplas->status.lvlWeapon/15. + 1);
+		Laplas->status.DMG = HERO_DAMAGE * (Laplas->status.lvlStrength / 10. + 1);
 	}
 
 	if (Laplas->buffs.buffLuckyStart + Laplas->buffs.buffDuaration < timeInGame)

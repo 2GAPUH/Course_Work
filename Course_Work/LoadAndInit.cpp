@@ -156,7 +156,7 @@ void dopInitHero(mainHero* Laplas)
 	Laplas->status.startHP = (HERO_HP * (Laplas->status.lvlHealth / 5. + 1));
 	Laplas->status.Shoot_DMG = int(HERO_SHOOT_DAMAGE * (Laplas->status.lvlHealth / 15. + 1));
 	Laplas->status.lucky = Laplas->status.lvlLucky * 3;
-	Laplas->status.potion_duar = Laplas->status.potion_duar * 10;
+	Laplas->status.potion_duar = Laplas->status.lvlPotion * 10;
 	Laplas->status.ammunition = int(HERO_START_AMUNITION * (Laplas->status.lvlAmmo / 8. + 1));
 }
 
