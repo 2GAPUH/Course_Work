@@ -123,25 +123,41 @@ mainItems* LoadItems(mainItems* levelItems, int* itemsCount, const char levelNam
 	return levelItems;
 }
 
-mainHero InitHero()
+void InitHero(mainHero* Laplas)
 {
-	mainHero Laplas;
-	Laplas.position = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
-	Laplas.hitbox = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, HERO_WIDHT, HERO_HEIGHT };
-	Laplas.texture_rect = { NULL, NULL, NULL, NULL };
-	Laplas.physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, HERO_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
-	Laplas.effect = { HERO_DASH_CD, NULL, HERO_ATACK_CD, NULL, HERO_SHOOT_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y, NULL, HERO_AFTER_ATACK_PROTECTION, NULL };
-	Laplas.animation.com = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
-	Laplas.animation.run = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
-	Laplas.animation.punch = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
-	Laplas.battle = { NULL, { NULL, NULL } , NULL, NULL };
-	Laplas.status = { HERO_HP, HERO_DAMAGE, HERO_HP, ALIVE , HERO_START_AMUNITION, HERO_SHOOT_DAMAGE };
-	Laplas.animationType = NULL;
-	Laplas.buffs = { NULL, NULL, DMG_BUFF_DUARATION, DMG_BUFF_PERCENT, NULL };
-	Laplas.keys = { NULL, NULL, NULL };
+	Laplas->texture_rect = { NULL, NULL, NULL, NULL };
+	Laplas->hitbox = { 0, 0, HERO_WIDHT, HERO_HEIGHT };
+	Laplas->position = { 0, 0 };
+	Laplas->physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, HERO_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+	Laplas->effect = { HERO_DASH_CD, NULL, HERO_ATACK_CD, NULL, HERO_SHOOT_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y, NULL, HERO_AFTER_ATACK_PROTECTION, NULL };
+	Laplas->animation.com = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
+	Laplas->animation.run = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
+	Laplas->animation.punch = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
+	Laplas->battle = { NULL, { NULL, NULL } , NULL, NULL };
+	Laplas->status.HP = int(HERO_HP * (Laplas->status.lvlHealth / 5. + 1));
+	Laplas->status.DMG = int(HERO_DAMAGE * (Laplas->status.lvlHealth / 10. + 1));
+	Laplas->status.startHP = (HERO_HP * (Laplas->status.lvlHealth / 5. + 1));
+	Laplas->status.alive = ALIVE;
+	Laplas->status.lvlWeapon = int(HERO_START_AMUNITION * (Laplas->status.lvlHealth / 5. + 1));
+	Laplas->status.Shoot_DMG = int(HERO_SHOOT_DAMAGE * (Laplas->status.lvlHealth / 15. + 1));
+	Laplas->status.lvlLucky = Laplas->status.lvlLucky * 3;
+	Laplas->status.potion_duar = Laplas->status.potion_duar * 10;
 
+	Laplas->animationType = NULL;
+	Laplas->buffs = { NULL, NULL, DMG_BUFF_DUARATION, DMG_BUFF_PERCENT, NULL };
+	Laplas->keys = { NULL, NULL, NULL };
 
-	return Laplas;
+}
+
+void dopInitHero(mainHero* Laplas)
+{
+	Laplas->status.HP = int(HERO_HP * (Laplas->status.lvlHealth / 5. + 1));
+	Laplas->status.DMG = int(HERO_DAMAGE * (Laplas->status.lvlHealth / 10. + 1));
+	Laplas->status.startHP = (HERO_HP * (Laplas->status.lvlHealth / 5. + 1));
+	Laplas->status.Shoot_DMG = int(HERO_SHOOT_DAMAGE * (Laplas->status.lvlHealth / 15. + 1));
+	Laplas->status.lucky = Laplas->status.lvlLucky * 3;
+	Laplas->status.potion_duar = Laplas->status.potion_duar * 10;
+	Laplas->status.ammunition = int(HERO_START_AMUNITION * (Laplas->status.lvlAmmo / 8. + 1));
 }
 
 void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* texture_beaver_run, mainRenderer* texture_beaver_atack, 
@@ -361,16 +377,7 @@ void loadLaplas(mainHero* Laplas, const char path[])
 	fclose(f);
 }
 
-void dopLoadHero(mainHero* Laplas)
-{
-	Laplas->animation.com = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
-	Laplas->animation.run = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
-	Laplas->animation.punch = { NULL, {0, 0, 0, 0} , {0, 0, 0 ,0}, NULL };
-	Laplas->battle = { NULL, { NULL, NULL } , NULL, NULL };
-	Laplas->animationType = NULL;
-	Laplas->keys = { NULL, NULL, NULL };
 
-}
 
 void saveLaplas(mainHero* Laplas, const char path[])
 {

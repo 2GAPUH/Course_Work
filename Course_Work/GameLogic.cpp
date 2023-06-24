@@ -147,7 +147,7 @@ void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas
 3.2 Rubber bullet
 */
 
-void CheckSkillFigure(mainHero* Laplas, int* itemsCount, mainItems levelItems[], mainWindow* window, SDL_Renderer* ren, SDL_Window* win,
+bool CheckSkillFigure(mainHero* Laplas, int* itemsCount, mainItems levelItems[], mainWindow* window, SDL_Renderer* ren, SDL_Window* win,
 	mainTextureSkill* texture_skill, TTF_Font* font)
 {
 	for (int i = 0; i < *itemsCount; i++)
@@ -157,8 +157,9 @@ void CheckSkillFigure(mainHero* Laplas, int* itemsCount, mainItems levelItems[],
 				{
 					SkillLeveling(Laplas, window, ren, win, texture_skill, font);
 					Laplas->keys.pressed_E = 0;
-					return;
+					return 1;
 				}
+	return 0;
 }
 
 void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInGame)
@@ -252,8 +253,8 @@ void BuffsStateCheck(mainHero* Laplas, int timeInGame)
 	if (Laplas->buffs.buffDMGstart + Laplas->buffs.buffDuaration < timeInGame)
 	{
 		Laplas->buffs.buffDMGactive = 0;
-		Laplas->status.Shoot_DMG = HERO_SHOOT_DAMAGE;
-		Laplas->status.DMG = HERO_DAMAGE;
+		Laplas->status.Shoot_DMG = Laplas->status.Shoot_DMG * (Laplas->status.lvlWeapon/15. + 1);
+		Laplas->status.DMG = Laplas->status.DMG * (Laplas->status.lvlStrength / 10. + 1);
 	}
 
 	if (Laplas->buffs.buffLuckyStart + Laplas->buffs.buffDuaration < timeInGame)

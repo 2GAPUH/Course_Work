@@ -126,9 +126,12 @@ struct mainStatistic
 	int startHP;
 	int DMG;
 	int HP;
-	bool alive;
 	int ammunition;
 	int Shoot_DMG;
+	int lucky;
+	int potion_duar;
+
+	bool alive;
 	int money;
 	int souls;
 
@@ -345,4 +348,9 @@ struct mainTextureSkill
 int inline GetNumInRange(int leftBord, int rightBord)
 {
 	return rand() % (rightBord - leftBord + 1) + leftBord;
+}
+
+int inline GetNumInRangeWithLucky(int leftBord, int rightBord, mainHero* Laplas)
+{
+	return rand() % (rightBord - leftBord + 1) + leftBord + Laplas->status.lucky;
 }

@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
 	mainEnemys* levelEnemys = NULL;
 	mainTraps* levelTraps = NULL;
 	mainItems* levelItems = NULL;
-	mainHero Laplas;
+	mainHero Laplas = {0};
 	mainTextureSkill texture_skill;
 	
 	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
@@ -163,9 +163,10 @@ int main(int argc, char* argv[])
 
 	#pragma endregion
 
-	Laplas = InitHero();
+	
+	InitHero(&Laplas);
 	loadLaplas(&Laplas, "Saves\\1.txt");
-	//dopLoadHero(&Laplas);
+	dopInitHero(&Laplas);
 
 	#pragma region TEXTURES_LOAD
 
@@ -580,7 +581,8 @@ int main(int argc, char* argv[])
 					}
 
 				//—тату€ прокачки
-				CheckSkillFigure(&Laplas, &itemsCount, levelItems, &window, ren, win, &texture_skill, fontNovemBig);
+				if (CheckSkillFigure(&Laplas, &itemsCount, levelItems, &window, ren, win, &texture_skill, fontNovemBig))
+					dopInitHero(&Laplas);
 
 				//—брос резиста от дамага
 				if (Laplas.effect.lastDamage + Laplas.effect.afterAtackResist < timeInGame)
