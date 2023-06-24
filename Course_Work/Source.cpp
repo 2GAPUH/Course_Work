@@ -51,18 +51,7 @@ void GetTexture(const char filePath[], mainRenderer* texture, int frameCount, SD
 	SDL_FreeSurface(surface);
 }
 
-mainRenderer CreateTimerFromText(const char str[], TTF_Font* font, SDL_Color fg)
-{
-	SDL_Surface* surface = TTF_RenderText_Blended(font, str, fg);
-	mainRenderer texture;
-	texture.texture = SDL_CreateTextureFromSurface(ren, surface);
-	texture.textureSize.w = surface->w;
-	texture.textureSize.h = surface->h;
-	texture.textureSize.x = WINDOW_WIDTH - surface->w;
-	texture.textureSize.y = NULL;
-	SDL_FreeSurface(surface);
-	return texture;
-}
+
 
 mainRenderer CreateAmmunitionFromText(const char str[], TTF_Font* font, SDL_Color fg)
 {
@@ -77,7 +66,18 @@ mainRenderer CreateAmmunitionFromText(const char str[], TTF_Font* font, SDL_Colo
 	return texture;
 }
 
-
+mainRenderer CreateTimerFromText(const char str[], TTF_Font* font, SDL_Color fg, SDL_Renderer* ren)
+{
+	SDL_Surface* surface = TTF_RenderText_Blended(font, str, fg);
+	mainRenderer texture;
+	texture.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture.textureSize.w = surface->w;
+	texture.textureSize.h = surface->h;
+	texture.textureSize.x = WINDOW_WIDTH - surface->w;
+	texture.textureSize.y = NULL;
+	SDL_FreeSurface(surface);
+	return texture;
+}
 
 int main(int argc, char* argv[])
 {
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
 	mainRenderer texture_buff_speed;
 	mainRenderer texture_kebab;
 	mainRenderer texture_skill_figure;
-
+	mainRenderer texture_skill_point;
 
 	mainRenderer texture_item_Ball;
 	mainRenderer texture_barrel;
@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
 	#pragma endregion
 
 	Laplas = InitHero();
-	//loadLaplas(&Laplas, "Saves\\1\\main_hero.txt", &deltaTime);
+	loadLaplas(&Laplas, "Saves\\1.txt");
 	//dopLoadHero(&Laplas);
 
 	#pragma region TEXTURES_LOAD
@@ -267,6 +267,8 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\skill_patron.png", &texture_skill.iconAmmo, 1, ren);
 	GetTexture("Textures\\skill_figure.png", &texture_skill.figure, 1, ren);
 	texture_skill_figure = texture_skill.figure;
+	GetTexture("Textures\\skill_point.png", &texture_skill.point, 1, ren);
+	texture_skill_point = texture_skill.point;
 
 	#pragma endregion
 
@@ -323,27 +325,6 @@ int main(int argc, char* argv[])
 	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, 
 		&texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure);
 
-	//mainRoom mainMap[MAP_SIZE][MAP_SIZE];
-	//for (int i = 0; i < MAP_SIZE; i++)
-	//	for (int j = 0; j < MAP_SIZE; j++)
-	//	{
-	//		mainMap[i][j].type = 0;
-	//		mainMap[i][j].left = 0;
-	//		mainMap[i][j].right = 0;
-	//		mainMap[i][j].top = 0;
-	//		mainMap[i][j].down = 0;
-	//	}
-
-	//mainMap[MAP_SIZE / 2][0].type = -1;
-	//mainMap[MAP_SIZE / 2][0].right = 1;
-	//Laplas.curRoom.i = MAP_SIZE / 2;
-	//Laplas.curRoom.j = MAP_SIZE / 2;
-
-	//twoParam tmpCurRoom = Laplas.curRoom;
- //
-	//tmp = rand() % (MAP_SIZE - 3) + 2;
-	//for(int i = 1; i < tmp; i ++)
-	//	mainMap[MAP_SIZE/2][i] = 
 
 	while (flag)
 	{
@@ -549,36 +530,6 @@ int main(int argc, char* argv[])
 				HeroBulletOutworldCheck(&Laplas, levelBorders);
 				TrapBulletOutworldCheck(levelTraps, &trapsCount, levelBorders);
 
-				//Срабатывание триггера обнаружения врагом
-				EnemyTrigger(levelEnemys, &Laplas, &enemysCount);
-
-				//Движение врагов
-				EnemysMovement(&enemysCount, levelEnemys, &Laplas);
-
-				//Анимация атаки
-				for (int i = 0; i < enemysCount; i++)
-					if (levelEnemys[i].hitbox.x > Laplas.hitbox.x - levelEnemys[i].hitbox.w / 1.25 && levelEnemys[i].hitbox.x < Laplas.hitbox.x + levelEnemys[i].hitbox.w/ 1.25)
-						levelEnemys[i].animation_type = 6;
-					else
-						levelEnemys[i].animation_type = 1;
-
-				//Переход на другую локацию
-				for(int i = 0; i < bordersCount;i++ )
-					if (levelBorders[i].type == 3)
-					{
-						if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[i].bordersHitbox))
-						{
-							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
-							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
-							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet);
-							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
-							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
-							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item3.txt");
-							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, 
-								&texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure);
-						}
-					}
-
 				#pragma endregion 
 
 				#pragma region LOGIC_CHECK
@@ -589,6 +540,12 @@ int main(int argc, char* argv[])
 				//Проверка таймера зелий
 				BuffsStateCheck(&Laplas, timeInGame);
 
+				//Срабатывание триггера обнаружения врагом
+				EnemyTrigger(levelEnemys, &Laplas, &enemysCount);
+
+				//Движение врагов
+				EnemysMovement(&enemysCount, levelEnemys, &Laplas);
+
 				//Проверка статуса врага
 				for(int i = 0; i < enemysCount; i ++)
 					if(levelEnemys[i].status.alive && levelEnemys[i].effect.poisoned && levelEnemys[i].status.HP > 2)
@@ -598,8 +555,39 @@ int main(int argc, char* argv[])
 							levelEnemys[i].status.HP -= POISON_DMG;
 						}
 
+				//Анимация атаки
+				for (int i = 0; i < enemysCount; i++)
+					if (levelEnemys[i].hitbox.x > Laplas.hitbox.x - levelEnemys[i].hitbox.w / 1.25 && levelEnemys[i].hitbox.x < Laplas.hitbox.x + levelEnemys[i].hitbox.w / 1.25)
+						levelEnemys[i].animation_type = 6;
+					else
+						levelEnemys[i].animation_type = 1;
 
-				CheckSkillFigure(&Laplas, &itemsCount, levelItems, &window, ren, win, &texture_skill);
+				//Переход на другую локацию
+				for (int i = 0; i < bordersCount; i++)
+					if (levelBorders[i].type == 3)
+					{
+						if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[i].bordersHitbox))
+						{
+							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
+							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
+							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet);
+							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
+							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
+							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item3.txt");
+							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel,
+								&texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure);
+						}
+					}
+
+				//Статуя прокачки
+				CheckSkillFigure(&Laplas, &itemsCount, levelItems, &window, ren, win, &texture_skill, fontNovemBig);
+
+				//Сброс резиста от дамага
+				if (Laplas.effect.lastDamage + Laplas.effect.afterAtackResist < timeInGame)
+					Laplas.effect.underAtack = 0;
+
+				//Активация ловушки
+				TrapActivate(&trapsCount, levelTraps, &Laplas, &timeInGame);
 
 				#pragma endregion 
 
@@ -613,9 +601,6 @@ int main(int argc, char* argv[])
 				//Удаление врагов с поле боя
 				EnemyDeath(&enemysCount, levelEnemys);
 
-				//Активация ловушки
-				TrapActivate(&trapsCount, levelTraps, &Laplas, &timeInGame);
-					
 				//Атака ловушкой по ГГ
 				TrapAtack(&trapsCount, levelTraps, &Laplas, &timeInGame);
 
@@ -667,9 +652,7 @@ int main(int argc, char* argv[])
 					}
 
 
-				//Сброс резиста от дамага
-				if (Laplas.effect.lastDamage + Laplas.effect.afterAtackResist < timeInGame)
-					Laplas.effect.underAtack = 0;
+
 
 				#pragma endregion 
 
@@ -689,7 +672,7 @@ int main(int argc, char* argv[])
 					lastTime = timeInGame / 1000 % 60;
 					sprintf_s(timer_text, "%02i:%02i", timeInGame / 60000, lastTime);
 					SDL_DestroyTexture(texture_timer.texture);
-					texture_timer = CreateTimerFromText(timer_text, fontNovemBig, { 220, 20, 60, 255 });
+					texture_timer = CreateTimerFromText(timer_text, fontNovemBig, { 220, 20, 60, 255 }, ren);
 				}
 
 				//Отрисовка кол-ва боеприпасов
@@ -757,7 +740,7 @@ int main(int argc, char* argv[])
 
 	}
 
-	//saveLaplas(&Laplas, "Saves\\1\\main_hero.txt", &deltaTime);
+	//saveLaplas(&Laplas, "Saves\\1.txt");
 
 	free(levelBorders);
 	free(levelEnemys);
@@ -811,6 +794,7 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_skill.iconStrength.texture);
 	SDL_DestroyTexture(texture_skill.iconWeapon.texture);
 	SDL_DestroyTexture(texture_skill.figure.texture);
+	SDL_DestroyTexture(texture_skill.point.texture);
 
 
 	DeInit(0, &win, &ren, &win_surface);

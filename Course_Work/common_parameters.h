@@ -31,6 +31,8 @@
 #define MAP_TYPE_COUNT 5
 #define POISON_CD 1500
 #define POISON_DMG 1
+#define SKILL_LVL_POINT_COST 10
+#define SKILL_MAX_LVL 7
 
 #pragma region HERO_STATS
 
@@ -129,6 +131,13 @@ struct mainStatistic
 	int Shoot_DMG;
 	int money;
 	int souls;
+
+	int lvlHealth;
+	int lvlStrength;
+	int lvlLucky;
+	int lvlAmmo;
+	int lvlWeapon;
+	int lvlPotion;
 };
 
 struct mainPhysics
@@ -323,6 +332,8 @@ struct mainRoom
 struct mainTextureSkill
 {
 	mainRenderer figure;
+	mainRenderer point;
+
 	mainRenderer iconHealth;
 	mainRenderer iconStrength;
 	mainRenderer iconLucky;

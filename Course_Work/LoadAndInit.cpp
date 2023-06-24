@@ -340,7 +340,7 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 	}
 }
 
-void loadLaplas(mainHero* Laplas, const char path[], int* deltatime)
+void loadLaplas(mainHero* Laplas, const char path[])
 {
 	FILE* f;
 	if (fopen_s(&f, path, "r") != 0)
@@ -349,55 +349,14 @@ void loadLaplas(mainHero* Laplas, const char path[], int* deltatime)
 		system("pause");
 	}
 
-	fscanf_s(f, "%d ", &deltatime);
+	fscanf_s(f, "%d ", &Laplas->status.lvlAmmo);
+	fscanf_s(f, "%d ", &Laplas->status.lvlHealth);
+	fscanf_s(f, "%d ", &Laplas->status.lvlLucky);
+	fscanf_s(f, "%d ", &Laplas->status.lvlPotion);
+	fscanf_s(f, "%d ", &Laplas->status.lvlStrength);
+	fscanf_s(f, "%d ", &Laplas->status.lvlWeapon);
 
-	fscanf_s(f, "%d ", &Laplas->position.x);
-	fscanf_s(f, "%d ", &Laplas->position.y);
-
-	fscanf_s(f, "%d ", &Laplas->hitbox.x);
-	fscanf_s(f, "%d ", &Laplas->hitbox.y);
-	fscanf_s(f, "%d ", &Laplas->hitbox.w);
-	fscanf_s(f, "%d ", &Laplas->hitbox.h);
-
-	fscanf_s(f, "%d ", &Laplas->texture_rect.x);
-	fscanf_s(f, "%d ", &Laplas->texture_rect.y);
-	fscanf_s(f, "%d ", &Laplas->texture_rect.w);
-	fscanf_s(f, "%d ", &Laplas->texture_rect.h);
-
-	fscanf_s(f, "%f ", &Laplas->physic.xMoveL);
-	fscanf_s(f, "%f ", &Laplas->physic.xMoveR);
-	fscanf_s(f, "%f ", &Laplas->physic.yMove);
-	fscanf_s(f, "%d ", &Laplas->physic.gazeDirection);
-	fscanf_s(f, "%f ", &Laplas->physic.speed);
-	fscanf_s(f, "%f ", &Laplas->physic.gravity);
-	fscanf_s(f, "%f ", &Laplas->physic.accelerationX);
-	fscanf_s(f, "%f ", &Laplas->physic.accelerationY);
-	fscanf_s(f, "%f ", &Laplas->physic.impulse);
-	fscanf_s(f, "%d ", &Laplas->physic.onBorder);
-
-	fscanf_s(f, "%d ", &Laplas->effect.dashCD);
-	fscanf_s(f, "%d ", &Laplas->effect.timeDashCD);
-	fscanf_s(f, "%d ", &Laplas->effect.atackCD);
-	fscanf_s(f, "%d ", &Laplas->effect.timeAtackCD);
-	fscanf_s(f, "%d ", &Laplas->effect.shootCD);
-	fscanf_s(f, "%d ", &Laplas->effect.timeShootCD);
-	fscanf_s(f, "%f ", &Laplas->effect.camersScale.x);
-	fscanf_s(f, "%f ", &Laplas->effect.camersScale.y);
-	fscanf_s(f, "%d ", &Laplas->effect.underAtack);
-	fscanf_s(f, "%d ", &Laplas->effect.afterAtackResist);
-	fscanf_s(f, "%d ", &Laplas->effect.lastDamage);
-
-	fscanf_s(f, "%d ", &Laplas->status.DMG);
-	fscanf_s(f, "%d ", &Laplas->status.HP);
-	fscanf_s(f, "%d ", &Laplas->status.alive);
-	fscanf_s(f, "%d ", &Laplas->status.ammunition);
-	fscanf_s(f, "%d ", &Laplas->status.Shoot_DMG);
-
-
-	fscanf_s(f, "%d ", &Laplas->buffs.buffDMGactive);
-	fscanf_s(f, "%d ", &Laplas->buffs.buffDMGstart);
-	fscanf_s(f, "%d ", &Laplas->buffs.buffDuaration);
-	fscanf_s(f, "%d ", &Laplas->buffs.buffDMGpercent);
+	fscanf_s(f, "%d ", &Laplas->status.souls);
 
 	fclose(f);
 }
@@ -411,4 +370,25 @@ void dopLoadHero(mainHero* Laplas)
 	Laplas->animationType = NULL;
 	Laplas->keys = { NULL, NULL, NULL };
 
+}
+
+void saveLaplas(mainHero* Laplas, const char path[])
+{
+	FILE* f;
+	if (fopen_s(&f, path, "w") != 0)
+	{
+		printf_s("Can't open %s!", path);
+		system("pause");
+	}
+
+	fprintf_s(f, "%d ", Laplas->status.lvlAmmo);
+	fprintf_s(f, "%d ", Laplas->status.lvlHealth);
+	fprintf_s(f, "%d ", Laplas->status.lvlLucky);
+	fprintf_s(f, "%d ", Laplas->status.lvlPotion);
+	fprintf_s(f, "%d ", Laplas->status.lvlStrength);
+	fprintf_s(f, "%d ", Laplas->status.lvlWeapon);
+
+	fprintf_s(f, "%d ", Laplas->status.souls);
+
+	fclose(f);
 }

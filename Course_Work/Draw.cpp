@@ -135,7 +135,6 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 	SDL_Rect rect123;
 	SDL_Rect dopRect = { NULL, NULL, NULL, NULL };
 	bool check = 1;
-	SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
 	for (int i = 0; i < bordersCount; i++)
 	{
 		rect123 = levelBorders[i].bordersHitbox;
@@ -152,14 +151,7 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 
 		switch (levelBorders[i].type)
 		{
-		case 1:
-			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-			SDL_RenderFillRect(ren, &rect123);
-			break;
-
 		case 2:
-			SDL_SetRenderDrawColor(ren, 128, 255, 128, 255);
-			//SDL_RenderFillRect(ren, &rect123);
 			SDL_Rect rect1 = cobbleStone->textureSize;
 			dopRect = cobbleStone->textureSize;
 
@@ -185,25 +177,15 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 				}
 			break;
 
-		case 3:
-			SDL_SetRenderDrawColor(ren, 255, 128, 128, 255);
-			//SDL_RenderFillRect(ren, &rect123);
-
-			break;
-
 		case 4:
 			SDL_RenderCopy(ren, platform->texture, NULL, &rect123);
 			break;
 
 		case 5:
-			SDL_SetRenderDrawColor(ren, 120, 0, 120, 255);
-			//SDL_RenderFillRect(ren, &rect123);
 			SDL_RenderCopy(ren, trampline->texture, NULL, &rect123);
 			break;
 
 		case 7:
-			SDL_SetRenderDrawColor(ren, 120, 0, 120, 255);
-			//SDL_RenderFillRect(ren, &rect123);
 			if(levelBorders[i].alive)
 				SDL_RenderCopy(ren, tmp_Platform->texture, NULL, &rect123);
 			break;

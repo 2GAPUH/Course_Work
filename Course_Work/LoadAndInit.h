@@ -20,4 +20,5 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 	mainRenderer* texture_barrel, mainRenderer* texture_item_Ball, mainRenderer* texture_item_acid, mainRenderer* texture_buff_speed, 
 	mainRenderer* texture_buff_lucky, mainRenderer* texture_skill_figure);
 void dopLoadHero(mainHero* Laplas);
-void loadLaplas(mainHero* Laplas, const char path[], int* deltatime);
+void loadLaplas(mainHero* Laplas, const char path[]);
+void saveLaplas(mainHero* Laplas, const char path[]);

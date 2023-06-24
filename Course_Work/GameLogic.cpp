@@ -148,14 +148,14 @@ void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas
 */
 
 void CheckSkillFigure(mainHero* Laplas, int* itemsCount, mainItems levelItems[], mainWindow* window, SDL_Renderer* ren, SDL_Window* win,
-	mainTextureSkill* texture_skill)
+	mainTextureSkill* texture_skill, TTF_Font* font)
 {
 	for (int i = 0; i < *itemsCount; i++)
 		if (levelItems[i].type == 5)
 			if (Laplas->keys.pressed_E)
 				if (HeroPhysicInRange({ Laplas->hitbox.x, Laplas->hitbox.y }, levelItems[i].grab_zone))
 				{
-					SkillLeveling(Laplas, window, ren, win, texture_skill);
+					SkillLeveling(Laplas, window, ren, win, texture_skill, font);
 					Laplas->keys.pressed_E = 0;
 					return;
 				}

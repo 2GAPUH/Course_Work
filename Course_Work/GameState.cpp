@@ -1,17 +1,49 @@
 #include "GameState.h"
 
 
-void SkillLeveling(mainHero* Laplas,  mainWindow* window, SDL_Renderer* ren, SDL_Window* win, mainTextureSkill* texture_skill)
+void UpSkillLvl(SDL_Point* mousePoint, SDL_Rect button, int* skill_lvl, int* souls)
+{
+	if (SDL_PointInRect(mousePoint, &button))
+		if (*skill_lvl < SKILL_MAX_LVL && *souls >*skill_lvl * SKILL_LVL_POINT_COST)
+		{
+			(*souls) -= (*skill_lvl) * SKILL_LVL_POINT_COST;
+			(*skill_lvl)++;
+			*mousePoint = { 0, 0 };
+		}
+}
+
+void DrawSkillPoints(int* skillLvl, SDL_Rect luckyPoints, SDL_Renderer* ren, SDL_Texture* texture)
+{
+	for (int i = 0; i < *skillLvl - 1; i++)
+	{
+		SDL_Rect dopRect = luckyPoints;
+		dopRect.x += dopRect.w * i;
+		SDL_RenderCopy(ren, texture, NULL, &dopRect);
+	}
+}
+
+void SkillLeveling(mainHero* Laplas, mainWindow* window, SDL_Renderer* ren, SDL_Window* win, mainTextureSkill* texture_skill,
+	TTF_Font* font)
 {
 	SDL_Rect luckyButton = { int(window->w * (2. / 16.)) , int(window->h * (1. / 9.)), int(window->w * 3 / 16.) ,int(window->h * 3 / 9.) };
 	SDL_Rect potionButton = { int(window->w * (6.5 / 16.)), luckyButton.y,   luckyButton.w ,luckyButton.h };
 	SDL_Rect healthButton = { int(window->w * (11. / 16.)), luckyButton.y,   luckyButton.w ,luckyButton.h };
-	SDL_Rect strengthButton = { luckyButton.x  , int(window->h * (5. / 9.))  , luckyButton.w ,luckyButton.h }; 
+	SDL_Rect strengthButton = { luckyButton.x  , int(window->h * (5. / 9.))  , luckyButton.w ,luckyButton.h };
 	SDL_Rect ammoButton = { potionButton.x , strengthButton.y , luckyButton.w ,luckyButton.h };
 	SDL_Rect weaponButton = { healthButton.x , ammoButton.y , luckyButton.w ,luckyButton.h };
-	
+
+	SDL_Rect luckyPoints = { int(window->w * (2. / 16.)) , int(window->h * (4. / 9.)), int(window->w * 0.5 / 16.) ,int(window->h * 1 / 9.) };
+	SDL_Rect potionPoints = { int(window->w * (6.5 / 16.)), luckyPoints.y,   luckyPoints.w ,luckyPoints.h };
+	SDL_Rect healthPoints = { int(window->w * (11. / 16.)), luckyPoints.y,   luckyPoints.w ,luckyPoints.h };
+	SDL_Rect strengthPoints = { luckyPoints.x  , int(window->h * (8. / 9.))  , luckyPoints.w ,luckyPoints.h };
+	SDL_Rect ammoPoints = { potionPoints.x , strengthPoints.y , luckyPoints.w ,luckyPoints.h };
+	SDL_Rect weaponPoints = { healthPoints.x , strengthPoints.y , luckyPoints.w ,luckyPoints.h };
+
 	SDL_Event ev;
-	
+	SDL_Point mousePoint;
+	char souls[5] = { 0 };
+	mainRenderer texture;
+	texture.texture = 0;
 
 	while (true)
 	{
@@ -29,6 +61,13 @@ void SkillLeveling(mainHero* Laplas,  mainWindow* window, SDL_Renderer* ren, SDL
 					strengthButton = { luckyButton.x  , int(window->h * (5. / 9.))  , luckyButton.w ,luckyButton.h };
 					ammoButton =     { potionButton.x , strengthButton.y , luckyButton.w ,luckyButton.h };
 					weaponButton =   { healthButton.x , ammoButton.y , luckyButton.w ,luckyButton.h };
+
+					luckyPoints = { int(window->w * (2. / 16.)) , int(window->h * (4. / 9.)), int(window->w * 0.5 / 16.) ,int(window->h * 1 / 9.) };
+					potionPoints = { int(window->w * (6.5 / 16.)), luckyPoints.y,   luckyPoints.w ,luckyPoints.h };
+					healthPoints = { int(window->w * (11. / 16.)), luckyPoints.y,   luckyPoints.w ,luckyPoints.h };
+					strengthPoints = { luckyPoints.x  , int(window->h * (8. / 9.))  , luckyPoints.w ,luckyPoints.h };
+					ammoPoints = { potionPoints.x , strengthPoints.y , luckyPoints.w ,luckyPoints.h };
+					weaponPoints = { healthPoints.x , strengthPoints.y , luckyPoints.w ,luckyPoints.h };
 				}
 				break;
 
@@ -36,19 +75,47 @@ void SkillLeveling(mainHero* Laplas,  mainWindow* window, SDL_Renderer* ren, SDL
 				switch (ev.key.keysym.scancode)
 				{
 				case SDL_SCANCODE_ESCAPE:
+					SDL_DestroyTexture(texture.texture);
+					texture.texture = 0;
 					return;
 					break;
 				}
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				SDL_Point mousePoint = { ev.button.x,ev.button.y };
+				mousePoint = { ev.button.x,ev.button.y };
 				break;
 				
 			}
 		}
 		
+		UpSkillLvl(&mousePoint, luckyButton, &Laplas->status.lvlLucky, &Laplas->status.souls);
+		UpSkillLvl(&mousePoint, potionButton, &Laplas->status.lvlPotion, &Laplas->status.souls);
+		UpSkillLvl(&mousePoint, healthButton, &Laplas->status.lvlHealth, &Laplas->status.souls);
+		UpSkillLvl(&mousePoint, strengthButton, &Laplas->status.lvlStrength, &Laplas->status.souls);
+		UpSkillLvl(&mousePoint, ammoButton, &Laplas->status.lvlAmmo, &Laplas->status.souls);
+		UpSkillLvl(&mousePoint, weaponButton, &Laplas->status.lvlWeapon, &Laplas->status.souls);
 
+		sprintf_s(souls, "%d", Laplas->status.souls);
+
+		SDL_Surface* surface = TTF_RenderText_Blended(font, souls, { 25, 229, 230, 255 });
+		if (texture.texture != 0)
+			SDL_DestroyTexture(texture.texture);
+
+
+		texture.texture = SDL_CreateTextureFromSurface(ren, surface);
+		texture.textureSize.w = surface->w;
+		texture.textureSize.h = surface->h;
+		texture.textureSize.x = WINDOW_WIDTH - surface->w;
+		texture.textureSize.y = NULL;
+		SDL_FreeSurface(surface);
+
+		DrawSkillPoints(&Laplas->status.lvlAmmo, ammoPoints, ren, texture_skill->point.texture);
+		DrawSkillPoints(&Laplas->status.lvlLucky, luckyPoints, ren, texture_skill->point.texture);
+		DrawSkillPoints(&Laplas->status.lvlHealth, healthPoints, ren, texture_skill->point.texture);
+		DrawSkillPoints(&Laplas->status.lvlPotion, potionPoints, ren, texture_skill->point.texture);
+		DrawSkillPoints(&Laplas->status.lvlStrength, strengthPoints, ren, texture_skill->point.texture);
+		DrawSkillPoints(&Laplas->status.lvlWeapon, weaponPoints, ren, texture_skill->point.texture);
 
 		SDL_RenderCopy(ren, texture_skill->iconLucky.texture, NULL, &luckyButton);
 		SDL_RenderCopy(ren, texture_skill->iconPotion.texture, NULL, &potionButton);
@@ -57,7 +124,11 @@ void SkillLeveling(mainHero* Laplas,  mainWindow* window, SDL_Renderer* ren, SDL
 		SDL_RenderCopy(ren, texture_skill->iconAmmo.texture, NULL, &ammoButton);
 		SDL_RenderCopy(ren, texture_skill->iconWeapon.texture, NULL, &weaponButton);
 
+		SDL_RenderCopy(ren, texture.texture, NULL, &texture.textureSize);
+
 		SDL_RenderPresent(ren);
+
+
 
 		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 		SDL_RenderClear(ren);
