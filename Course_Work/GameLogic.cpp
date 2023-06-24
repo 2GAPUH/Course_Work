@@ -164,9 +164,11 @@ void CheckSkillFigure(mainHero* Laplas, int* itemsCount, mainItems levelItems[],
 void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInGame)
 {
 	for (int i = 0; i < *itemsCount; i++)
-		if (Laplas->keys.pressed_E && items[i].alive)
-			if (HeroPhysicInRange({ Laplas->hitbox.x, Laplas->hitbox.y }, items[i].grab_zone))
+		if (Laplas->keys.pressed_E && items[i].alive && items[i].type!=6)
+			if (HeroPhysicInRange({ Laplas->hitbox.x, Laplas->hitbox.y }, items[i].grab_zone) && Laplas->money >= items[i].cost)
 			{
+				Laplas->money -= items[i].cost;
+				printf_s("%d", Laplas->money);
 				switch (items[i].type)
 				{
 				case 2:
@@ -238,6 +240,17 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 					}
 					break;
 
+				case 4:
+					items[i].alive = 0;
+					if (rand()%100 > 30)
+					{
+						Laplas->status.HP -= 30;
+					}
+					else {
+						Laplas->status.HP += 70;
+					}
+					break;
+
 				case 5:
 					//SkillLeveling();
 					break;
@@ -268,11 +281,19 @@ void BuffsStateCheck(mainHero* Laplas, int timeInGame)
 	}
 }
 
-void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[])
+void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[], mainHero *Laplas)
 {
 	for (int d = 0; d < *enemysCount; d++)
 		if (!levelEnemys[d].status.alive)
 		{
+			Laplas->money += levelEnemys->reward;
+			printf_s("%d", Laplas->money);
+			if (levelEnemys[d].type == 2 && rand()%100<=20)
+			{
+				//drop potion
+				printf_s("potion");
+			}
+
 			if (d == *enemysCount - 1 || *enemysCount == 1)
 			{
 				(*enemysCount)--;

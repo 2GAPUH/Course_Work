@@ -15,7 +15,7 @@ void TrapBulletOutworldCheck(mainTraps levelTraps[], int* trapsCount, mainBorder
 void EnemyTrigger(mainEnemys levelEnemys[], mainHero* Laplas, int* enemysCount);
 void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas);
 void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInGame);
-void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[]);
+void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas);
 void TrapActivate(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, int* deltaTime);
 void TrapAtack(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, int* deltaTime);
 void BuffsStateCheck(mainHero* Laplas, int timeInGame);

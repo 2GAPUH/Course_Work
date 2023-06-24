@@ -120,10 +120,13 @@ int main(int argc, char* argv[])
 	mainRenderer texture_acid_effect;
 	mainRenderer texture_tower;
 	mainRenderer texture_tower_bullet;
+	mainRenderer texture_digit_atack;
+	mainRenderer texture_digit_idle;
 	mainRenderer texture_buff_lucky;
 	mainRenderer texture_buff_speed;
 	mainRenderer texture_kebab;
 	mainRenderer texture_skill_figure;
+	mainRenderer texture_shop;
 
 
 	mainRenderer texture_item_Ball;
@@ -203,6 +206,11 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\bobr_preatack.png", &texture_beaver_preatack, 1, ren);
 	GetTexture("Textures\\bobr_atack.png", &texture_beaver_atack, 2, ren);
 
+	GetTexture("Textures\\barrel.png", &texture_barrel, 1, ren);
+
+	GetTexture("Textures\\texture_digit_atack.png", &texture_digit_atack, 7, ren);
+	GetTexture("Textures\\texture_digit_idle.png", &texture_digit_idle, 1, ren);
+
 	GetTexture("Textures\\krab.png", &texture_krab, 3, ren);
 
 	GetTexture("Textures\\BackGroundCave.png", &texture_backGround, 1, ren);
@@ -238,8 +246,9 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\potion_speed.png", &texture_buff_speed, 1, ren);
 	GetTexture("Textures\\potion_lucky.png", &texture_buff_lucky, 1, ren);
 	GetTexture("Textures\\kebab.png", &texture_kebab, 1, ren);
+	GetTexture("Textures\\shop.png", &texture_shop, 1, ren);
 
-	GetTexture("Textures\\barrel.png", &texture_barrel, 1, ren);
+	
 
 	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1, ren);
 	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1, ren);
@@ -318,10 +327,10 @@ int main(int argc, char* argv[])
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\SaveRoomTraps.txt");
 	levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
 
-	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet);
+	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet, &texture_digit_idle, &texture_digit_atack, &texture_barrel);
 	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, 
-		&texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure);
+		&texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop);
 
 	//mainRoom mainMap[MAP_SIZE][MAP_SIZE];
 	//for (int i = 0; i < MAP_SIZE; i++)
@@ -570,12 +579,12 @@ int main(int argc, char* argv[])
 						{
 							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
 							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
-							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet);
+							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet, &texture_digit_idle, &texture_digit_atack, &texture_barrel);
 							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
 							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item3.txt");
 							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, 
-								&texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure);
+								&texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop);
 						}
 					}
 
@@ -611,7 +620,7 @@ int main(int argc, char* argv[])
 				HeroDashAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys);
 
 				//Удаление врагов с поле боя
-				EnemyDeath(&enemysCount, levelEnemys);
+				EnemyDeath(&enemysCount, levelEnemys, &Laplas);
 
 				//Активация ловушки
 				TrapActivate(&trapsCount, levelTraps, &Laplas, &timeInGame);
@@ -714,8 +723,11 @@ int main(int argc, char* argv[])
 				////Эффект бафа
 				DrawBuffsEffect(ren, &Laplas, levelWidth, levelHeight, &window);
 
+				//отрисовка характеристик персонажа
 				DrawAmmoBar(ammoBarTexture, &window, ren);
 				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window, ren);
+
+				//отрисовка хп ближайшего противника
 				if (enemysCount>0)
 				{
 					DrawEnemyHP(Laplas, levelEnemys, enemysCount, hpBarTexture, enemyHpBarEdgingTexture, &window, ren);

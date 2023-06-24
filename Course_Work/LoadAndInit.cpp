@@ -139,13 +139,14 @@ mainHero InitHero()
 	Laplas.animationType = NULL;
 	Laplas.buffs = { NULL, NULL, DMG_BUFF_DUARATION, DMG_BUFF_PERCENT, NULL };
 	Laplas.keys = { NULL, NULL, NULL };
-
+	Laplas.money = START_MONEY;
 
 	return Laplas;
 }
 
 void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* texture_beaver_run, mainRenderer* texture_beaver_atack, 
-	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect, mainRenderer* texture_tower, mainRenderer* texture_tower_bullet)
+	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect, 
+	mainRenderer* texture_tower, mainRenderer* texture_tower_bullet, mainRenderer* texture_digit_idle, mainRenderer* texture_digit_atack, mainRenderer* texture_barrel)
 {
 	for (int i = 0; i < *enemysCount; i++)
 	{
@@ -155,7 +156,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		levelEnemys[i].triggered = NULL;
 
 		if (levelEnemys[i].type == 1)
-		{
+		{	//BEAVER
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
 			levelEnemys[i].status = { BEAVER_HP, BEAVER_DMG, BEAVER_HP , ALIVE };
@@ -165,27 +166,28 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].animation.preAtack = *texture_beaver_preAtack;
 			levelEnemys[i].triggeredDistance = BEAVER_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
-
+			levelEnemys[i].reward = BEAVER_REAWRD;
 
 		}
 
 		else if (levelEnemys[i].type == 2)
-		{
-			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+		{	//BARREL
+			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BARREL_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
-			levelEnemys[i].status = { BEAVER_HP, BEAVER_DMG, BEAVER_HP , ALIVE };
-			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
-			levelEnemys[i].animation.run = *texture_beaver_run;
-			levelEnemys[i].animation.atack = *texture_beaver_atack;
-			levelEnemys[i].animation.preAtack = *texture_beaver_preAtack;
-			levelEnemys[i].triggeredDistance = BEAVER_TRIGGERED_DISTANCE;
+			levelEnemys[i].status = { BARREL_HP, BARREL_DMG, BARREL_HP , ALIVE };
+			levelEnemys[i].effect.atackCD = BARREL_ATACK_CD;
+			levelEnemys[i].animation.run = *texture_barrel;
+			levelEnemys[i].animation.atack = *texture_barrel;
+			levelEnemys[i].animation.preAtack = *texture_barrel;
+			levelEnemys[i].triggeredDistance = BARREL_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
+			levelEnemys[i].reward = BARREL_REAWRD;
 
 
 		}
 
 		else if (levelEnemys[i].type == 3)
-		{
+		{	//KRAB
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
 			levelEnemys[i].status = { KRAB_HP, KRAB_DMG, KRAB_HP , ALIVE };
@@ -195,25 +197,38 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].animation.preAtack = *texture_krab_run;
 			levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
+			levelEnemys[i].reward = KRAB_REAWRD;
 
 		}
 
 		else if (levelEnemys[i].type == 4)
-		{
-			{
-				levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
-				levelEnemys[i].effect.underAtack = NULL;
-				levelEnemys[i].status = { KRAB_HP, KRAB_DMG, KRAB_HP , ALIVE };
-				levelEnemys[i].effect.atackCD = KRAB_ATACK_CD;
-				levelEnemys[i].animation.run = *texture_tower;
-				levelEnemys[i].animation.atack = *texture_tower;
-				levelEnemys[i].animation.preAtack = *texture_tower;
-				levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
-				levelEnemys[i].animation_type = NULL;
-				levelEnemys[i].animation.bullet = *texture_tower_bullet;
-				levelEnemys[i].shoot.alive = 0;
+		{	//TOWER
+			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+			levelEnemys[i].effect.underAtack = NULL;
+			levelEnemys[i].status = { KRAB_HP, KRAB_DMG, KRAB_HP , ALIVE };
+			levelEnemys[i].effect.atackCD = KRAB_ATACK_CD;
+			levelEnemys[i].animation.run = *texture_tower;
+			levelEnemys[i].animation.atack = *texture_tower;
+			levelEnemys[i].animation.preAtack = *texture_tower;
+			levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
+			levelEnemys[i].animation_type = NULL;
+			levelEnemys[i].animation.bullet = *texture_tower_bullet;
+			levelEnemys[i].shoot.alive = 0;
+			levelEnemys[i].reward = BEAVER_REAWRD;
+		}
 
-			}
+		else if (levelEnemys[i].type == 5) 
+		{	//DIGLET
+			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, DIGIT_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+			levelEnemys[i].effect.underAtack = NULL;
+			levelEnemys[i].status = { DIGIT_HP, DIGIT_DMG, DIGIT_HP , ALIVE };
+			levelEnemys[i].effect.atackCD = DIGIT_ATACK_CD;
+			levelEnemys[i].animation.run = *texture_digit_idle;
+			levelEnemys[i].animation.atack = *texture_digit_atack;
+			levelEnemys[i].animation.preAtack = *texture_digit_idle;
+			levelEnemys[i].triggeredDistance = DIGIT_TRIGGERED_DISTANCE;
+			levelEnemys[i].animation_type = NULL;
+			levelEnemys[i].reward = DIGIT_REAWRD;
 		}
 	}
 }
@@ -264,7 +279,7 @@ void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_da
 
 void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet, 
 	mainRenderer* texture_barrel, mainRenderer* texture_item_Ball, mainRenderer* texture_item_acid, mainRenderer* texture_buff_speed, 
-	mainRenderer*  texture_buff_lucky, mainRenderer* texture_skill_figure)
+	mainRenderer*  texture_buff_lucky, mainRenderer* texture_skill_figure, mainRenderer* texture_kebab, mainRenderer* texture_shop)
 {
 	for (int i = 0; i < *itemsCount; i++)
 	{
@@ -289,16 +304,19 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 				case 1:
 					levelItems[i].render = *texture_buff_DMG;
 					levelItems[i].dop_type = 1;
+					levelItems[i].cost = 0;
 					break;
 
 				case 2:
 					levelItems[i].render = *texture_buff_speed;
 					levelItems[i].dop_type = 2;
+					levelItems[i].cost = 0;
 					break;
 
 				case 3:
 					levelItems[i].render = *texture_buff_lucky;
 					levelItems[i].dop_type = 3;
+					levelItems[i].cost = 0;
 					break;
 				}
 
@@ -330,10 +348,18 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 				
 				break;
 
+			case 4:
+				levelItems[i].render = *texture_kebab;
+				levelItems[i].cost = 0;
+				break;
 			case 5:
 				levelItems[i].render = *texture_skill_figure;
+				levelItems[i].cost = 0;
 				break;
-
+			case 6:
+				levelItems[i].render = *texture_shop;
+				levelItems[i].cost = 0;
+				break;
 			}
 			
 		}
