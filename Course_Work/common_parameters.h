@@ -113,6 +113,19 @@
 
 #pragma endregion
 
+#pragma region BAT_STATS
+
+#define BAT_HP 30
+#define BAT_DMG 100
+#define BAT_SPEED 8
+#define BAT_ATACK_CD 1000
+#define BAT_TRIGGERED_DISTANCE 500
+#define BAT_REAWRD 100
+#define BAT_DIVE_HEIGHT 300
+
+
+#pragma endregion
+
 #pragma region TRAPS_STATS
 
 #define TRAP_DART_WIDTH 40
