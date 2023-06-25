@@ -232,11 +232,15 @@ void PauseMenu(GameState* gameState, mainWindow* window, SDL_Renderer * ren, SDL
 	}
 }
 
-void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, SDL_Renderer* ren, SDL_Window* win) {
+void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, SDL_Renderer* ren, SDL_Window* win, Audio audio) {
 
-	SDL_FRect volumeLeftButton;
-	SDL_FRect volumeBar;
-	SDL_FRect volumeRightButton;
+	SDL_FRect musicVolumeLeftButton;
+	SDL_FRect musicVolumeRightButton;
+	SDL_FRect musicVolumeBar;
+
+	SDL_FRect soundsVolumeLeftButton;
+	SDL_FRect soundsVolumeRightButton;
+	SDL_FRect soundsVolumeBar;
 
 	mainRenderer plusButtonTexture;
 	mainRenderer minusButtonTexture;
@@ -278,9 +282,13 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 
 		SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
 
-		volumeLeftButton = { float(window->w / 3.12), float(window->h / 3.), float(window->w / 25.6), float(window->h / 14.4) };
-		volumeRightButton = { float(window->w / 1.66), float(window->h / 3.), float(window->w / 25.6), float(window->h / 14.4) };
-		volumeBar = { float(window->w / 2.61),float(window->h / 3.),float(window->w / 25.6) * settings->volume,float(window->h / 14.4) };
+		musicVolumeLeftButton = { float(window->w / 3.12), float(window->h / 3.), float(window->w / 25.6), float(window->h / 14.4) };
+		musicVolumeRightButton = { float(window->w / 1.66), float(window->h / 3.), float(window->w / 25.6), float(window->h / 14.4) };
+		musicVolumeBar = { float(window->w / 2.61),float(window->h / 3.),float(window->w / 25.6) * settings->musicVolume,float(window->h / 14.4) };
+
+		soundsVolumeLeftButton = { float(window->w / 3.12), float(window->h / 5.), float(window->w / 25.6), float(window->h / 14.4) };
+		soundsVolumeRightButton = { float(window->w / 1.66), float(window->h / 5.), float(window->w / 25.6), float(window->h / 14.4) };
+		soundsVolumeBar = { float(window->w / 2.61),float(window->h / 5.),float(window->w / 25.6) * settings->soundsVolume,float(window->h / 14.4) };
 
 		skinLeftButton = { float(window->w / 3.12), float(window->h / 1.63), float(window->w / 25.6), float(window->h / 14.4) };
 		skinRightButton = { float(window->w / 1.66),float(window->h / 1.63), float(window->w / 25.6), float(window->h / 14.4) };
@@ -290,10 +298,13 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 
 		
 
-		SDL_RenderCopyF(ren, minusButtonTexture.texture, NULL, &volumeLeftButton);
-		SDL_RenderCopyF(ren, plusButtonTexture.texture, NULL, &volumeRightButton);
+		SDL_RenderCopyF(ren, minusButtonTexture.texture, NULL, &musicVolumeLeftButton);
+		SDL_RenderCopyF(ren, plusButtonTexture.texture, NULL, &musicVolumeRightButton);
+		SDL_RenderCopyF(ren, volumeBarTexture.texture, NULL, &musicVolumeBar);
 
-		SDL_RenderCopyF(ren, volumeBarTexture.texture, NULL, &volumeBar);
+		SDL_RenderCopyF(ren, minusButtonTexture.texture, NULL, &soundsVolumeLeftButton);
+		SDL_RenderCopyF(ren, plusButtonTexture.texture, NULL, &soundsVolumeRightButton);
+		SDL_RenderCopyF(ren, volumeBarTexture.texture, NULL, &soundsVolumeBar);
 
 		SDL_RenderCopyF(ren, minusButtonTexture.texture, NULL, &skinLeftButton);
 		SDL_RenderCopyF(ren, plusButtonTexture.texture, NULL, &skinRightButton);
@@ -319,13 +330,20 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 			case SDL_MOUSEBUTTONUP:
 			{
 				SDL_FPoint mousePoint = { ev.button.x,ev.button.y };
-				if (SDL_PointInFRect(&mousePoint, &volumeLeftButton) && settings->volume > 0) {
-					settings->volume--;
-					Mix_VolumeMusic(255 * settings->volume / 5);
+				if (SDL_PointInFRect(&mousePoint, &musicVolumeLeftButton) && settings->musicVolume > 0) {
+					settings->musicVolume--;
+					Mix_VolumeMusic(255 * settings->musicVolume / 5);
 				}
-				else if (SDL_PointInFRect(&mousePoint, &volumeRightButton) && settings->volume < 5) {
-					settings->volume++;
-					Mix_VolumeMusic(255 * settings->volume / 5);
+				else if (SDL_PointInFRect(&mousePoint, &musicVolumeRightButton) && settings->musicVolume < 5) {
+					settings->musicVolume++;
+					Mix_VolumeMusic(255 * settings->musicVolume / 5);
+				}
+
+				if (SDL_PointInFRect(&mousePoint, &soundsVolumeLeftButton) && settings->soundsVolume > 0) {
+					settings->soundsVolume--;
+				}
+				else if (SDL_PointInFRect(&mousePoint, &soundsVolumeRightButton) && settings->soundsVolume < 5) {
+					settings->soundsVolume++;
 				}
 
 				if (SDL_PointInFRect(&mousePoint, &skinLeftButton) && settings->skin > 1) {

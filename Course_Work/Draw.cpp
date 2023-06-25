@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_Image.h>
 #include <SDL_ttf.h>
+#include "Audio.h"
 #include "common_parameters.h"
 #include <time.h>
 
@@ -529,6 +530,8 @@ void DrawItem(mainHero* Laplas, mainItems items[], mainWindow* window, SDL_Rende
 
 				SDL_RenderCopy(ren, texture_cost.texture, NULL, &rectCost);
 				SDL_FreeSurface(surface);
+				SDL_DestroyTexture(texture_cost.texture);
+
 			}
 
 			SDL_RenderCopy(ren, items[i].render.texture, &items[i].render.frame, &rect123);
@@ -711,4 +714,5 @@ void DrawMoney(SDL_Renderer* ren, mainWindow* window, TTF_Font* font, mainHero L
 
 	SDL_RenderCopy(ren, texture_money.texture, NULL, &rectCost);
 	SDL_FreeSurface(surface);
+	SDL_DestroyTexture(texture_money.texture);
 }
