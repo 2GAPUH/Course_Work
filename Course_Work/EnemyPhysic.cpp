@@ -214,18 +214,20 @@ void EnemyPhysicOutworldCheck(int* enemysCount, mainEnemys Enemy[], mainBorders 
 {
 	for (int i = 0; i < *enemysCount;i++)
 	{
+		if (Enemy[i].type != 6)
+		{
+			if (Enemy[i].hitbox.x > levelBorders[1].bordersHitbox.w - Enemy[i].hitbox.w / 2 - 2)
+				Enemy[i].hitbox.x = levelBorders[1].bordersHitbox.w - Enemy[i].hitbox.w / 2 - 2;
+			else if (Enemy[i].hitbox.x < levelBorders[0].bordersHitbox.x + Enemy[i].hitbox.w / 2 + 2)
+				Enemy[i].hitbox.x = levelBorders[0].bordersHitbox.x + Enemy[i].hitbox.w / 2 + 2;
 
-		if (Enemy[i].hitbox.x > levelBorders[1].bordersHitbox.w - Enemy[i].hitbox.w / 2 - 2)
-			Enemy[i].hitbox.x = levelBorders[1].bordersHitbox.w - Enemy[i].hitbox.w / 2 - 2;
-		else if (Enemy[i].hitbox.x < levelBorders[0].bordersHitbox.x + Enemy[i].hitbox.w / 2 + 2)
-			Enemy[i].hitbox.x = levelBorders[0].bordersHitbox.x + Enemy[i].hitbox.w / 2 + 2;
+			if (Enemy[i].hitbox.y > levelBorders[0].bordersHitbox.h - Enemy[i].hitbox.h / 2 - 2)
+				Enemy[i].hitbox.y = levelBorders[0].bordersHitbox.h - Enemy[i].hitbox.h / 2 - 2;
+			else if (Enemy[i].hitbox.y < levelBorders[0].bordersHitbox.y + Enemy[i].hitbox.h / 2 + 2)
+				Enemy[i].hitbox.y = levelBorders[0].bordersHitbox.y + Enemy[i].hitbox.h / 2 + 2;
+		}
 
-		if (Enemy[i].hitbox.y > levelBorders[0].bordersHitbox.h - Enemy[i].hitbox.h / 2 - 2)
-			Enemy[i].hitbox.y = levelBorders[0].bordersHitbox.h - Enemy[i].hitbox.h / 2 - 2;
-		else if (Enemy[i].hitbox.y < levelBorders[0].bordersHitbox.y + Enemy[i].hitbox.h / 2 + 2)
-			Enemy[i].hitbox.y = levelBorders[0].bordersHitbox.y + Enemy[i].hitbox.h / 2 + 2;
-
-		if (Enemy[i].type == 6)
+		else if (Enemy[i].type == 6)
 		{
 			if (Enemy[i].hitbox.x > levelBorders[1].bordersHitbox.w - Enemy[i].hitbox.w / 2 - 2)
 				Enemy[i].status.alive = 0;

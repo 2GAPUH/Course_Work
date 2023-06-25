@@ -731,7 +731,7 @@ int main(int argc, char* argv[])
 				EnemysMovement(&map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas);
 
 				//Проверка статуса врага
-				for(int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i ++)
+				for(int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
 					if(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.alive && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].effect.poisoned && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.HP > 2)
 						if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].effect.poisonLastDamage + POISON_CD < timeInGame)
 						{
@@ -741,10 +741,13 @@ int main(int argc, char* argv[])
 
 				//Анимация атаки
 				for (int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
-					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.x > Laplas.hitbox.x - map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.w / 1.25 && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.x < Laplas.hitbox.x + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.w / 1.25)
-						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].animation_type = 6;
-					else
-						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].animation_type = 1;
+					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].type != 6)
+					{
+						if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.x > Laplas.hitbox.x - map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.w / 1.25 && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.x < Laplas.hitbox.x + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.w / 1.25)
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].animation_type = 6;
+						else
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].animation_type = 1;
+					}
 
 				//Переход на другую локацию
 				if(Laplas.lastLocalSwap + LOCAL_SWAP_CD < timeInGame)
@@ -838,7 +841,7 @@ int main(int argc, char* argv[])
 				//Атака ловушкой по ГГ
 				TrapAtack(&map.trapsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.traps[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, &timeInGame);
 
-
+				//Дальняя атака врага
 				for (int t = 0; t < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; t++)
 				{
 					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].type == 4 && !map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.alive && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].effect.atackCD + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.lastShoot < timeInGame)
@@ -859,18 +862,27 @@ int main(int argc, char* argv[])
 							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.alive = 1;
 						}
 					}
-					else if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].type == 6 && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].animation_type == 6)
-					{
 
+					else if (!map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.everShoot && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].type == 6 && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].animation_type == 6 && !map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.alive)
+					{
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.lastShoot = timeInGame;
+						
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.shootAtackCentere.x = map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.x;
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.shootAtackCentere.y = map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.y + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.h ;
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.alive = 1;
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.everShoot = 1;
 					}
 				}
 
+				//Движение снаряда врага с коллизией
 				for (int j = 0; j < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; j++)
-					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.alive)
+				{
+					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.alive && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].type != 6)
 					{
 						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.shootAtackCentere.x += map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.bulletSpeed;
 
-						if (!Laplas.effect.underAtack && CheckShootHitbox(&map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.shootAtackCentere, &Laplas.hitbox))
+						if (!Laplas.effect.underAtack && CheckShootHitbox(&map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.shootAtackCentere, { Laplas.hitbox.x + Laplas.hitbox.w / 2,Laplas.hitbox.y + Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h }))
 						{
 							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.alive = 0;
 							Laplas.effect.underAtack = 1;
@@ -881,14 +893,38 @@ int main(int argc, char* argv[])
 							}
 							else
 								Laplas.buffs.itemBallActive = 0;
-									  
+
 							if (Laplas.status.HP <= 0)
-							{		  
+							{
 								Laplas.status.alive = 0;
 							}
 						}
 
 					}
+
+					else if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.alive && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].type == 6)
+					{
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.shootAtackCentere.y += map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.bulletSpeed / 2;
+
+						if (!Laplas.effect.underAtack && CheckShootHitbox(&map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.shootAtackCentere, { Laplas.hitbox.x + Laplas.hitbox.w / 2,Laplas.hitbox.y + Laplas.hitbox.h / 2, Laplas.hitbox.w, Laplas.hitbox.h }))
+						{
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.alive = 0;
+							Laplas.effect.underAtack = 1;
+							Laplas.effect.lastDamage = timeInGame;
+							if (!Laplas.buffs.itemBallActive)
+							{
+								Laplas.status.HP -= map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].status.DMG;
+							}
+							else
+								Laplas.buffs.itemBallActive = 0;
+
+							if (Laplas.status.HP <= 0)
+							{
+								Laplas.status.alive = 0;
+							}
+						}
+					}
+				}
 
 
 

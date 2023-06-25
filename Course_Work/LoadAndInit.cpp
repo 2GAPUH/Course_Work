@@ -168,7 +168,7 @@ void InitHero(mainHero* Laplas)
 	Laplas->status.lvlLucky = Laplas->status.lvlLucky * 3;
 	Laplas->status.potion_duar = Laplas->status.potion_duar * 10;
 
-	Laplas->animationType = NULL;
+	Laplas->animationType = 1;
 	Laplas->buffs = { NULL, NULL, DMG_BUFF_DUARATION, DMG_BUFF_PERCENT, NULL };
 	Laplas->keys = { NULL, NULL, NULL };
 	Laplas->lastLocalSwap = 0;
@@ -303,11 +303,13 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].animation.atack = *texture_bat_without_anvil;
 			levelEnemys[i].animation.preAtack = *texture_bat_with_anvil;
 			levelEnemys[i].triggeredDistance = BAT_TRIGGERED_DISTANCE;
-			levelEnemys[i].animation_type = NULL;
+			levelEnemys[i].animation_type = 1;
 			levelEnemys[i].animation.bullet = *texture_anvil_without_bat;
+			levelEnemys[i].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
 			levelEnemys[i].shoot.alive = 0;
 			levelEnemys[i].reward = BAT_REAWRD;
-		
+			levelEnemys[i].shoot.everShoot = 0;
+			break;
 
 
 
