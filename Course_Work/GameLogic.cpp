@@ -163,6 +163,8 @@ bool CheckSkillFigure(mainHero* Laplas, int* itemsCount, mainItems levelItems[],
 				{
 					SkillLeveling(Laplas, window, ren, win, texture_skill, font);
 					Laplas->keys.pressed_E = 0;
+					Laplas->physic.xMoveL = 0;
+					Laplas->physic.xMoveR = 0;
 					return 1;
 				}
 	return 0;

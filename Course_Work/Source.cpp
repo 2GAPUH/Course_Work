@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL.h>
-#include <SDL_mixer.h>
 #include <SDL_Image.h>
+#include <SDL_mixer.h>
 #include <SDL_ttf.h>
 #include <iostream>
 #include "func.h"
@@ -22,7 +22,6 @@ SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
 Audio audio = {NULL,NULL, false};
-int levelWidth = 0, levelHeight = 0;
 
 void GetTexture(const char filePath[], mainRenderer* texture, int frameCount, SDL_Renderer* ren)
 { 
@@ -56,6 +55,7 @@ void GetTexture(const char filePath[], mainRenderer* texture, int frameCount, SD
 
 
 
+
 mainRenderer CreateAmmunitionFromText(const char str[], TTF_Font* font, SDL_Color fg)
 {
 	SDL_Surface* surface = TTF_RenderText_Blended(font, str, fg);
@@ -82,6 +82,155 @@ mainRenderer CreateTimerFromText(const char str[], TTF_Font* font, SDL_Color fg,
 	return texture;
 }
 
+void LoadMap(mainMap* map, const char mapName[])
+{
+	FILE* f;
+	if(fopen_s(&f, mapName, "r") != 0)
+	{
+		printf_s("Error map\n");
+		system("pause");
+	}
+
+	fscanf_s(f, "%d", &map->mapSize.i);
+	fscanf_s(f, "%d", &map->mapSize.j);
+
+	map->map = (int**)malloc(sizeof(int*) * (map->mapSize.i));
+	for (int i = 0; i < map->mapSize.i; i++)
+		map->map[i] = (int*)malloc(sizeof(int) * (map->mapSize.j));
+
+	map->borders = (mainBorders***)malloc(sizeof(mainBorders**) * map->mapSize.i);
+	map->enemys = (mainEnemys***)malloc(sizeof(mainEnemys**) * map->mapSize.i);
+	map->traps = (mainTraps***)malloc(sizeof(mainTraps**) * map->mapSize.i);
+	map->items = (mainItems***)malloc(sizeof(mainItems**) * map->mapSize.i);
+
+	map->bordersCount = (int**)malloc(sizeof(int*) * (map->mapSize.i));
+	for (int i = 0; i < map->mapSize.i; i++)
+		map->bordersCount[i] = (int*)malloc(sizeof(int) * (map->mapSize.j));
+
+	map->itemsCount = (int**)malloc(sizeof(int*) * (map->mapSize.i));
+	for (int i = 0; i < map->mapSize.i; i++)
+		map->itemsCount[i] = (int*)malloc(sizeof(int) * (map->mapSize.j));
+
+	map->enemysCount = (int**)malloc(sizeof(int*) * (map->mapSize.i));
+	for (int i = 0; i < map->mapSize.i; i++)
+		map->enemysCount[i] = (int*)malloc(sizeof(int) * (map->mapSize.j));
+
+	map->trapsCount = (int**)malloc(sizeof(int*) * (map->mapSize.i));
+	for (int i = 0; i < map->mapSize.i; i++)
+		map->trapsCount[i] = (int*)malloc(sizeof(int) * (map->mapSize.j));
+
+	map->levelSize = (twoParam**)malloc(sizeof(twoParam*) * map->mapSize.i);
+	for (int i = 0; i < map->mapSize.i; i++)
+		map->levelSize[i] = (twoParam*)malloc(sizeof(twoParam) * (map->mapSize.j));
+
+	for (int i = 0; i < map->mapSize.i; i++)
+	{
+		map->borders[i] = (mainBorders**)malloc(sizeof(mainBorders*) * (map->mapSize.j));
+		map->enemys[i] = (mainEnemys**)malloc(sizeof(mainEnemys*) * (map->mapSize.j));
+		map->traps[i] = (mainTraps**)malloc(sizeof(mainTraps*) * (map->mapSize.j));
+		map->items[i] = (mainItems**)malloc(sizeof(mainItems*) * (map->mapSize.j));
+		for (int j = 0; j < map->mapSize.j; j++)
+		{
+			fscanf_s(f, "%d", &map->map[i][j]);
+		}
+	}
+
+	fclose(f);
+}
+
+void InitMap(mainMap* map, mainHero* Laplas, mainRenderer* texture_beaver_run, mainRenderer* texture_beaver_atack,
+	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect,
+	mainRenderer* texture_tower, mainRenderer* texture_tower_bullet, mainRenderer* texture_digit_idle, mainRenderer* texture_digit_atack,
+	mainRenderer* texture_barrel, mainRenderer* texture_dart_trap, mainRenderer* texture_pressure_plate, mainRenderer* texture_trap_spikes,
+	mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet, mainRenderer* texture_item_Ball,
+	mainRenderer* texture_item_acid, mainRenderer* texture_buff_speed, mainRenderer* texture_buff_lucky,
+	mainRenderer* texture_skill_figure, mainRenderer* texture_kebab, mainRenderer* texture_shop)
+{
+	char itemPath[] = "Items\\Item00.txt";
+	char bordersPath[] = "Levels\\Borders00.txt";
+	char trapsPath[] = "Traps\\Trap00.txt";
+	char enemysPath[] = "Enemys\\Enemy00.txt";
+
+	for (int i = 0; i < map->mapSize.i; i++)
+		for (int j = 0; j < map->mapSize.j; j++)
+			if (map->map[i][j] != 0)
+			{
+				if (map->map[i][j] == 99)
+					Laplas->curRoom = { i, j };
+
+				itemPath[10] = map->map[i][j] / 10 + '0';
+				itemPath[11] = map->map[i][j] % 10 + '0';
+
+				bordersPath[14] = map->map[i][j] / 10 + '0';
+				bordersPath[15] = map->map[i][j] % 10 + '0';
+
+				trapsPath[10] = map->map[i][j] / 10 + '0';
+				trapsPath[11] = map->map[i][j] % 10 + '0';
+
+				enemysPath[12] = map->map[i][j] / 10 + '0';
+				enemysPath[13] = map->map[i][j] % 10 + '0';
+
+				map->borders[i][j] = LoadLevel(map->borders[i][j], &map->bordersCount[i][j], Laplas, bordersPath, &map->levelSize[i][j].i, &map->levelSize[i][j].j);
+
+				map->enemys[i][j] = LoadEnemys(map->enemys[i][j], &map->enemysCount[i][j], enemysPath);
+				InitEnemys(map->enemys[i][j], &map->enemysCount[i][j], texture_beaver_run, texture_beaver_atack, texture_beaver_preAtack,
+					texture_krab_run, texture_acid_effect, texture_tower, texture_tower_bullet,
+					texture_digit_idle, texture_digit_atack, texture_barrel);
+
+				map->traps[i][j] = LoadTraps(map->traps[i][j], &map->trapsCount[i][j], trapsPath);
+				InitTraps(map->traps[i][j], &map->trapsCount[i][j], texture_dart_trap, texture_pressure_plate,
+					texture_trap_spikes);
+
+				map->items[i][j] = LoadItems(map->items[i][j], &map->itemsCount[i][j], itemPath);
+				InitItems(map->items[i][j], &map->itemsCount[i][j], texture_buff_DMG, texture_item_Rubber_Bullet, texture_barrel,
+					texture_item_Ball, texture_item_acid, texture_buff_speed, texture_buff_lucky, texture_skill_figure, texture_kebab,
+					texture_shop);
+
+			}
+}
+
+void FreeMap(mainMap* map)
+{
+	for (int i = 0; i < map->mapSize.i; i++)
+	{
+
+		
+		
+		for (int j = 0; j < map->mapSize.j; j++)
+		{
+			if (map->map[i][j] != 0)
+			{
+				free(map->borders[i][j]);
+				free(map->enemys[i][j]);
+				free(map->traps[i][j]);
+				free(map->items[i][j]);
+			}
+		}
+		
+		free(map->map[i]);
+		free(map->bordersCount[i]);
+		free(map->itemsCount[i]);
+		free(map->enemysCount[i]);
+		free(map->trapsCount[i]);
+
+		free(map->borders[i]);
+		free(map->enemys[i]);
+		free(map->traps[i]);
+		free(map->items[i]);
+		free(map->levelSize[i]);
+	}
+	free(map->map);
+	free(map->bordersCount);
+	free(map->itemsCount);
+	free(map->enemysCount);
+	free(map->trapsCount);
+	free(map->borders);
+	free(map->enemys);
+	free(map->traps);
+	free(map->items);
+	free(map->levelSize);
+}
+
 int main(int argc, char* argv[])
 {
 	int seed = 1002139123;
@@ -95,8 +244,9 @@ int main(int argc, char* argv[])
 	#pragma region VARIABLE_INIT
 
 	GameState gameState = MAIN_MENU;
-	Settings settings = { 5, 1 };
+	Settings settings = { 0, 1 };
 	int tmp;
+	mainMap map;
 
 	mainRenderer texture_backGround;
 	mainRenderer texture_cobbleStone;
@@ -143,19 +293,11 @@ int main(int argc, char* argv[])
 	mainRenderer enemyHpBarEdgingTexture;
 	mainRenderer ammoBarTexture;
 
-	int bordersCount = NULL;
-	int enemysCount = NULL;
-	int trapsCount = NULL;
-	int itemsCount = NULL;
 	int lastTime = 0;
 	int temp = 0;
 	int timeInGame = clock();
 	int check = 1;
 
-	mainBorders* levelBorders = NULL;
-	mainEnemys* levelEnemys = NULL;
-	mainTraps* levelTraps = NULL;
-	mainItems* levelItems = NULL;
 	mainHero Laplas = {0};
 	mainTextureSkill texture_skill;
 	
@@ -330,16 +472,13 @@ int main(int argc, char* argv[])
 
 	#pragma endregion
 
-	levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\SaveRoom1.txt", &levelWidth, &levelHeight);
-	levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\SaveRoomEnemys.txt");
-	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\SaveRoomTraps.txt");
-	levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
+	LoadMap(&map, "map.txt");
 
-	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet, &texture_digit_idle, &texture_digit_atack, &texture_barrel);
-	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
-	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, 
-		&texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop);
-
+	InitMap(&map, &Laplas, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab,
+		&texture_acid_effect, &texture_tower, &texture_tower_bullet, &texture_digit_idle, &texture_digit_atack,
+		&texture_barrel, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes,
+		&texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_item_Ball, &texture_item_acid, &texture_buff_speed,
+		&texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop);
 
 	while (flag)
 	{
@@ -517,7 +656,7 @@ int main(int argc, char* argv[])
 
 				//Получение координат
 				HeroPhysicGetBase(&Laplas);
-				EnemyPhysicGetBase(levelEnemys, &enemysCount);
+				EnemyPhysicGetBase(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]);
 
 				//Движение по оси X + рывок
 				if(Laplas.animationType != 2 && Laplas.animationType != 3)
@@ -525,78 +664,128 @@ int main(int argc, char* argv[])
 
 				//Прыжок
 				HeroPhysicJump(&Laplas);
-				EnemyPhysicJump(levelEnemys, &enemysCount, &Laplas);
+				EnemyPhysicJump(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas);
 
 				//Гравитация
 				HeroPhysicGravity(&Laplas);
-				EnemyPhysicGravity(levelEnemys, &enemysCount);
+				EnemyPhysicGravity(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]);
 
 				//Проверка коллизии
-				HeroPhysicHitboxOverlay(&bordersCount, &Laplas, levelBorders, &trapsCount, levelTraps, timeInGame);
-				EnemyPhysicHitboxOverlay(&bordersCount, &enemysCount, levelEnemys, levelBorders, timeInGame, &Laplas);
+				HeroPhysicHitboxOverlay(&map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, map.borders[Laplas.curRoom.i][Laplas.curRoom.j], &map.trapsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.traps[Laplas.curRoom.i][Laplas.curRoom.j], timeInGame); 
+				EnemyPhysicHitboxOverlay(&map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j], timeInGame, &Laplas); 
 
 				//Проверка пуль на касание с стеной
-				TrapBulletHitboxInRange(levelTraps, &trapsCount, &bordersCount, levelBorders);
-				HeroBulletHitboxInRange(&Laplas, &bordersCount, levelBorders);
-				EnemysBulletHitboxInRange(levelEnemys, &enemysCount, &bordersCount, levelBorders);
+				TrapBulletHitboxInRange(map.traps[Laplas.curRoom.i][Laplas.curRoom.j], &map.trapsCount[Laplas.curRoom.i][Laplas.curRoom.j], &map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
+				HeroBulletHitboxInRange(&Laplas, &map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
+				EnemysBulletHitboxInRange(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], &map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
 
 				//Выход за границы мира
-				HeroPhysicOutworldCheck(&Laplas, levelBorders);
-				EnemyPhysicOutworldCheck(&enemysCount, levelEnemys, levelBorders);
-				HeroBulletOutworldCheck(&Laplas, levelBorders);
-				TrapBulletOutworldCheck(levelTraps, &trapsCount, levelBorders);
+				HeroPhysicOutworldCheck(&Laplas, map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
+				EnemyPhysicOutworldCheck(&map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
+				HeroBulletOutworldCheck(&Laplas, map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
+				TrapBulletOutworldCheck(map.traps[Laplas.curRoom.i][Laplas.curRoom.j], &map.trapsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
 
 				#pragma endregion 
 
 				#pragma region LOGIC_CHECK
 
 				//Подбор предмета
-				ItemEquip(&Laplas, levelItems, &itemsCount,timeInGame);
+				ItemEquip(&Laplas, map.items[Laplas.curRoom.i][Laplas.curRoom.j], &map.itemsCount[Laplas.curRoom.i][Laplas.curRoom.j],timeInGame);
+
 
 				//Проверка таймера зелий
 				BuffsStateCheck(&Laplas, timeInGame);
 
 				//Срабатывание триггера обнаружения врагом
-				EnemyTrigger(levelEnemys, &Laplas, &enemysCount);
+				EnemyTrigger(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]);
 
 				//Движение врагов
-				EnemysMovement(&enemysCount, levelEnemys, &Laplas);
+				EnemysMovement(&map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas);
 
 				//Проверка статуса врага
-				for(int i = 0; i < enemysCount; i ++)
-					if(levelEnemys[i].status.alive && levelEnemys[i].effect.poisoned && levelEnemys[i].status.HP > 2)
-						if (levelEnemys[i].effect.poisonLastDamage + POISON_CD < timeInGame)
+				for(int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i ++)
+					if(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.alive && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].effect.poisoned && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.HP > 2)
+						if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].effect.poisonLastDamage + POISON_CD < timeInGame)
 						{
-							levelEnemys[i].effect.poisonLastDamage = timeInGame;
-							levelEnemys[i].status.HP -= POISON_DMG;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].effect.poisonLastDamage = timeInGame;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.HP -= POISON_DMG;
 						}
 
 				//Анимация атаки
-				for (int i = 0; i < enemysCount; i++)
-					if (levelEnemys[i].hitbox.x > Laplas.hitbox.x - levelEnemys[i].hitbox.w / 1.25 && levelEnemys[i].hitbox.x < Laplas.hitbox.x + levelEnemys[i].hitbox.w / 1.25)
-						levelEnemys[i].animation_type = 6;
+				for (int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
+					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.x > Laplas.hitbox.x - map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.w / 1.25 && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.x < Laplas.hitbox.x + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.w / 1.25)
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].animation_type = 6;
 					else
-						levelEnemys[i].animation_type = 1;
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].animation_type = 1;
 
 				//Переход на другую локацию
-				for (int i = 0; i < bordersCount; i++)
-					if (levelBorders[i].type == 3)
+				if(Laplas.lastLocalSwap + LOCAL_SWAP_CD < timeInGame)
+					for (int i = 0; i < map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
 					{
-						if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, levelBorders[i].bordersHitbox))
+						switch(map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].type)
 						{
-							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
-							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
-							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet, &texture_digit_idle, &texture_digit_atack, &texture_barrel);
-							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
-							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
-							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item3.txt");
-							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, 
-								&texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop);
+						case 11:
+							if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox))
+							{
+								Laplas.lastLocalSwap = timeInGame;
+								Laplas.curRoom.i--;
+								for(int i = 0; i < map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
+									if (map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].type == 14)
+									{
+										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
+										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
+									}
+							}
+							break;
+						
+						case 12:
+							if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox))
+							{
+								Laplas.lastLocalSwap = timeInGame;
+								Laplas.curRoom.j--;
+								for (int i = 0; i < map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
+									if (map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].type == 13)
+									{
+										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
+										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
+									}
+							}
+							break;
+
+							
+
+						case 13:
+							if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox))
+							{
+								Laplas.lastLocalSwap = timeInGame;
+								Laplas.curRoom.j++;
+								for (int i = 0; i < map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
+									if (map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].type == 12)
+									{
+										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
+										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
+									}
+							}
+							break;
+
+						case 14:
+							if (HeroPhysicInRange({ Laplas.hitbox.x, Laplas.hitbox.y }, map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox))
+							{
+								Laplas.lastLocalSwap = timeInGame;
+								Laplas.curRoom.i++;
+								for (int i = 0; i < map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
+									if (map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].type == 11)
+									{
+										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
+										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
+									}
+							}
+							break;
 						}
 					}
 
 				//Статуя прокачки
-				if (CheckSkillFigure(&Laplas, &itemsCount, levelItems, &window, ren, win, &texture_skill, fontNovemBig))
+				if (CheckSkillFigure(&Laplas, &map.itemsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.items[Laplas.curRoom.i][Laplas.curRoom.j], &window, ren, win, &texture_skill, fontNovemBig))
 					dopInitHero(&Laplas);
 
 				//Сброс резиста от дамага
@@ -604,58 +793,58 @@ int main(int argc, char* argv[])
 					Laplas.effect.underAtack = 0;
 
 				//Активация ловушки
-				TrapActivate(&trapsCount, levelTraps, &Laplas, &timeInGame);
+				TrapActivate(&map.trapsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.traps[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, &timeInGame);
 
 				#pragma endregion 
 
 				#pragma region BATTLE
-				HeroCommonAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys, timeInGame);
+				HeroCommonAtack(&Laplas, &timeInGame, &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], timeInGame);
 
-				HeroShootAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys);
+				HeroShootAtack(&Laplas, &timeInGame, &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], map.enemys[Laplas.curRoom.i][Laplas.curRoom.j]);
 
-				HeroDashAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys);
+				HeroDashAtack(&Laplas, &timeInGame, &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], map.enemys[Laplas.curRoom.i][Laplas.curRoom.j]);
 
 				//Удаление врагов с поле боя
-				EnemyDeath(&enemysCount, levelEnemys, &Laplas, levelItems, &itemsCount);
+				EnemyDeath(&map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, map.items[Laplas.curRoom.i][Laplas.curRoom.j], &map.itemsCount[Laplas.curRoom.i][Laplas.curRoom.j]);
 
 				//Атака ловушкой по ГГ
-				TrapAtack(&trapsCount, levelTraps, &Laplas, &timeInGame);
+				TrapAtack(&map.trapsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.traps[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, &timeInGame);
 
 
-				for (int t = 0; t < enemysCount; t++)
-					if (levelEnemys[t].type == 4 && !levelEnemys[t].shoot.alive && levelEnemys[t].effect.atackCD + levelEnemys[t].shoot.lastShoot < timeInGame)
+				for (int t = 0; t < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; t++)
+					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].type == 4 && !map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.alive && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].effect.atackCD + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.lastShoot < timeInGame)
 					{
-						levelEnemys[t].shoot.lastShoot = timeInGame;
-						if (levelEnemys[t].hitbox.x < Laplas.hitbox.x)
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.lastShoot = timeInGame;
+						if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.x < Laplas.hitbox.x)
 						{
-							levelEnemys[t].shoot.shootAtackCentere.x = levelEnemys[t].hitbox.x + levelEnemys[t].hitbox.w / 2;
-							levelEnemys[t].shoot.shootAtackCentere.y = levelEnemys[t].hitbox.y + levelEnemys[t].hitbox.h / 2;
-							levelEnemys[t].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
-							levelEnemys[t].shoot.alive = 1;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.shootAtackCentere.x = map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.x + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.w / 2;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.shootAtackCentere.y = map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.y + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.h / 2;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.alive = 1;
 						}
 						else
 						{
-							levelEnemys[t].shoot.shootAtackCentere.x = levelEnemys[t].hitbox.x - levelEnemys[t].hitbox.w / 2;
-							levelEnemys[t].shoot.shootAtackCentere.y = levelEnemys[t].hitbox.y + levelEnemys[t].hitbox.h / 2;
-							levelEnemys[t].shoot.bulletSpeed = -TRAPS_BULLET_SPEED;
-							levelEnemys[t].shoot.alive = 1;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.shootAtackCentere.x = map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.x - map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.w / 2;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.shootAtackCentere.y = map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.y + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].hitbox.h / 2;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.bulletSpeed = -TRAPS_BULLET_SPEED;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.alive = 1;
 						}
 					}
 
 
-				for (int j = 0; j < enemysCount; j++)
-					if (levelEnemys[j].shoot.alive)
+				for (int j = 0; j < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; j++)
+					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.alive)
 					{
-						levelEnemys[j].shoot.shootAtackCentere.x += levelEnemys[j].shoot.bulletSpeed;
+						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.shootAtackCentere.x += map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.bulletSpeed;
 
-						if (!Laplas.effect.underAtack && CheckShootHitbox(&levelEnemys[j].shoot.shootAtackCentere, &Laplas.hitbox))
+						if (!Laplas.effect.underAtack && CheckShootHitbox(&map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.shootAtackCentere, &Laplas.hitbox))
 						{
-							levelEnemys[j].shoot.alive = 0;
+							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.alive = 0;
 							Laplas.effect.underAtack = 1;
 							Laplas.effect.lastDamage = timeInGame;
 							if (!Laplas.buffs.itemBallActive)
 							{
-								Laplas.status.HP -= levelEnemys[j].status.DMG;
+								Laplas.status.HP -= map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].status.DMG;
 							}
 							else
 								Laplas.buffs.itemBallActive = 0;
@@ -679,9 +868,9 @@ int main(int argc, char* argv[])
 				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 		
 				//Враги и стены
-				DrawHitbox(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_trampline, &texture_tmp_platform, ren, levelWidth, levelHeight);
-				DrawEnemys(&enemysCount, levelEnemys, &Laplas, &window,  &texture_buff_DMG, ren, levelWidth, levelHeight);
-				DrawTraps(&trapsCount, levelTraps, &Laplas, &window, ren, levelWidth, levelHeight);
+				DrawHitbox(map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_trampline, &texture_tmp_platform, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);
+				DrawEnemys(&map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, &window,  &texture_buff_DMG, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j); 
+				DrawTraps(&map.trapsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.traps[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, &window, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);
 
 				//Отрисовка таймера
 				if (lastTime != timeInGame / 1000 % 60)
@@ -699,20 +888,20 @@ int main(int argc, char* argv[])
 
 		
 				//Таймер и боезапас
-				DrawHeroBullet(&Laplas, &window, ren, levelWidth, levelHeight);
-				DrawTrapsBullet(&Laplas, &window, &trapsCount, levelTraps, &texture_trap_dart, ren, levelWidth, levelHeight);
+				DrawHeroBullet(&Laplas, &window, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);
+				DrawTrapsBullet(&Laplas, &window, &map.trapsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.traps[Laplas.curRoom.i][Laplas.curRoom.j], &texture_trap_dart, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);
 
-				DrawItem(&Laplas, levelItems, &window, ren, levelWidth, levelHeight, &itemsCount, fontNovemSmall);
+				DrawItem(&Laplas, map.items[Laplas.curRoom.i][Laplas.curRoom.j], &window, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j, &map.itemsCount[Laplas.curRoom.i][Laplas.curRoom.j], fontNovemSmall);
 
 				//ГГ
-				DrawMainHero(&Laplas, window, ren, levelWidth, levelHeight);
+				DrawMainHero(&Laplas, window, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);
 
-				DrawItemsEffect(ren, &Laplas, levelWidth, levelHeight, &window);
+				DrawItemsEffect(ren, &Laplas,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j, &window);
 
-				DrawFakeWalls(bordersCount, levelBorders, &Laplas, &window, &texture_cobbleStone_fake, ren, levelWidth, levelHeight);
+				DrawFakeWalls(map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, &window, &texture_cobbleStone_fake, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);
 
 				////Эффект бафа
-				DrawBuffsEffect(ren, &Laplas, levelWidth, levelHeight, &window);
+				DrawBuffsEffect(ren, &Laplas,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j, &window);
 
 				//отрисовка характеристик персонажа
 				DrawAmmoBar(ammoBarTexture, &window, ren);
@@ -720,9 +909,9 @@ int main(int argc, char* argv[])
 				DrawMoney(ren, &window, fontNovemSmall, Laplas);
 
 				//отрисовка хп ближайшего противника
-				if (enemysCount>0)
+				if (map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]>0)
 				{
-					DrawEnemyHP(Laplas, levelEnemys, enemysCount, hpBarTexture, enemyHpBarEdgingTexture, &window, ren);
+					DrawEnemyHP(Laplas, map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], hpBarTexture, enemyHpBarEdgingTexture, &window, ren);
 				}
 				
 				//Отрисовка пуль
@@ -763,11 +952,6 @@ int main(int argc, char* argv[])
 	}
 
 	//saveLaplas(&Laplas, "Saves\\1.txt");
-
-	free(levelBorders);
-	free(levelEnemys);
-	free(levelTraps);
-	free(levelItems);
 	TTF_CloseFont(fontNovemBig);
 	TTF_CloseFont(fontNovemSmall);
 
@@ -818,6 +1002,7 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_skill.figure.texture);
 	SDL_DestroyTexture(texture_skill.point.texture);
 
+	FreeMap(&map);
 
 	DeInit(0, &win, &ren, &win_surface);
 	

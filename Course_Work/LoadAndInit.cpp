@@ -8,15 +8,18 @@ mainBorders* LoadLevel(mainBorders* levelBorders, int* bordersCount, mainHero* L
 	int* levelHeight)
 {
 	FILE* f;
-	fopen_s(&f, levelName, "r");
+	if (fopen_s(&f, levelName, "r") != 0)
+	{
+		puts(levelName);
+		printf_s("Can't open!\n");
+		system("pause");
+	}
 
 	fscanf_s(f, "%d", bordersCount);
-	fscanf_s(f, "%d", &Laplas->hitbox.x);
-	fscanf_s(f, "%d", &Laplas->hitbox.y);
 	fscanf_s(f, "%d", levelWidth);
 	fscanf_s(f, "%d", levelHeight);
 
-	levelBorders = (mainBorders*)realloc(levelBorders, sizeof(mainBorders) * (*bordersCount));
+	levelBorders = (mainBorders*)malloc(sizeof(mainBorders) * (*bordersCount));
 
 
 
@@ -42,11 +45,20 @@ mainBorders* LoadLevel(mainBorders* levelBorders, int* bordersCount, mainHero* L
 mainEnemys* LoadEnemys(mainEnemys* levelEnemys, int* enemysCount, const char levelName[])
 {
 	FILE* f;
-	fopen_s(&f, levelName, "r");
+	
+
+	if (fopen_s(&f, levelName, "r") != 0)
+	{
+		puts(levelName);
+		printf_s("Can't open!\n");
+		system("pause");
+	}
+
 
 	fscanf_s(f, "%d", enemysCount);
 
-	levelEnemys = (mainEnemys*)realloc(levelEnemys, sizeof(mainEnemys) * (*enemysCount));
+
+	levelEnemys = (mainEnemys*)malloc(sizeof(mainEnemys) * (*enemysCount));
 
 	for (int i = 0; i < *enemysCount; i++)
 	{
@@ -68,11 +80,18 @@ mainEnemys* LoadEnemys(mainEnemys* levelEnemys, int* enemysCount, const char lev
 mainTraps* LoadTraps(mainTraps* levelTraps, int* trapsCount, const char levelName[])
 {
 	FILE* f;
-	fopen_s(&f, levelName, "r");
+	
+
+	if (fopen_s(&f, levelName, "r") != 0)
+	{
+		puts(levelName);
+		printf_s("Can't open!\n");
+		system("pause");
+	}
 
 	fscanf_s(f, "%d", trapsCount);
 
-	levelTraps = (mainTraps*)realloc(levelTraps, sizeof(mainTraps) * (*trapsCount));
+	levelTraps = (mainTraps*)malloc(sizeof(mainTraps) * (*trapsCount));
 
 	for (int i = 0; i < *trapsCount; i++)
 	{
@@ -96,11 +115,17 @@ mainTraps* LoadTraps(mainTraps* levelTraps, int* trapsCount, const char levelNam
 mainItems* LoadItems(mainItems* levelItems, int* itemsCount, const char levelName[])
 {
 	FILE* f;
-	fopen_s(&f, levelName, "r");
+
+	if (fopen_s(&f, levelName, "r") != 0)
+	{
+		puts(levelName);
+		printf_s("Can't open!\n");
+		system("pause");
+	}
 
 	fscanf_s(f, "%d", itemsCount);
 
-	levelItems = (mainItems*)realloc(levelItems, sizeof(mainItems) * (*itemsCount));
+	levelItems = (mainItems*)malloc(sizeof(mainItems) * (*itemsCount));
 
 	for (int i = 0; i < *itemsCount; i++)
 	{
@@ -126,7 +151,7 @@ mainItems* LoadItems(mainItems* levelItems, int* itemsCount, const char levelNam
 void InitHero(mainHero* Laplas)
 {
 	Laplas->texture_rect = { NULL, NULL, NULL, NULL };
-	Laplas->hitbox = { 0, 0, HERO_WIDHT, HERO_HEIGHT };
+	Laplas->hitbox = { WINDOW_WIDTH/2, WINDOW_HEIGHT/2, HERO_WIDHT, HERO_HEIGHT };
 	Laplas->position = { 0, 0 };
 	Laplas->physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, HERO_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 	Laplas->effect = { HERO_DASH_CD, NULL, HERO_ATACK_CD, NULL, HERO_SHOOT_CD, NULL, CAMERA_SCALE_X, CAMERA_SCALE_Y, NULL, HERO_AFTER_ATACK_PROTECTION, NULL };
@@ -146,6 +171,7 @@ void InitHero(mainHero* Laplas)
 	Laplas->animationType = NULL;
 	Laplas->buffs = { NULL, NULL, DMG_BUFF_DUARATION, DMG_BUFF_PERCENT, NULL };
 	Laplas->keys = { NULL, NULL, NULL };
+	Laplas->lastLocalSwap = 0;
 
 }
 
@@ -162,7 +188,8 @@ void dopInitHero(mainHero* Laplas)
 
 void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* texture_beaver_run, mainRenderer* texture_beaver_atack, 
 	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect, 
-	mainRenderer* texture_tower, mainRenderer* texture_tower_bullet, mainRenderer* texture_digit_idle, mainRenderer* texture_digit_atack, mainRenderer* texture_barrel)
+	mainRenderer* texture_tower, mainRenderer* texture_tower_bullet, mainRenderer* texture_digit_idle, mainRenderer* texture_digit_atack, 
+	mainRenderer* texture_barrel)
 {
 	for (int i = 0; i < *enemysCount; i++)
 	{
@@ -175,7 +202,10 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		{	//BEAVER
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
-			levelEnemys[i].status = { BEAVER_HP, BEAVER_DMG, BEAVER_HP , ALIVE };
+			levelEnemys[i].status.HP = BEAVER_HP;
+			levelEnemys[i].status.DMG = BEAVER_DMG;
+			levelEnemys[i].status.startHP = BEAVER_HP;
+			levelEnemys[i].status.alive = true;
 			levelEnemys[i].effect.atackCD = BEAVER_ATACK_CD;
 			levelEnemys[i].animation.run = *texture_beaver_run;
 			levelEnemys[i].animation.atack = *texture_beaver_atack;
@@ -190,7 +220,10 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		{	//BARREL
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BARREL_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
-			levelEnemys[i].status = { BARREL_HP, BARREL_DMG, BARREL_HP , ALIVE };
+			levelEnemys[i].status.HP = BARREL_HP;
+			levelEnemys[i].status.DMG = BARREL_DMG;
+			levelEnemys[i].status.startHP = BARREL_HP;
+			levelEnemys[i].status.alive = true;
 			levelEnemys[i].effect.atackCD = BARREL_ATACK_CD;
 			levelEnemys[i].animation.run = *texture_barrel;
 			levelEnemys[i].animation.atack = *texture_barrel;
@@ -206,7 +239,10 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		{	//KRAB
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
-			levelEnemys[i].status = { KRAB_HP, KRAB_DMG, KRAB_HP , ALIVE };
+			levelEnemys[i].status.HP = KRAB_HP;
+			levelEnemys[i].status.DMG = KRAB_DMG;
+			levelEnemys[i].status.startHP = KRAB_HP;
+			levelEnemys[i].status.alive = true;
 			levelEnemys[i].effect.atackCD = KRAB_ATACK_CD;
 			levelEnemys[i].animation.run = *texture_krab_run;
 			levelEnemys[i].animation.atack = *texture_krab_run;
@@ -221,7 +257,10 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		{	//TOWER
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
-			levelEnemys[i].status = { TOWER_HP, TOWER_DMG, TOWER_HP , ALIVE };
+			levelEnemys[i].status.HP = TOWER_HP;
+			levelEnemys[i].status.DMG = TOWER_DMG;
+			levelEnemys[i].status.startHP = TOWER_HP;
+			levelEnemys[i].status.alive = true;
 			levelEnemys[i].effect.atackCD = TOWER_ATACK_CD;
 			levelEnemys[i].animation.run = *texture_tower;
 			levelEnemys[i].animation.atack = *texture_tower;
@@ -237,7 +276,10 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		{	//DIGLET
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, DIGIT_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
-			levelEnemys[i].status = { DIGIT_HP, DIGIT_DMG, DIGIT_HP , ALIVE };
+			levelEnemys[i].status.HP = DIGIT_HP;
+			levelEnemys[i].status.DMG = DIGIT_DMG;
+			levelEnemys[i].status.startHP = DIGIT_HP;
+			levelEnemys[i].status.alive = true;
 			levelEnemys[i].effect.atackCD = DIGIT_ATACK_CD;
 			levelEnemys[i].animation.run = *texture_digit_idle;
 			levelEnemys[i].animation.atack = *texture_digit_atack;
@@ -369,10 +411,13 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 				levelItems[i].render = *texture_kebab;
 				levelItems[i].cost = 0;
 				break;
+
 			case 5:
 				levelItems[i].render = *texture_skill_figure;
 				levelItems[i].cost = 0;
+				levelItems[i].alive = 1;
 				break;
+
 			case 6:
 				levelItems[i].render = *texture_shop;
 				levelItems[i].cost = 0;

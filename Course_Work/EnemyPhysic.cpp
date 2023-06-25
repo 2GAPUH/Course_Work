@@ -123,7 +123,7 @@ void EnemyPhysicHitboxOverlay(int* bordersCount,int* enemysCount, mainEnemys Ene
 		int check = 1;
 		for (int j = 0; j < *bordersCount; j++)
 		{
-			if (levelBorders[j].type == 1 || levelBorders[j].type == 2)
+			if (levelBorders[j].type == 1 || levelBorders[j].type == 2 || levelBorders[j].type == 11 || levelBorders[j].type == 12 || levelBorders[j].type == 13 || levelBorders[j].type == 14)
 			{
 				if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
 				{

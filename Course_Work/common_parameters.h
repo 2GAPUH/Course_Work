@@ -34,6 +34,7 @@
 #define POISON_DMG 1
 #define SKILL_LVL_POINT_COST 10
 #define SKILL_MAX_LVL 7
+#define LOCAL_SWAP_CD 1000
 
 #pragma region HERO_STATS
 
@@ -192,6 +193,8 @@ struct mainPhysics
 	bool onBorder;
 };
 
+
+
 struct statusEffect
 {
 	int dashCD, timeDashCD;
@@ -214,6 +217,7 @@ struct mainRenderer
 	int frameCount;
 	int angel;
 };
+
 
 struct heroAnimation
 {
@@ -302,7 +306,10 @@ struct mainHero
 	mainKeys keys;
 	twoParam curRoom;
 	int money;
+	int lastLocalSwap;
 };
+
+
 /*
 0 - стойка
 1 - бег
@@ -390,6 +397,23 @@ struct Audio
 	Mix_Chunk* sound;
 	bool isPlaying;
 };
+
+struct mainMap
+{
+	int** map = NULL;
+	twoParam mapSize;
+	mainEnemys*** enemys = NULL;
+	mainBorders*** borders = NULL;
+	mainTraps*** traps = NULL;
+	mainItems*** items = NULL;
+
+	int** trapsCount = NULL;
+	int** enemysCount = NULL;
+	int** itemsCount = NULL;
+	int** bordersCount = NULL;
+	twoParam** levelSize = NULL;
+};
+
 
 int inline GetNumInRange(int leftBord, int rightBord)
 {

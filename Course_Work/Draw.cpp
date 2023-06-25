@@ -153,6 +153,7 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 		switch (levelBorders[i].type)
 		{
 		case 2:
+
 			SDL_Rect rect1 = cobbleStone->textureSize;
 			dopRect = cobbleStone->textureSize;
 
@@ -187,6 +188,7 @@ void DrawHitbox(int bordersCount, mainBorders levelBorders[], mainHero* Laplas, 
 			break;
 
 		case 7:
+			SDL_RenderDrawRect(ren, &rect123);
 			if(levelBorders[i].alive)
 				SDL_RenderCopy(ren, tmp_Platform->texture, NULL, &rect123);
 			break;
@@ -408,7 +410,7 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 
 		case 5:
 
-			if (levelEnemys[i].animation_type == 1) {
+			if (levelEnemys[i].animation_type == 6) {
 				if (levelEnemys[i].physic.gazeDirection > 0)
 					SDL_RenderCopyEx(ren, levelEnemys[i].animation.atack.texture, &levelEnemys[i].animation.atack.frame, &movedEnemy, levelEnemys[i].animation.atack.angel, 0, SDL_FLIP_NONE);
 				else if (levelEnemys[i].physic.gazeDirection < 0)
@@ -419,8 +421,19 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 					break;
 				}
 	
+				
+
+				if ( (SDL_GetTicks() - levelEnemys[i].animation.atack.frameTime > 1000 / 15))
+				{
+					levelEnemys[i].animation.atack.frame.x += levelEnemys[i].animation.atack.textureSize.w / levelEnemys[i].animation.atack.frameCount;
+					levelEnemys[i].animation.atack.frameTime = SDL_GetTicks();
+				}
+
+				if (levelEnemys[i].animation.atack.frame.x >= levelEnemys[i].animation.atack.textureSize.w )
+					levelEnemys[i].animation.atack.frame.x = 0;
+
 			}
-			else if (levelEnemys[i].animation_type == 6) {
+			else if (levelEnemys[i].animation_type == 1) {
 				if (levelEnemys[i].physic.gazeDirection > 0)
 					SDL_RenderCopyEx(ren, levelEnemys[i].animation.preAtack.texture, &levelEnemys[i].animation.preAtack.frame, &movedEnemy, levelEnemys[i].animation.preAtack.angel, 0, SDL_FLIP_HORIZONTAL);
 				else if (levelEnemys[i].physic.gazeDirection < 0)
@@ -430,7 +443,15 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 					SDL_RenderCopyEx(ren, levelEnemys[i].animation.preAtack.texture, &levelEnemys[i].animation.preAtack.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
 					break;
 				}
-				break;
+				
+				if (SDL_GetTicks() - levelEnemys[i].animation.preAtack.frameTime > 1000 / 15)
+				{
+					levelEnemys[i].animation.preAtack.frame.x += levelEnemys[i].animation.preAtack.textureSize.w / levelEnemys[i].animation.preAtack.frameCount;
+					levelEnemys[i].animation.preAtack.frameTime = SDL_GetTicks();
+				}
+
+				if (levelEnemys[i].animation.preAtack.frame.x >= levelEnemys[i].animation.preAtack.textureSize.w )
+					levelEnemys[i].animation.preAtack.frame.x = 0;
 			}
 
 			

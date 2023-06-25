@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Libs\SDL2-2.26.4\include;D:\Libs\SDL2_ttf-2.20.2\include;D:\Libs\SDL2_mixer-2.6.3\include;D:\Libs\SDL2_image-2.6.3\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Libs\SDL2_mixer-2.6.3\lib\x64;D:\Libs\SDL2-2.26.4\lib\x64;D:\Libs\SDL2_ttf-2.20.2\lib\x64;D:\Libs\SDL2_image-2.6.3\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Libs\SDL2-2.26.4\include;D:\Libs\SDL2_ttf-2.20.2\include;D:\Libs\SDL2_mixer-2.6.3\include;D:\Libs\SDL2_mixer-2.6.3\include;D:\Libs\SDL2_image-2.6.3\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Libs\SDL2_mixer-2.6.3\lib\x64;D:\Libs\SDL2_mixer-2.6.3\lib\x64;D:\Libs\SDL2-2.26.4\lib\x64;D:\Libs\SDL2_ttf-2.20.2\lib\x64;D:\Libs\SDL2_image-2.6.3\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\Libs\SDL2-2.26.4\include;D:\Libs\SDL2_ttf-2.20.2\include;D:\Libs\SDL2_image-2.6.3\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Libs\SDL2-2.26.4\lib\x64;D:\Libs\SDL2_ttf-2.20.2\lib\x64;D:\Libs\SDL2_image-2.6.3\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Libs\SDL2-2.26.4\include;D:\Libs\SDL2_ttf-2.20.2\include;D:\Libs\SDL2_mixer-2.6.3\include;D:\Libs\SDL2_image-2.6.3\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Libs\SDL2_mixer-2.6.3\lib\x64;D:\Libs\SDL2-2.26.4\lib\x64;D:\Libs\SDL2_ttf-2.20.2\lib\x64;D:\Libs\SDL2_image-2.6.3\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -116,7 +116,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2main.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2main.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,7 +133,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2main.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2main.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -190,46 +190,36 @@
     <Image Include="Textures\woodenPlatform.png" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Enemys\Enemy.txt" />
-    <Text Include="Enemys\Enemy1.txt" />
-    <Text Include="Enemys\Enemy2.txt" />
-    <Text Include="Enemys\Enemy3.txt" />
-    <Text Include="Enemys\Enemy4.txt" />
-    <Text Include="Enemys\Enemy5.txt" />
-    <Text Include="Enemys\Enemy6.txt" />
-    <Text Include="Enemys\Enemy7.txt" />
-    <Text Include="Enemys\Enemy8.txt" />
-    <Text Include="Enemys\SaveRoomEnemys.txt" />
-    <Text Include="Items\Item.txt" />
-    <Text Include="Items\Item1.txt" />
-    <Text Include="Items\Item2.txt" />
-    <Text Include="Items\Item3.txt" />
-    <Text Include="Items\Item4.txt" />
-    <Text Include="Items\Item5.txt" />
-    <Text Include="Items\Item6.txt" />
-    <Text Include="Items\Item7.txt" />
-    <Text Include="Items\Item8.txt" />
-    <Text Include="Levels\Borders.txt" />
-    <Text Include="Levels\Borders1.txt" />
-    <Text Include="Levels\Borders2.txt" />
-    <Text Include="Levels\Borders3.txt" />
-    <Text Include="Levels\Borders4.txt" />
-    <Text Include="Levels\Borders5.txt" />
-    <Text Include="Levels\Borders6.txt" />
-    <Text Include="Levels\Borders7.txt" />
-    <Text Include="Levels\Borders8.txt" />
-    <Text Include="Levels\SaveRoom1.txt" />
+    <Text Include="Enemys\Enemy00.txt" />
+    <Text Include="Enemys\Enemy01.txt" />
+    <Text Include="Enemys\Enemy02.txt" />
+    <Text Include="Enemys\Enemy03.txt" />
+    <Text Include="Enemys\Enemy04.txt" />
+    <Text Include="Enemys\Enemy14.txt" />
+    <Text Include="Enemys\Enemy99.txt" />
+    <Text Include="Items\Item00.txt" />
+    <Text Include="Items\Item01.txt" />
+    <Text Include="Items\Item02.txt" />
+    <Text Include="Items\Item03.txt" />
+    <Text Include="Items\Item04.txt" />
+    <Text Include="Items\Item14.txt" />
+    <Text Include="Items\Item99.txt" />
+    <Text Include="Levels\Borders00.txt" />
+    <Text Include="Levels\Borders01.txt" />
+    <Text Include="Levels\Borders02.txt" />
+    <Text Include="Levels\Borders03.txt" />
+    <Text Include="Levels\Borders04.txt" />
+    <Text Include="Levels\Borders14.txt" />
+    <Text Include="Levels\Borders99.txt" />
+    <Text Include="map.txt" />
     <Text Include="Saves\1\main_hero.txt" />
-    <Text Include="Traps\SaveRoomTraps.txt" />
-    <Text Include="Traps\Trap.txt" />
-    <Text Include="Traps\Trap1.txt" />
-    <Text Include="Traps\Trap2.txt" />
-    <Text Include="Traps\Trap3.txt" />
-    <Text Include="Traps\Trap4.txt" />
-    <Text Include="Traps\Trap5.txt" />
-    <Text Include="Traps\Trap6.txt" />
-    <Text Include="Traps\Trap7.txt" />
-    <Text Include="Traps\Trap8.txt" />
+    <Text Include="Traps\Trap00.txt" />
+    <Text Include="Traps\Trap01.txt" />
+    <Text Include="Traps\Trap02.txt" />
+    <Text Include="Traps\Trap03.txt" />
+    <Text Include="Traps\Trap04.txt" />
+    <Text Include="Traps\Trap14.txt" />
+    <Text Include="Traps\Trap99.txt" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Fonts\novem.ttf" />
