@@ -205,12 +205,12 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		{	//TOWER
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
-			levelEnemys[i].status = { KRAB_HP, KRAB_DMG, KRAB_HP , ALIVE };
-			levelEnemys[i].effect.atackCD = KRAB_ATACK_CD;
+			levelEnemys[i].status = { TOWER_HP, TOWER_DMG, TOWER_HP , ALIVE };
+			levelEnemys[i].effect.atackCD = TOWER_ATACK_CD;
 			levelEnemys[i].animation.run = *texture_tower;
 			levelEnemys[i].animation.atack = *texture_tower;
 			levelEnemys[i].animation.preAtack = *texture_tower;
-			levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
+			levelEnemys[i].triggeredDistance = TOWER_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 			levelEnemys[i].animation.bullet = *texture_tower_bullet;
 			levelEnemys[i].shoot.alive = 0;
@@ -229,6 +229,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].triggeredDistance = DIGIT_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 			levelEnemys[i].reward = DIGIT_REAWRD;
+			
 		}
 	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <SDL_Image.h>
 #include <SDL_ttf.h>
 #include <iostream>
@@ -14,15 +15,17 @@
 #include "LoadAndInit.h"
 #include "GameState.h"
 #include "GameLogic.h"
+#include "Audio.h"
 
 SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
+Audio audio = {NULL,NULL, false};
 int levelWidth = 0, levelHeight = 0;
 
 void GetTexture(const char filePath[], mainRenderer* texture, int frameCount, SDL_Renderer* ren)
-{
+{ 
 	SDL_Surface* surface = NULL;
 	if ((surface = IMG_Load(filePath)) == NULL)
 	{
@@ -162,6 +165,8 @@ int main(int argc, char* argv[])
 	char timer_text[10] = "00:00";
 	char amunition_text[10] = "000";
 	
+	const char main_music[] = "Sounds\\main_theme.wav";
+
 	bool isRunning;
 
 	#pragma endregion
@@ -359,6 +364,7 @@ int main(int argc, char* argv[])
 		switch (gameState)
 		{
 		case MAIN_MENU:
+			PlayMusic(main_music,&audio,settings.volume);
 			MainMenu(&gameState, &window, ren, win);
 			break;
 
@@ -620,7 +626,7 @@ int main(int argc, char* argv[])
 				HeroDashAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys);
 
 				//Удаление врагов с поле боя
-				EnemyDeath(&enemysCount, levelEnemys, &Laplas);
+				EnemyDeath(&enemysCount, levelEnemys, &Laplas, levelItems, &itemsCount);
 
 				//Активация ловушки
 				TrapActivate(&trapsCount, levelTraps, &Laplas, &timeInGame);
@@ -711,7 +717,7 @@ int main(int argc, char* argv[])
 				DrawHeroBullet(&Laplas, &window, ren, levelWidth, levelHeight);
 				DrawTrapsBullet(&Laplas, &window, &trapsCount, levelTraps, &texture_trap_dart, ren, levelWidth, levelHeight);
 
-				DrawItem(&Laplas, levelItems, &window, ren, levelWidth, levelHeight, &itemsCount);
+				DrawItem(&Laplas, levelItems, &window, ren, levelWidth, levelHeight, &itemsCount, fontNovemSmall);
 
 				//ГГ
 				DrawMainHero(&Laplas, window, ren, levelWidth, levelHeight);
@@ -726,6 +732,7 @@ int main(int argc, char* argv[])
 				//отрисовка характеристик персонажа
 				DrawAmmoBar(ammoBarTexture, &window, ren);
 				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window, ren);
+				DrawMoney(ren, &window, fontNovemSmall, Laplas);
 
 				//отрисовка хп ближайшего противника
 				if (enemysCount>0)
@@ -758,6 +765,7 @@ int main(int argc, char* argv[])
 			break;
 
 		case PAUSE_MENU:
+			stopMusic(&audio);
 			PauseMenu(&gameState, &window, ren, win);
 			break;
 

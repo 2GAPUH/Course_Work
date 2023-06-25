@@ -1,4 +1,5 @@
 #include "GameState.h"
+#include <SDL_mixer.h>
 
 
 void SkillLeveling(mainHero* Laplas,  mainWindow* window, SDL_Renderer* ren, SDL_Window* win, mainTextureSkill* texture_skill)
@@ -320,9 +321,11 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 				SDL_FPoint mousePoint = { ev.button.x,ev.button.y };
 				if (SDL_PointInFRect(&mousePoint, &volumeLeftButton) && settings->volume > 0) {
 					settings->volume--;
+					Mix_VolumeMusic(255 * settings->volume / 5);
 				}
 				else if (SDL_PointInFRect(&mousePoint, &volumeRightButton) && settings->volume < 5) {
 					settings->volume++;
+					Mix_VolumeMusic(255 * settings->volume / 5);
 				}
 
 				if (SDL_PointInFRect(&mousePoint, &skinLeftButton) && settings->skin > 1) {

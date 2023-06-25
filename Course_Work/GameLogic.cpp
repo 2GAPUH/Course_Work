@@ -113,7 +113,13 @@ void EnemyTrigger(mainEnemys levelEnemys[], mainHero* Laplas, int* enemysCount)
 		if (!levelEnemys[i].triggered && sqrt((Laplas->hitbox.x - levelEnemys[i].hitbox.x) * (Laplas->hitbox.x - levelEnemys[i].hitbox.x) +
 			(Laplas->hitbox.y - levelEnemys[i].hitbox.y) * (Laplas->hitbox.y - levelEnemys[i].hitbox.y)) <
 			levelEnemys[i].triggeredDistance || levelEnemys[i].effect.underAtack)
+		{
 			levelEnemys[i].triggered = 1;
+			if (levelEnemys[i].type == 5)
+			{
+				levelEnemys[i].animation_type = 1;
+			}
+		}
 }
 
 void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas)
@@ -242,7 +248,7 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 
 				case 4:
 					items[i].alive = 0;
-					if (rand()%100 > 30)
+					if (GetNumInRange(0, 100) <= 30)
 					{
 						Laplas->status.HP -= 30;
 					}
@@ -281,17 +287,19 @@ void BuffsStateCheck(mainHero* Laplas, int timeInGame)
 	}
 }
 
-void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[], mainHero *Laplas)
+void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[], mainHero *Laplas, mainItems levelItems[], int* itemsCount)
 {
 	for (int d = 0; d < *enemysCount; d++)
 		if (!levelEnemys[d].status.alive)
 		{
 			Laplas->money += levelEnemys->reward;
 			printf_s("%d", Laplas->money);
-			if (levelEnemys[d].type == 2 && rand()%100<=20)
+			if (levelEnemys[d].type == 2 && GetNumInRange(0, 100)<=20)
 			{
-				//drop potion
-				printf_s("potion");
+				levelItems[*itemsCount - 1].hitbox.x = levelEnemys[d].hitbox.x;
+				levelItems[*itemsCount - 1].hitbox.y = levelEnemys[d].hitbox.y;
+				levelItems[*itemsCount - 1].position = { levelItems[*itemsCount - 1].hitbox.x + levelItems[*itemsCount - 1].hitbox.w / 2, levelItems[*itemsCount - 1].hitbox.y + levelItems[*itemsCount - 1].hitbox.h / 2 };
+				levelItems[*itemsCount - 1].grab_zone = { levelItems[*itemsCount - 1].hitbox.x - levelItems[*itemsCount - 1].hitbox.w, levelItems[*itemsCount - 1].hitbox.y - levelItems[*itemsCount - 1].hitbox.h, levelItems[*itemsCount - 1].hitbox.w * 2, levelItems[*itemsCount - 1].hitbox.h * 2 };
 			}
 
 			if (d == *enemysCount - 1 || *enemysCount == 1)
