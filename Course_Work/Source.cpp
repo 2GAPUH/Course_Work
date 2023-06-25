@@ -144,7 +144,8 @@ void InitMap(mainMap* map, mainHero* Laplas, mainRenderer* texture_beaver_run, m
 	mainRenderer* texture_barrel, mainRenderer* texture_dart_trap, mainRenderer* texture_pressure_plate, mainRenderer* texture_trap_spikes,
 	mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet, mainRenderer* texture_item_Ball,
 	mainRenderer* texture_item_acid, mainRenderer* texture_buff_speed, mainRenderer* texture_buff_lucky,
-	mainRenderer* texture_skill_figure, mainRenderer* texture_kebab, mainRenderer* texture_shop)
+	mainRenderer* texture_skill_figure, mainRenderer* texture_kebab, mainRenderer* texture_shop, 
+	mainRenderer* texture_bat_with_anvil, mainRenderer* texture_bat_without_anvil, mainRenderer* texture_anvil_without_bat)
 {
 	char itemPath[] = "Items\\Item00.txt";
 	char bordersPath[] = "Levels\\Borders00.txt";
@@ -175,7 +176,8 @@ void InitMap(mainMap* map, mainHero* Laplas, mainRenderer* texture_beaver_run, m
 				map->enemys[i][j] = LoadEnemys(map->enemys[i][j], &map->enemysCount[i][j], enemysPath);
 				InitEnemys(map->enemys[i][j], &map->enemysCount[i][j], texture_beaver_run, texture_beaver_atack, texture_beaver_preAtack,
 					texture_krab_run, texture_acid_effect, texture_tower, texture_tower_bullet,
-					texture_digit_idle, texture_digit_atack, texture_barrel);
+					texture_digit_idle, texture_digit_atack, texture_bat_with_anvil, texture_bat_without_anvil,
+					texture_anvil_without_bat, texture_barrel);
 
 				map->traps[i][j] = LoadTraps(map->traps[i][j], &map->trapsCount[i][j], trapsPath);
 				InitTraps(map->traps[i][j], &map->trapsCount[i][j], texture_dart_trap, texture_pressure_plate,
@@ -282,6 +284,10 @@ int main(int argc, char* argv[])
 	mainRenderer texture_skill_point;
 	mainRenderer texture_shop;
 
+	mainRenderer texture_bat_with_anvil;
+	mainRenderer texture_bat_without_anvil;
+	mainRenderer texture_anvil_without_bat;
+
 	mainRenderer texture_item_Ball;
 	mainRenderer texture_barrel;
 	TTF_Font* fontNovemBig = NULL;
@@ -320,7 +326,7 @@ int main(int argc, char* argv[])
 
 	
 	InitHero(&Laplas);
-	loadLaplas(&Laplas, "Saves\\1.txt");
+	loadLaplas(&Laplas, "Saves\\1.txt", &settings);
 	dopInitHero(&Laplas);
 
 	#pragma region TEXTURES_LOAD
@@ -387,9 +393,9 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\buff_Rubber_Bullet.png", &texture_item_Rubber_Bullet, 36, ren);
 
-
-
-
+	GetTexture("Textures\\bat_with_anvil.png", &texture_bat_with_anvil, 3, ren);
+	GetTexture("Textures\\bat_without_anvil.png", &texture_bat_without_anvil, 3, ren);
+	GetTexture("Textures\\anvil_without_bat.png", &texture_anvil_without_bat, 1, ren);
 
 	GetTexture("Textures\\acid.png", &texture_item_acid, 29, ren);
 
@@ -483,7 +489,7 @@ int main(int argc, char* argv[])
 		&texture_acid_effect, &texture_tower, &texture_tower_bullet, &texture_digit_idle, &texture_digit_atack,
 		&texture_barrel, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes,
 		&texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_item_Ball, &texture_item_acid, &texture_buff_speed,
-		&texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop);
+		&texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop, &texture_bat_with_anvil, &texture_bat_without_anvil, &texture_anvil_without_bat);
 
 	while (flag)
 	{
@@ -834,6 +840,7 @@ int main(int argc, char* argv[])
 
 
 				for (int t = 0; t < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; t++)
+				{
 					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].type == 4 && !map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.alive && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].effect.atackCD + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.lastShoot < timeInGame)
 					{
 						map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.lastShoot = timeInGame;
@@ -852,7 +859,11 @@ int main(int argc, char* argv[])
 							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].shoot.alive = 1;
 						}
 					}
+					else if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].type == 6 && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][t].animation_type == 6)
+					{
 
+					}
+				}
 
 				for (int j = 0; j < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; j++)
 					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][j].shoot.alive)
@@ -973,7 +984,7 @@ int main(int argc, char* argv[])
 
 	}
 
-	//saveLaplas(&Laplas, "Saves\\1.txt");
+	//saveLaplas(&Laplas, "Saves\\1.txt", &settings);
 	TTF_CloseFont(fontNovemBig);
 	TTF_CloseFont(fontNovemSmall);
 
@@ -1023,6 +1034,10 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(texture_skill.iconWeapon.texture);
 	SDL_DestroyTexture(texture_skill.figure.texture);
 	SDL_DestroyTexture(texture_skill.point.texture);
+
+	SDL_DestroyTexture(texture_bat_with_anvil.texture);
+	SDL_DestroyTexture(texture_bat_without_anvil.texture);
+	SDL_DestroyTexture(texture_anvil_without_bat.texture);
 
 	FreeMap(&map);
 

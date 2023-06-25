@@ -186,9 +186,10 @@ void dopInitHero(mainHero* Laplas)
 	Laplas->status.ammunition = int(HERO_START_AMUNITION * (Laplas->status.lvlAmmo / 8. + 1));
 }
 
-void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* texture_beaver_run, mainRenderer* texture_beaver_atack, 
-	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect, 
-	mainRenderer* texture_tower, mainRenderer* texture_tower_bullet, mainRenderer* texture_digit_idle, mainRenderer* texture_digit_atack, 
+void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* texture_beaver_run, mainRenderer* texture_beaver_atack,
+	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect,
+	mainRenderer* texture_tower, mainRenderer* texture_tower_bullet, mainRenderer* texture_digit_idle, mainRenderer* texture_digit_atack,
+	mainRenderer* texture_bat_with_anvil, mainRenderer* texture_bat_without_anvil, mainRenderer* texture_anvil_without_bat, 
 	mainRenderer* texture_barrel)
 {
 	for (int i = 0; i < *enemysCount; i++)
@@ -198,8 +199,10 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		levelEnemys[i].effect.poisonLastDamage = 0;
 		levelEnemys[i].triggered = NULL;
 
-		if (levelEnemys[i].type == 1)
-		{	//BEAVER
+		switch(levelEnemys[i].type)
+		{	
+		case 1:
+			//BEAVER
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BEAVER_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
 			levelEnemys[i].status.HP = BEAVER_HP;
@@ -213,11 +216,10 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].triggeredDistance = BEAVER_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 			levelEnemys[i].reward = BEAVER_REAWRD;
-
-		}
-
-		else if (levelEnemys[i].type == 2)
-		{	//BARREL
+			break;
+		
+		case 2:
+			//BARREL
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BARREL_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
 			levelEnemys[i].status.HP = BARREL_HP;
@@ -231,12 +233,10 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].triggeredDistance = BARREL_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 			levelEnemys[i].reward = BARREL_REAWRD;
+			break;
 
-
-		}
-
-		else if (levelEnemys[i].type == 3)
-		{	//KRAB
+		case 3:
+			//KRAB
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
 			levelEnemys[i].status.HP = KRAB_HP;
@@ -250,11 +250,11 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].triggeredDistance = KRAB_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 			levelEnemys[i].reward = KRAB_REAWRD;
+			break;
+		
 
-		}
-
-		else if (levelEnemys[i].type == 4)
-		{	//TOWER
+		case 4:
+			//TOWER
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, KRAB_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
 			levelEnemys[i].status.HP = TOWER_HP;
@@ -270,10 +270,11 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].animation.bullet = *texture_tower_bullet;
 			levelEnemys[i].shoot.alive = 0;
 			levelEnemys[i].reward = BEAVER_REAWRD;
-		}
+			break;
+		
 
-		else if (levelEnemys[i].type == 5) 
-		{	//DIGLET
+		case 5:
+			//DIGLET
 			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, DIGIT_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
 			levelEnemys[i].effect.underAtack = NULL;
 			levelEnemys[i].status.HP = DIGIT_HP;
@@ -287,7 +288,29 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].triggeredDistance = DIGIT_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 			levelEnemys[i].reward = DIGIT_REAWRD;
-			
+			break;
+
+		case 6:
+			//Bat
+			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BAT_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+			levelEnemys[i].effect.underAtack = NULL;
+			levelEnemys[i].status.HP = BAT_HP;
+			levelEnemys[i].status.DMG = BAT_DMG;
+			levelEnemys[i].status.startHP = BAT_HP;
+			levelEnemys[i].status.alive = true;
+			levelEnemys[i].effect.atackCD = BAT_ATACK_CD;
+			levelEnemys[i].animation.run = *texture_bat_with_anvil;
+			levelEnemys[i].animation.atack = *texture_bat_without_anvil;
+			levelEnemys[i].animation.preAtack = *texture_bat_with_anvil;
+			levelEnemys[i].triggeredDistance = BAT_TRIGGERED_DISTANCE;
+			levelEnemys[i].animation_type = NULL;
+			levelEnemys[i].animation.bullet = *texture_anvil_without_bat;
+			levelEnemys[i].shoot.alive = 0;
+			levelEnemys[i].reward = BAT_REAWRD;
+		
+
+
+
 		}
 	}
 }
@@ -428,7 +451,7 @@ void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_bu
 	}
 }
 
-void loadLaplas(mainHero* Laplas, const char path[])
+void loadLaplas(mainHero* Laplas, const char path[], Settings* settings)
 {
 	FILE* f;
 	if (fopen_s(&f, path, "r") != 0)
@@ -446,12 +469,14 @@ void loadLaplas(mainHero* Laplas, const char path[])
 
 	fscanf_s(f, "%d ", &Laplas->status.souls);
 
+	fscanf_s(f, "%d ", &settings->skin);
+	
 	fclose(f);
 }
 
 
 
-void saveLaplas(mainHero* Laplas, const char path[])
+void saveLaplas(mainHero* Laplas, const char path[], Settings* settings)
 {
 	FILE* f;
 	if (fopen_s(&f, path, "w") != 0)
@@ -468,6 +493,8 @@ void saveLaplas(mainHero* Laplas, const char path[])
 	fprintf_s(f, "%d ", Laplas->status.lvlWeapon);
 
 	fprintf_s(f, "%d ", Laplas->status.souls);
+
+	fprintf_s(f, "%d ", settings->skin);
 
 	fclose(f);
 }

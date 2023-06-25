@@ -125,21 +125,38 @@ void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas
 {
 	for (int i = 0; i < *enemysCount; i++)
 	{
-		if (levelEnemys[i].triggered && levelEnemys[i].animation_type != 6 && levelEnemys[i].type != 4)
+		if (levelEnemys[i].type != 6)
 		{
-			if (levelEnemys[i].hitbox.x + levelEnemys[i].physic.speed < Laplas->hitbox.x)
+			if (levelEnemys[i].triggered && levelEnemys[i].animation_type != 6 && levelEnemys[i].type != 4)
 			{
-				levelEnemys[i].hitbox.x += levelEnemys[i].physic.speed;
-				levelEnemys[i].physic.xMoveR = 1;
-				levelEnemys[i].physic.xMoveL = 0;
-			}
-			else if (levelEnemys[i].hitbox.x - levelEnemys[i].physic.speed > Laplas->hitbox.x)
-			{
-				levelEnemys[i].hitbox.x -= levelEnemys[i].physic.speed;
-				levelEnemys[i].physic.xMoveR = 0;
-				levelEnemys[i].physic.xMoveL = -1;
+				if (levelEnemys[i].hitbox.x + levelEnemys[i].physic.speed < Laplas->hitbox.x)
+				{
+					levelEnemys[i].hitbox.x += levelEnemys[i].physic.speed;
+					levelEnemys[i].physic.xMoveR = 1;
+					levelEnemys[i].physic.xMoveL = 0;
+				}
+				else if (levelEnemys[i].hitbox.x - levelEnemys[i].physic.speed > Laplas->hitbox.x)
+				{
+					levelEnemys[i].hitbox.x -= levelEnemys[i].physic.speed;
+					levelEnemys[i].physic.xMoveR = 0;
+					levelEnemys[i].physic.xMoveL = -1;
+				}
 			}
 		}
+
+		else if (levelEnemys[i].type == 6)
+		{
+			double len = sqrt((levelEnemys[i].hitbox.x - Laplas->hitbox.x) * (levelEnemys[i].hitbox.x - Laplas->hitbox.x) +
+				(levelEnemys[i].hitbox.y + BAT_DIVE_HEIGHT - Laplas->hitbox.y) * (levelEnemys[i].hitbox.y + BAT_DIVE_HEIGHT - Laplas->hitbox.y));
+			if (len > 10)
+			{
+				double dx = (levelEnemys[i].hitbox.x - Laplas->hitbox.x) / len * levelEnemys[i].physic.speed;
+				double dy = (levelEnemys[i].hitbox.y + BAT_DIVE_HEIGHT - Laplas->hitbox.y) / len * levelEnemys[i].physic.speed;
+				levelEnemys[i].hitbox.x -= dx;
+				levelEnemys[i].hitbox.y -= dy;
+			}
+		}
+		
 	}
 }
 
