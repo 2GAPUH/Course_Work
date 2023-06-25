@@ -6,6 +6,7 @@
 #include <time.h>
 #include "func.h"
 #include <string.h>
+#include "Audio.h"
 
 void MainMenu(GameState* gameState, mainWindow* window, SDL_Renderer* ren, SDL_Window* win);
 void PauseMenu(GameState* gameState, mainWindow* window, SDL_Renderer* ren, SDL_Window* win);

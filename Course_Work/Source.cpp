@@ -487,6 +487,7 @@ int main(int argc, char* argv[])
 
 	while (flag)
 	{
+		
 		switch (gameState)
 		{
 		case MAIN_MENU:
@@ -521,6 +522,8 @@ int main(int argc, char* argv[])
 				break;
 			}
 
+
+
 			while (isRunning)
 			{
 				timeInGame += 17;
@@ -554,6 +557,10 @@ int main(int argc, char* argv[])
 						case SDL_SCANCODE_ESCAPE:
 							isRunning = false;
 							gameState = PAUSE_MENU;
+							Laplas.keys.pressed_E = 0;
+							Laplas.physic.xMoveL = 0;
+							Laplas.physic.xMoveR = 0;
+							StopSound(&audio, 1);
 							break;
 
 						case SDL_SCANCODE_A:
@@ -656,7 +663,7 @@ int main(int argc, char* argv[])
 								Laplas.battle.shootAtack = 1;
 								Laplas.status.ammunition -= 1;
 								AddNewBullet(&Laplas);
-								PlaySound(shot_sound, 1, &audio, settings.soundsVolume, -1);
+								PlaySound(shot_sound, 1, &audio, settings.soundsVolume, 0);
 							}
 						}
 						break;
@@ -800,7 +807,7 @@ int main(int argc, char* argv[])
 					}
 
 				//Статуя прокачки
-				if (CheckSkillFigure(&Laplas, &map.itemsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.items[Laplas.curRoom.i][Laplas.curRoom.j], &window, ren, win, &texture_skill, fontNovemBig))
+				if (CheckSkillFigure(&Laplas, &map.itemsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.items[Laplas.curRoom.i][Laplas.curRoom.j], &window, ren, win, &texture_skill, fontNovemBig, &audio))
 					dopInitHero(&Laplas);
 
 				//Сброс резиста от дамага
@@ -882,7 +889,7 @@ int main(int argc, char* argv[])
 				//Задний фон
 				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
 
-				DrawItem(&Laplas, levelItems, &window, ren, levelWidth, levelHeight, &itemsCount, fontNovemSmall);
+				DrawItem(&Laplas, map.items[Laplas.curRoom.i][Laplas.curRoom.j], &window, ren, map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i, map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j, &map.itemsCount[Laplas.curRoom.i][Laplas.curRoom.j], fontNovemSmall);
 		
 				//Враги и стены
 				DrawHitbox(map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_trampline, &texture_tmp_platform, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);

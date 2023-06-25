@@ -2,7 +2,6 @@
 #include "HeroBattle.h"
 #include "GameState.h"
 
-
 bool HeroPhysicInRange(SDL_Point unit, SDL_Rect bordersHitbox)
 {
 	if (unit.x > bordersHitbox.x && unit.x < bordersHitbox.x + bordersHitbox.w)
@@ -154,13 +153,14 @@ void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas
 */
 
 bool CheckSkillFigure(mainHero* Laplas, int* itemsCount, mainItems levelItems[], mainWindow* window, SDL_Renderer* ren, SDL_Window* win,
-	mainTextureSkill* texture_skill, TTF_Font* font)
+	mainTextureSkill* texture_skill, TTF_Font* font, Audio* audio)
 {
 	for (int i = 0; i < *itemsCount; i++)
 		if (levelItems[i].type == 5)
 			if (Laplas->keys.pressed_E)
 				if (HeroPhysicInRange({ Laplas->hitbox.x, Laplas->hitbox.y }, levelItems[i].grab_zone))
 				{
+					StopSound(audio, 1);
 					SkillLeveling(Laplas, window, ren, win, texture_skill, font);
 					Laplas->keys.pressed_E = 0;
 					Laplas->physic.xMoveL = 0;
