@@ -256,7 +256,13 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 						Laplas->status.HP -= 30;
 					}
 					else {
-						Laplas->status.HP += 70;
+						if (Laplas->status.startHP -  Laplas->status.HP <= 70) {
+							Laplas->status.HP += 70;
+						}
+						else
+						{
+							Laplas->status.HP = Laplas->status.startHP;
+						}
 					}
 					break;
 

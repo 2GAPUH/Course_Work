@@ -290,6 +290,7 @@ int main(int argc, char* argv[])
 	
 	mainRenderer hpBarTexture;
 	mainRenderer hpBarEdgingTexture;
+	mainRenderer brokeHpBarEdgingTexture;
 	mainRenderer enemyHpBarEdgingTexture;
 	mainRenderer ammoBarTexture;
 
@@ -413,6 +414,7 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
 	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1, ren);
 	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1, ren);
+	GetTexture("Textures\\broke_outside_life_bar.png", &brokeHpBarEdgingTexture, 1, ren);
 	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
 	GetTexture("Textures\\ammo_bar.png", &ammoBarTexture, 1, ren);
 
@@ -663,6 +665,7 @@ int main(int argc, char* argv[])
 								Laplas.battle.shootAtack = 1;
 								Laplas.status.ammunition -= 1;
 								AddNewBullet(&Laplas);
+								EndSound(&audio);
 								PlaySound(shot_sound, 1, &audio, settings.soundsVolume, 0);
 							}
 						}
@@ -927,7 +930,7 @@ int main(int argc, char* argv[])
 
 				//отрисовка характеристик персонажа
 				DrawAmmoBar(ammoBarTexture, &window, ren);
-				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window, ren);
+				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture,brokeHpBarEdgingTexture, &window, ren);
 				DrawMoney(ren, &window, fontNovemSmall, Laplas);
 
 				//отрисовка хп ближайшего противника
@@ -963,6 +966,10 @@ int main(int argc, char* argv[])
 		case PAUSE_MENU:
 			StopMusic(&audio);
 			PauseMenu(&gameState, &window, ren, win);
+			break;
+
+		case LOAD_MENU:
+			LoadMenu(&gameState, &window, ren, win, settings, &Laplas);
 			break;
 
 		case QUIT:
@@ -1012,6 +1019,7 @@ int main(int argc, char* argv[])
 	
 	SDL_DestroyTexture(texture_platform.texture);
 	SDL_DestroyTexture(hpBarEdgingTexture.texture);
+	SDL_DestroyTexture(brokeHpBarEdgingTexture.texture);
 	SDL_DestroyTexture(enemyHpBarEdgingTexture.texture);
 	SDL_DestroyTexture(hpBarTexture.texture);
 

@@ -1,4 +1,5 @@
 #include "GameState.h"
+#include "LoadAndInit.h"
 #include <SDL_mixer.h>
 
 
@@ -485,6 +486,101 @@ void CreditsMenu(GameState* gameState, mainWindow* window, SDL_Renderer* ren, SD
 					SDL_RenderClear(ren);
 					SDL_DestroyTexture(ButtonTexture.texture);
 					*gameState = MAIN_MENU;
+					return;
+				}
+			}
+			}
+		}
+	}
+}
+
+void LoadMenu(GameState* gameState, mainWindow* window, SDL_Renderer* ren, SDL_Window* win, Settings settings, mainHero* Laplas) {
+	mainRenderer ButtonTexture;
+	GetTextureDop("Textures\\button2.png", &ButtonTexture, 1, ren);
+	SDL_FRect loadOneButton;
+	SDL_FRect loadTwoButton;
+	SDL_FRect loadThreeButton;
+
+	SDL_FRect skinOne;
+	SDL_FRect skinTwo;
+	SDL_FRect skinThree;
+
+	mainRenderer skinOneTexture;
+	mainRenderer skinTwoTexture;
+	mainRenderer skinThreeTexture;
+
+	mainHero loadHero1;
+	mainHero loadHero2;
+	mainHero loadHero3;
+
+	loadLaplas(&loadHero1, "Saves\\1.txt");
+	skinOneTexture.texture = loadHero1.animation.com.texture;
+	loadLaplas(&loadHero2, "Saves\\2.txt");
+	skinTwoTexture.texture = loadHero2.animation.com.texture;
+	loadLaplas(&loadHero3, "Saves\\3.txt");
+	skinThreeTexture.texture = loadHero3.animation.com.texture;
+
+	SDL_Event ev;
+
+	while (true)
+	{
+		while (SDL_PollEvent(&ev))
+		{
+			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+			SDL_RenderClear(ren);
+
+			loadOneButton = { float(window->w / 12),float(window->h / 4), float(window->w / 4), float(window->h / 2.6) };
+			loadTwoButton = { float(window->w / 2.67),float(window->h / 4), float(window->w / 4), float(window->h / 2.6) };
+			loadThreeButton = { float(window->w / 1.5),float(window->h / 4), float(window->w / 4), float(window->h / 2.6) };
+
+			loadOneButton = { float(window->w / 12),float(window->h / 4), float(window->w / 4), float(window->h / 2.6) };
+			loadTwoButton = { float(window->w / 2.67),float(window->h / 4), float(window->w / 4), float(window->h / 2.6) };
+			loadThreeButton = { float(window->w / 1.5),float(window->h / 4), float(window->w / 4), float(window->h / 2.6) };
+			SDL_RenderCopyF(ren, ButtonTexture.texture, NULL, &loadOneButton);
+			SDL_RenderCopyF(ren, ButtonTexture.texture, NULL, &loadTwoButton);
+			SDL_RenderCopyF(ren, ButtonTexture.texture, NULL, &loadThreeButton);
+
+			
+
+			SDL_RenderPresent(ren);
+			switch (ev.type)
+			{
+			case SDL_WINDOWEVENT:
+				if (ev.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					SDL_GetWindowSize(win, &window->w, &window->h);
+				}
+				break;
+
+			case SDL_MOUSEBUTTONUP:
+			{
+				SDL_FPoint mousePoint = { ev.button.x,ev.button.y };
+
+				if (SDL_PointInFRect(&mousePoint, &loadOneButton))
+				{
+					*Laplas = loadHero1;
+					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+					SDL_RenderClear(ren);
+					SDL_DestroyTexture(ButtonTexture.texture);
+					*gameState = IN_GAME;
+					return;
+				}
+				else if (SDL_PointInFRect(&mousePoint, &loadTwoButton))
+				{
+					*Laplas = loadHero2;
+					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+					SDL_RenderClear(ren);
+					SDL_DestroyTexture(ButtonTexture.texture);
+					*gameState = IN_GAME;
+					return;
+				}
+				else if (SDL_PointInFRect(&mousePoint, &loadTwoButton))
+				{
+					*Laplas = loadHero3;
+					SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+					SDL_RenderClear(ren);
+					SDL_DestroyTexture(ButtonTexture.texture);
+					*gameState = IN_GAME;
 					return;
 				}
 			}
