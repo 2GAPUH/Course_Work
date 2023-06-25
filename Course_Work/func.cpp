@@ -146,3 +146,4 @@ bool SegmentOverlay(SDL_Point firstStart, SDL_Point firstEnd, SDL_Point secondSt
 		&& Intersect(firstStart.x, firstEnd.x, secondStart.x, secondEnd.x)
 		&& Intersect(firstStart.y, firstEnd.y, secondStart.y, secondEnd.y);
 }
+

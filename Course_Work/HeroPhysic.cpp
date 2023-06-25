@@ -5,7 +5,7 @@
 #include "common_parameters.h"
 #include <math.h>
 #include <stdio.h>
-
+#include <time.h>
 
 bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
 {
@@ -44,7 +44,7 @@ bool HeroCheckBorders(mainHero* Laplas, SDL_Rect unit)
 		{ unit.x - Laplas->hitbox.w / 2, unit.y + unit.h }, { unit.x + unit.w + Laplas->hitbox.w / 2, unit.y + unit.h }, &intersect))
 	{
 		Laplas->position.x = Laplas->position.x;
-		Laplas->position.y = intersect.y + Laplas->hitbox.h / 2 + 1;
+		Laplas->position.y = intersect.y + Laplas->hitbox.h / 2 + 2;
 		Laplas->physic.impulse = 0.1;
 		Laplas->physic.accelerationY = 0.3;
 		return 0;
@@ -121,6 +121,7 @@ void HeroPhysicJump(mainHero* Laplas)
 			Laplas->physic.accelerationY = 0.1;
 		Laplas->physic.onBorder = 0;
 	}
+
 }
 
 //Гравитация
@@ -132,7 +133,7 @@ void HeroPhysicGravity(mainHero* Laplas)
 }
 
 //Проверка на наложение хитбоксов
-void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[], int* trapsCount, mainTraps levelTraps[])
+void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders levelBorders[], int* trapsCount, mainTraps levelTraps[], int deltaTime)
 {
 	int check = 1;
 	for (int i = 0;i  < *bordersCount;i++)
@@ -145,7 +146,7 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 			}
 		}
 		
-		else if((levelBorders[i].type == 4 && !Laplas->physic.pressed_S && Laplas->physic.impulse < 0.1 ))
+		else if(((levelBorders[i].type == 4 || levelBorders[i].type == 8) && !Laplas->keys.pressed_S  && Laplas->physic.impulse < 0.1))
 		{
 			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
 			{
@@ -154,11 +155,37 @@ void HeroPhysicHitboxOverlay(int* bordersCount, mainHero* Laplas, mainBorders le
 		}
 
 
-		else if(levelBorders[i].type == 5)
-			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+		else if (levelBorders[i].type == 5)
+		{
+			mainHero copy = *Laplas;
+			if (!HeroCheckBorders(&copy, levelBorders[i].bordersHitbox))
 			{
 				Laplas->physic.impulse = 1;
 			}
+		}
+
+		else if ((levelBorders[i].type == 7 && !Laplas->keys.pressed_S && Laplas->physic.impulse < 0.1 && levelBorders[i].alive))
+		{
+			if (!HeroCheckBorders(Laplas, levelBorders[i].bordersHitbox))
+			{
+				check = 0;
+
+				if (!levelBorders[i].active)
+				{
+					levelBorders[i].active = 1;
+					levelBorders[i].timer = deltaTime;
+				}
+			}
+			if (deltaTime - levelBorders[i].timer > TMP_PLATFORM_LIFE_TIME && levelBorders[i].active)
+				levelBorders[i].alive = 0;
+		}
+		else if (levelBorders[i].type == 7 && !levelBorders[i].alive && deltaTime - levelBorders[i].timer > TMP_PLATFORM_LIFE_TIME * 4)
+		{
+			levelBorders[i].active = 0;
+			levelBorders[i].alive = 1;
+		}
+
+
 	}
 
 	for (int i = 0; i < *trapsCount; i++)

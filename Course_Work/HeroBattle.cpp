@@ -32,6 +32,11 @@ void AddNewBullet(mainHero* Laplas)
 				Laplas->battle.shoot[i].bulletSpeed = HERO_BULLET_SPEED;
 				Laplas->battle.shoot[i].shootAtackCentere.x = Laplas->hitbox.x + Laplas->hitbox.w / 2;
 				Laplas->battle.shoot[i].shootAtackCentere.y = Laplas->hitbox.y;
+				if (Laplas->buffs.itemRubberBulletActive)
+				{
+					Laplas->battle.shoot[i].rebound_count = RUBBER_REBOUND_COUNT;
+				}
+				else Laplas->battle.shoot[i].rebound_count = NULL;
 			}
 			else if (Laplas->physic.gazeDirection < 0)
 			{
@@ -39,6 +44,11 @@ void AddNewBullet(mainHero* Laplas)
 				Laplas->battle.shoot[i].bulletSpeed = -HERO_BULLET_SPEED;
 				Laplas->battle.shoot[i].shootAtackCentere.x = Laplas->hitbox.x - Laplas->hitbox.w / 2;
 				Laplas->battle.shoot[i].shootAtackCentere.y = Laplas->hitbox.y;
+				if (Laplas->buffs.itemRubberBulletActive)
+				{
+					Laplas->battle.shoot[i].rebound_count = RUBBER_REBOUND_COUNT;
+				}
+				else Laplas->battle.shoot[i].rebound_count = NULL;
 			}
 
 			break;
@@ -58,7 +68,7 @@ bool CheckShootHitbox(SDL_Point* shoot, SDL_Rect* enemy)
 		return 0;
 }
 
-void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[])
+void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[], int timeInGame)
 {
 	if (Laplas->battle.commonAtack && Laplas->animationType != 3 &&Laplas->effect.timeAtackCD + Laplas->effect.atackCD > *deltaTime)
 	{
@@ -74,10 +84,17 @@ void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEne
 
 	for (int i = 0; i < *enemysCount; i++)
 	{
-		if (Laplas->battle.commonAtack && levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas->hitbox, &levelEnemys[i].hitbox))
+		if (Laplas->battle.commonAtack && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas->hitbox, &levelEnemys[i].hitbox))
 		{
+			if (Laplas->buffs.itemAcid)
+			{
+				levelEnemys[i].effect.poisoned = 1;
+				levelEnemys[i].status.HP -= POISON_DMG;
+				levelEnemys[i].effect.poisonLastDamage = timeInGame;
+			}
 			levelEnemys[i].effect.underAtack = 1;
 			levelEnemys[i].status.HP -= Laplas->status.DMG;
+			levelEnemys[i].physic.impulse += 0.45;
 			if (levelEnemys[i].status.HP <= 0)
 			{
 				levelEnemys[i].status.alive = 0;
@@ -106,10 +123,11 @@ void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnem
 			Laplas->battle.shoot[j].shootAtackCentere.x += Laplas->battle.shoot[j].bulletSpeed;
 			for (int i = 0; i < *enemysCount; i++)
 			{
-				if (levelEnemys[i].status.alive && !levelEnemys[i].effect.underAtack && CheckShootHitbox(&Laplas->battle.shoot[j].shootAtackCentere, &levelEnemys[i].hitbox))
+				if (!levelEnemys[i].effect.underAtack && CheckShootHitbox(&Laplas->battle.shoot[j].shootAtackCentere, &levelEnemys[i].hitbox))
 				{
 					Laplas->battle.shoot[j].alive = 0;
 					levelEnemys[i].effect.underAtack = 1;
+					levelEnemys[i].physic.impulse += 0.45;
 					levelEnemys[i].status.HP -= Laplas->status.Shoot_DMG;
 					if (levelEnemys[i].status.HP <= 0)
 					{
@@ -118,4 +136,33 @@ void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnem
 				}
 			}
 		}
+}
+
+void HeroDashAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnemys levelEnemys[])
+{
+	if (Laplas->battle.commonAtack && Laplas->animationType != 3 && Laplas->effect.timeAtackCD + Laplas->effect.atackCD > *deltaTime)
+	{
+		Laplas->animationType = 2;
+	}
+	else if (Laplas->animationType != 3)
+	{
+		Laplas->battle.commonAtack = 0;
+		for (int i = 0; i < *enemysCount; i++)
+			levelEnemys[i].effect.underAtack = 0;
+		Laplas->animationType = 0;
+	}
+
+	for (int i = 0; i < *enemysCount; i++)
+	{
+		if (Laplas->battle.commonAtack && !levelEnemys[i].effect.underAtack && CheckAtackHitbox(&Laplas->hitbox, &levelEnemys[i].hitbox))
+		{
+			levelEnemys[i].effect.underAtack = 1;
+			levelEnemys[i].status.HP -= Laplas->status.DMG;
+			levelEnemys[i].physic.impulse += 0.45;
+			if (levelEnemys[i].status.HP <= 0)
+			{
+				levelEnemys[i].status.alive = 0;
+			}
+		}
+	}
 }

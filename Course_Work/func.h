@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL.h>
-
+#include "common_parameters.h"
 
 
 void DeInit(int error, SDL_Window** win, SDL_Renderer** ren, SDL_Surface** win_surface);

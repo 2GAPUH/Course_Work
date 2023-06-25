@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Libs\SDL2-2.26.4\include;D:\Libs\SDL2_ttf-2.20.2\include;D:\Libs\SDL2_image-2.6.3\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Libs\SDL2-2.26.4\lib\x64;D:\Libs\SDL2_ttf-2.20.2\lib\x64;D:\Libs\SDL2_image-2.6.3\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Libs\SDL2-2.26.4\include;D:\Libs\SDL2_ttf-2.20.2\include;D:\Libs\SDL2_mixer-2.6.3\include;D:\Libs\SDL2_mixer-2.6.3\include;D:\Libs\SDL2_image-2.6.3\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Libs\SDL2_mixer-2.6.3\lib\x64;D:\Libs\SDL2_mixer-2.6.3\lib\x64;D:\Libs\SDL2-2.26.4\lib\x64;D:\Libs\SDL2_ttf-2.20.2\lib\x64;D:\Libs\SDL2_image-2.6.3\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\Libs\SDL2-2.26.4\include;D:\Libs\SDL2_ttf-2.20.2\include;D:\Libs\SDL2_image-2.6.3\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Libs\SDL2-2.26.4\lib\x64;D:\Libs\SDL2_ttf-2.20.2\lib\x64;D:\Libs\SDL2_image-2.6.3\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Libs\SDL2-2.26.4\include;D:\Libs\SDL2_ttf-2.20.2\include;D:\Libs\SDL2_mixer-2.6.3\include;D:\Libs\SDL2_image-2.6.3\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Libs\SDL2_mixer-2.6.3\lib\x64;D:\Libs\SDL2-2.26.4\lib\x64;D:\Libs\SDL2_ttf-2.20.2\lib\x64;D:\Libs\SDL2_image-2.6.3\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -116,7 +116,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2main.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2main.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,47 +133,93 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2main.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2main.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="Draw.cpp" />
     <ClCompile Include="EnemyPhysic.cpp" />
     <ClCompile Include="func.cpp" />
+    <ClCompile Include="GameLogic.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="HeroBattle.cpp" />
     <ClCompile Include="HeroPhysic.cpp" />
+    <ClCompile Include="LoadAndInit.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Audio.h" />
     <ClInclude Include="common_parameters.h" />
+    <ClInclude Include="Draw.h" />
     <ClInclude Include="EnemyPhysic.h" />
     <ClInclude Include="func.h" />
+    <ClInclude Include="GameLogic.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="HeroBattle.h" />
     <ClInclude Include="HeroPhysic.h" />
+    <ClInclude Include="LoadAndInit.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\BackGroundCave.png" />
     <Image Include="Textures\barrel1.png" />
+    <Image Include="Textures\black_char_idle-Sheet.png" />
+    <Image Include="Textures\black_char_punch_spritelist.png" />
+    <Image Include="Textures\black_char_run_spritelist.png" />
     <Image Include="Textures\bobr.png" />
+    <Image Include="Textures\buff_DMG.png" />
+    <Image Include="Textures\buff_Rubber_Bullet.png" />
     <Image Include="Textures\cobblestone20x20.png" />
     <Image Include="Textures\cobblestone40x40.png" />
+    <Image Include="Textures\krab.png" />
     <Image Include="Textures\hero_bullet.png" />
     <Image Include="Textures\hero_comm.png" />
     <Image Include="Textures\hero_punch.png" />
     <Image Include="Textures\hero_run.png" />
     <Image Include="Textures\hpBar.png" />
     <Image Include="Textures\mainHero26x22.png" />
+    <Image Include="Textures\overheating.png" />
     <Image Include="Textures\pressure_plate.png" />
+    <Image Include="Textures\tower_bullet.png" />
     <Image Include="Textures\trap_dart.png" />
     <Image Include="Textures\trap_spikes.png" />
     <Image Include="Textures\trap_with_dart.png" />
+    <Image Include="Textures\white_char_idle-Sheet.png" />
+    <Image Include="Textures\white_char_punch_spritelist.png" />
+    <Image Include="Textures\white_char_run_spritelist.png" />
     <Image Include="Textures\woodenPlatform.png" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Enemys\Enemy.txt" />
-    <Text Include="Enemys\Enemy1.txt" />
-    <Text Include="Levels\Borders.txt" />
-    <Text Include="Levels\Borders1.txt" />
-    <Text Include="Traps\Trap.txt" />
+    <Text Include="Enemys\Enemy00.txt" />
+    <Text Include="Enemys\Enemy01.txt" />
+    <Text Include="Enemys\Enemy02.txt" />
+    <Text Include="Enemys\Enemy03.txt" />
+    <Text Include="Enemys\Enemy04.txt" />
+    <Text Include="Enemys\Enemy14.txt" />
+    <Text Include="Enemys\Enemy99.txt" />
+    <Text Include="Items\Item00.txt" />
+    <Text Include="Items\Item01.txt" />
+    <Text Include="Items\Item02.txt" />
+    <Text Include="Items\Item03.txt" />
+    <Text Include="Items\Item04.txt" />
+    <Text Include="Items\Item14.txt" />
+    <Text Include="Items\Item99.txt" />
+    <Text Include="Levels\Borders00.txt" />
+    <Text Include="Levels\Borders01.txt" />
+    <Text Include="Levels\Borders02.txt" />
+    <Text Include="Levels\Borders03.txt" />
+    <Text Include="Levels\Borders04.txt" />
+    <Text Include="Levels\Borders14.txt" />
+    <Text Include="Levels\Borders99.txt" />
+    <Text Include="map.txt" />
+    <Text Include="Saves\1\main_hero.txt" />
+    <Text Include="Traps\Trap00.txt" />
+    <Text Include="Traps\Trap01.txt" />
+    <Text Include="Traps\Trap02.txt" />
+    <Text Include="Traps\Trap03.txt" />
+    <Text Include="Traps\Trap04.txt" />
+    <Text Include="Traps\Trap14.txt" />
+    <Text Include="Traps\Trap99.txt" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Fonts\novem.ttf" />
