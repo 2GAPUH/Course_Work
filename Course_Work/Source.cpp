@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
 	#pragma region VARIABLE_INIT
 
 	GameState gameState = MAIN_MENU;
-	Settings settings = { 0, 1 };
+	Settings settings = { 1, 5, 1 };
 	int tmp;
 	mainMap map;
 
@@ -307,7 +307,12 @@ int main(int argc, char* argv[])
 	char timer_text[10] = "00:00";
 	char amunition_text[10] = "000";
 	
+
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 	const char main_music[] = "Sounds\\main_theme.wav";
+	const char walk_sound[] = "Sounds\\walk.mp3";
+	const char punch_sound[] = "Sounds\\punch.mp3";
+	const char shot_sound[] = "Sounds\\shot.mp3";
 
 	bool isRunning;
 
@@ -485,7 +490,7 @@ int main(int argc, char* argv[])
 		switch (gameState)
 		{
 		case MAIN_MENU:
-			PlayMusic(main_music,&audio,settings.volume);
+			PlayMusic(main_music,&audio,settings.musicVolume);
 			MainMenu(&gameState, &window, ren, win);
 			break;
 
@@ -506,11 +511,13 @@ int main(int argc, char* argv[])
 				GetTexture("Textures\\black_hero_atack3.png", &Laplas.animation.punch, 5, ren);
 				GetTexture("Textures\\black_hero_comm.png", &Laplas.animation.com, 3, ren);
 				GetTexture("Textures\\black_hero_run.png", &Laplas.animation.run, 8, ren);
+				GetTexture("Textures\\black_hero_shoot.png", &Laplas.animation.shoot, 3, ren);
 				break;
 			case 3:
 				GetTexture("Textures\\white_hero_comm.png", &Laplas.animation.com, 3, ren);
 				GetTexture("Textures\\white_hero_run.png", &Laplas.animation.run, 8, ren);
 				GetTexture("Textures\\white_hero_atack3.png", &Laplas.animation.punch, 5, ren);
+				GetTexture("Textures\\white_hero_shoot.png", &Laplas.animation.shoot, 3, ren);
 				break;
 			}
 
@@ -551,10 +558,12 @@ int main(int argc, char* argv[])
 
 						case SDL_SCANCODE_A:
 							Laplas.physic.xMoveL = -1;
+							PlaySound(walk_sound, 1, &audio, settings.soundsVolume, -1);
 							break;
 
 						case SDL_SCANCODE_D:
 							Laplas.physic.xMoveR = 1;
+							PlaySound(walk_sound, 1, &audio, settings.soundsVolume, -1);
 							break;
 
 						case SDL_SCANCODE_S:
@@ -592,6 +601,7 @@ int main(int argc, char* argv[])
 						{
 						case SDL_SCANCODE_A:
 							Laplas.physic.xMoveL = 0;
+							StopSound(&audio, 1);
 							break;
 
 						case SDL_SCANCODE_S:
@@ -600,6 +610,7 @@ int main(int argc, char* argv[])
 
 						case SDL_SCANCODE_D:
 							Laplas.physic.xMoveR = 0;
+							StopSound(&audio, 1);
 							break;
 
 						case SDL_SCANCODE_E:
@@ -632,6 +643,9 @@ int main(int argc, char* argv[])
 							{
 								Laplas.effect.timeAtackCD = timeInGame;
 								Laplas.battle.commonAtack = 1;
+								EndSound(&audio);
+								PlaySound(punch_sound, 1, &audio,settings.soundsVolume, 0);
+								
 							}
 						}
 						else if (ev.button.button == SDL_BUTTON_RIGHT)
@@ -642,6 +656,7 @@ int main(int argc, char* argv[])
 								Laplas.battle.shootAtack = 1;
 								Laplas.status.ammunition -= 1;
 								AddNewBullet(&Laplas);
+								PlaySound(shot_sound, 1, &audio, settings.soundsVolume, -1);
 							}
 						}
 						break;
@@ -866,6 +881,8 @@ int main(int argc, char* argv[])
 
 				//Задний фон
 				SDL_RenderCopy(ren, texture_backGround.texture, NULL, NULL);
+
+				DrawItem(&Laplas, levelItems, &window, ren, levelWidth, levelHeight, &itemsCount, fontNovemSmall);
 		
 				//Враги и стены
 				DrawHitbox(map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, &window, &texture_cobbleStone, &texture_platform, &texture_trampline, &texture_tmp_platform, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);
@@ -890,8 +907,6 @@ int main(int argc, char* argv[])
 				//Таймер и боезапас
 				DrawHeroBullet(&Laplas, &window, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);
 				DrawTrapsBullet(&Laplas, &window, &map.trapsCount[Laplas.curRoom.i][Laplas.curRoom.j], map.traps[Laplas.curRoom.i][Laplas.curRoom.j], &texture_trap_dart, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);
-
-				DrawItem(&Laplas, map.items[Laplas.curRoom.i][Laplas.curRoom.j], &window, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j, &map.itemsCount[Laplas.curRoom.i][Laplas.curRoom.j], fontNovemSmall);
 
 				//ГГ
 				DrawMainHero(&Laplas, window, ren,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j);
@@ -935,11 +950,11 @@ int main(int argc, char* argv[])
 			break;
 
 		case SETTINGS:
-			SettingsMenu(&gameState,&settings, &window, ren, win);
+			SettingsMenu(&gameState,&settings, &window, ren, win, audio);
 			break;
 
 		case PAUSE_MENU:
-			stopMusic(&audio);
+			StopMusic(&audio);
 			PauseMenu(&gameState, &window, ren, win);
 			break;
 

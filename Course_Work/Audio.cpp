@@ -3,10 +3,8 @@
 
 void PlayMusic(const char filename[], Audio* audio, int volume)
 {
-    if (!audio->isPlaying)
+    if (!audio->musicIsPlaying)
     {
-        Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
-
         audio->music = Mix_LoadMUS(filename);
 
         if (!audio->music)
@@ -17,23 +15,37 @@ void PlayMusic(const char filename[], Audio* audio, int volume)
         if (Mix_PlayMusic(audio->music, -1) < 0)
             printf("%s\n", Mix_GetError());
 
-        audio->isPlaying = true;
+        audio->musicIsPlaying = true;
     }
 }
 
-void stopMusic(Audio* audio) {
-    audio->isPlaying = false;
-    Mix_CloseAudio();
+void StopMusic(Audio* audio) {
+    audio->musicIsPlaying = false;
+    Mix_HaltMusic();
 }
 
-void PlaySound(const char filename[], int channel, Audio audio, int volume)
+void StopSound(Audio* audio, int channel) {
+    audio->soundIsPlaying = false;
+    Mix_HaltChannel(channel);
+}
+
+void EndSound(Audio* audio) {
+    audio->soundIsPlaying = false;
+}
+
+void PlaySound(const char filename[], int channel, Audio* audio, int volume, int timeFlag)
 {
-    audio.sound = Mix_LoadWAV(filename);
-    if (!audio.sound)
-        printf("%s\n", Mix_GetError());
+    if (!audio->soundIsPlaying)
+    {
+        audio->sound = Mix_LoadWAV(filename);
+        if (!audio->sound)
+            printf("%s\n", Mix_GetError());
 
-    Mix_VolumeChunk(audio.sound, 255*volume/5);
+        Mix_VolumeChunk(audio->sound, 255 * volume / 5);
 
-    if (Mix_PlayChannel(channel, audio.sound, 0) < 0)
-        printf("%s\n", Mix_GetError());
+        if (Mix_PlayChannel(channel, audio->sound, timeFlag) < 0)
+            printf("%s\n", Mix_GetError());
+
+        audio->soundIsPlaying = true;
+    }
 }

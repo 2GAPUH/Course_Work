@@ -150,7 +150,8 @@ typedef enum GameState {
 
 struct Settings
 {
-	int volume;
+	int musicVolume;
+	int soundsVolume;
 	int skin;
 };
 
@@ -395,7 +396,9 @@ struct Audio
 {
 	Mix_Music* music;
 	Mix_Chunk* sound;
-	bool isPlaying;
+
+	bool musicIsPlaying;
+	bool soundIsPlaying;
 };
 
 struct mainMap
