@@ -148,7 +148,7 @@ void EnemyPhysicHitboxOverlay(int* bordersCount,int* enemysCount, mainEnemys Ene
 				}
 			}
 
-			else if ((levelBorders[j].type == 7 && levelBorders[i].alive))
+			/*else if ((levelBorders[j].type == 7 && levelBorders[i].alive))
 			{
 				if (!EnemyCheckBorders(&Enemy[i], levelBorders[j].bordersHitbox))
 				{
@@ -168,6 +168,27 @@ void EnemyPhysicHitboxOverlay(int* bordersCount,int* enemysCount, mainEnemys Ene
 			{
 				levelBorders[j].active = 0;
 				levelBorders[j].alive = 1;
+			}*/
+
+			else if ((levelBorders[i].type == 7 && Enemy[i].physic.impulse < 0.1 && levelBorders[i].alive))
+			{
+				if (!EnemyCheckBorders(&Enemy[i], levelBorders[i].bordersHitbox))
+				{
+					check = 0;
+
+					if (!levelBorders[i].active)
+					{
+						levelBorders[i].active = 1;
+						levelBorders[i].timer = deltaTime;
+					}
+				}
+				if (deltaTime - levelBorders[i].timer > TMP_PLATFORM_LIFE_TIME && levelBorders[i].active)
+					levelBorders[i].alive = 0;
+			}
+			else if (levelBorders[i].type == 7 && !levelBorders[i].alive && deltaTime - levelBorders[i].timer > TMP_PLATFORM_LIFE_TIME * 4)
+			{
+				levelBorders[i].active = 0;
+				levelBorders[i].alive = 1;
 			}
 		}
 

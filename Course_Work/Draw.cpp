@@ -5,6 +5,7 @@
 #include <time.h>
 
 
+
 void DrawMainHero(mainHero* Laplas, mainWindow window, SDL_Renderer *ren, int levelWidth, int levelHeight)
 {
 	SDL_SetRenderDrawColor(ren, 255, 0, 128, 255);
@@ -349,6 +350,29 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 			}
 			break;
 
+
+		case 2:
+			if (levelEnemys[i].physic.gazeDirection > 0)
+				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+			else if (levelEnemys[i].physic.gazeDirection < 0)
+				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+			else if (levelEnemys[i].physic.gazeDirection == 0)
+			{
+				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+				break;
+			}
+
+			if ((levelEnemys[i].physic.xMoveL || levelEnemys[i].physic.xMoveR) && (SDL_GetTicks() - levelEnemys[i].animation.run.frameTime > 1000 / 15) && (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR != 0))
+			{
+				levelEnemys[i].animation.run.frame.x += levelEnemys[i].animation.run.textureSize.w / levelEnemys[i].animation.run.frameCount;
+				levelEnemys[i].animation.run.frameTime = SDL_GetTicks();
+			}
+
+			if (levelEnemys[i].animation.run.frame.x >= levelEnemys[i].animation.run.textureSize.w || (!levelEnemys[i].physic.xMoveL && !levelEnemys[i].physic.xMoveR) || (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR == 0))
+				levelEnemys[i].animation.run.frame.x = 0;
+			break;
+
+
 		case 3:
 			if (levelEnemys[i].physic.gazeDirection > 0)
 				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);
@@ -382,19 +406,35 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 			}
 			break;
 
-			SDL_Rect movedEnemy = { levelEnemys[i].shoot.shootAtackCentere.x - 32,levelEnemys[i].shoot.shootAtackCentere.y -32, 64, 64};
+		case 5:
 
-			if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
-				movedEnemy.x -= Laplas->hitbox.x - window->w / 2.f;
-			if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
-				movedEnemy.x -= levelWidth - window->w;
+			if (levelEnemys[i].animation_type == 1) {
+				if (levelEnemys[i].physic.gazeDirection > 0)
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.atack.texture, &levelEnemys[i].animation.atack.frame, &movedEnemy, levelEnemys[i].animation.atack.angel, 0, SDL_FLIP_NONE);
+				else if (levelEnemys[i].physic.gazeDirection < 0)
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.atack.texture, &levelEnemys[i].animation.atack.frame, &movedEnemy, levelEnemys[i].animation.atack.angel, 0, SDL_FLIP_NONE);
+				else if (levelEnemys[i].physic.gazeDirection == 0)
+				{
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.atack.texture, &levelEnemys[i].animation.atack.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+					break;
+				}
+	
+			}
+			else if (levelEnemys[i].animation_type == 6) {
+				if (levelEnemys[i].physic.gazeDirection > 0)
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.preAtack.texture, &levelEnemys[i].animation.preAtack.frame, &movedEnemy, levelEnemys[i].animation.preAtack.angel, 0, SDL_FLIP_HORIZONTAL);
+				else if (levelEnemys[i].physic.gazeDirection < 0)
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.preAtack.texture, &levelEnemys[i].animation.preAtack.frame, &movedEnemy, levelEnemys[i].animation.preAtack.angel, 0, SDL_FLIP_NONE);
+				else if (levelEnemys[i].physic.gazeDirection == 0)
+				{
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.preAtack.texture, &levelEnemys[i].animation.preAtack.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+					break;
+				}
+				break;
+			}
 
-			if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
-				movedEnemy.y -= Laplas->hitbox.y - window->h / 2.f;
-			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
-				movedEnemy.y -= levelHeight - window->h;
-
-			SDL_RenderCopyEx(ren, levelEnemys[i].animation.bullet.texture, &levelEnemys[i].animation.bullet.textureSize, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+			
+			break;
 		}
 
 		if (levelEnemys[i].effect.poisoned)
@@ -431,8 +471,12 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 }
 
 void DrawItem(mainHero* Laplas, mainItems items[], mainWindow* window, SDL_Renderer* ren, int levelWidth, int levelHeight, 
-	int* itemsCount)
+	int* itemsCount, TTF_Font* font)
 {
+	
+	SDL_Surface* surface = NULL;
+	mainRenderer texture_cost;
+	char cost_text[10] = "000";
 	for (int i = 0; i < *itemsCount; i++)
 	{
 		if (items[i].alive)
@@ -449,6 +493,26 @@ void DrawItem(mainHero* Laplas, mainItems items[], mainWindow* window, SDL_Rende
 			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
 				rect123.y -= levelHeight - window->h;
 
+
+			if (items[i].cost>0)
+			{
+				SDL_Rect rectCost = rect123;
+
+				sprintf_s(cost_text, "%d", items[i].cost);
+				surface = TTF_RenderText_Blended(font, cost_text, { 255, 199, 60, 255 });
+
+				texture_cost.texture = SDL_CreateTextureFromSurface(ren, surface);
+				texture_cost.textureSize.w = surface->w;
+				texture_cost.textureSize.h = surface->h;
+				texture_cost.textureSize.x = WINDOW_WIDTH - surface->w;
+				texture_cost.textureSize.y = NULL;
+
+				rectCost.y -= texture_cost.textureSize.h;
+
+				SDL_RenderCopy(ren, texture_cost.texture, NULL, &rectCost);
+				SDL_FreeSurface(surface);
+			}
+
 			SDL_RenderCopy(ren, items[i].render.texture, &items[i].render.frame, &rect123);
 			if ((SDL_GetTicks() - items[i].render.frameTime > 1000. / 30))
 			{
@@ -459,6 +523,8 @@ void DrawItem(mainHero* Laplas, mainItems items[], mainWindow* window, SDL_Rende
 			if (items[i].render.frame.x >= items[i].render.textureSize.w)
 				items[i].render.frame.x = 0;
 		}
+
+
 	}
 }
 
@@ -586,14 +652,12 @@ void DrawAmmoBar(mainRenderer ammoBarTexture, mainWindow* window, SDL_Renderer* 
 void DrawEnemyHP(mainHero Laplas, mainEnemys* levelEnemys, int enemysCount, mainRenderer hpBarTexture, mainRenderer enemyHpBarEdgingTexture, mainWindow* window, SDL_Renderer* ren) {
 	mainEnemys closerEnemy = levelEnemys[0];
 	int minDistance = sqrt((Laplas.hitbox.x - levelEnemys[0].hitbox.x) * (Laplas.hitbox.x - levelEnemys[0].hitbox.x) +
-		(Laplas.hitbox.y - levelEnemys[0].hitbox.y) * (Laplas.hitbox.y - levelEnemys[0].hitbox.y)) <
-		levelEnemys[0].triggeredDistance;
+		(Laplas.hitbox.y - levelEnemys[0].hitbox.y) * (Laplas.hitbox.y - levelEnemys[0].hitbox.y));
 	int curDistance;
 	for (int i = 0; i < enemysCount; i++)
 	{
 		curDistance = sqrt((Laplas.hitbox.x - levelEnemys[i].hitbox.x) * (Laplas.hitbox.x - levelEnemys[i].hitbox.x) +
-			(Laplas.hitbox.y - levelEnemys[i].hitbox.y) * (Laplas.hitbox.y - levelEnemys[i].hitbox.y)) <
-			levelEnemys[i].triggeredDistance;
+			(Laplas.hitbox.y - levelEnemys[i].hitbox.y) * (Laplas.hitbox.y - levelEnemys[i].hitbox.y));
 		if (minDistance > curDistance)
 		{
 			minDistance = curDistance;
@@ -601,8 +665,32 @@ void DrawEnemyHP(mainHero Laplas, mainEnemys* levelEnemys, int enemysCount, main
 		}
 	}
 
-	SDL_FRect hpBar = { float(window->w / 4), float(window->h / 16), float(window->w / 32.8) * closerEnemy.status.HP / 10,  float(window->h / 16) };
-	SDL_FRect hpBarEdging = { float(window->w / 4.1), float(window->h / 16), float(window->w / 32) * closerEnemy.status.startHP/10,  float(window->h / 16) };
+	SDL_FRect hpBar = { float(window->w / 3.55), float(window->h / 16), float(window->w / 42.8) * closerEnemy.status.HP / 10,  float(window->h / 18) };
+	SDL_FRect hpBarEdging = { float(window->w / 3.6), float(window->h / 16), float(window->w / 41.8) * closerEnemy.status.startHP/10,  float(window->h / 18) };
 	SDL_RenderCopyF(ren, hpBarTexture.texture, NULL, &hpBar);
 	SDL_RenderCopyF(ren, enemyHpBarEdgingTexture.texture, NULL, &hpBarEdging);
+}
+
+void DrawMoney(SDL_Renderer* ren, mainWindow* window, TTF_Font* font, mainHero Laplas) {
+	SDL_Surface* surface = NULL;
+	mainRenderer texture_money;
+	char money_text[10] = "hobo";
+
+	SDL_Rect rectCost = { float(window->w / 3.8), float(window->h) - float(window->h / 8.8), float(window->w / 12),  float(window->h / 16) };
+
+	if (Laplas.money > 0)
+	{
+		sprintf_s(money_text, "%d", Laplas.money);
+	}
+	
+	surface = TTF_RenderText_Blended(font, money_text, { 255, 199, 60, 255 });
+
+	texture_money.texture = SDL_CreateTextureFromSurface(ren, surface);
+	texture_money.textureSize.w = surface->w;
+	texture_money.textureSize.h = surface->h;
+	texture_money.textureSize.x = WINDOW_WIDTH - surface->w;
+	texture_money.textureSize.y = NULL;
+
+	SDL_RenderCopy(ren, texture_money.texture, NULL, &rectCost);
+	SDL_FreeSurface(surface);
 }

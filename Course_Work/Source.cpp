@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <SDL_Image.h>
 #include <SDL_ttf.h>
 #include <iostream>
@@ -14,15 +15,17 @@
 #include "LoadAndInit.h"
 #include "GameState.h"
 #include "GameLogic.h"
+#include "Audio.h"
 
 SDL_Window* win = NULL;
 SDL_Renderer* ren = NULL;
 SDL_Surface* win_surface = NULL;
 SDL_Event ev;
+Audio audio = {NULL,NULL, false};
 int levelWidth = 0, levelHeight = 0;
 
 void GetTexture(const char filePath[], mainRenderer* texture, int frameCount, SDL_Renderer* ren)
-{
+{ 
 	SDL_Surface* surface = NULL;
 	if ((surface = IMG_Load(filePath)) == NULL)
 	{
@@ -120,11 +123,14 @@ int main(int argc, char* argv[])
 	mainRenderer texture_acid_effect;
 	mainRenderer texture_tower;
 	mainRenderer texture_tower_bullet;
+	mainRenderer texture_digit_atack;
+	mainRenderer texture_digit_idle;
 	mainRenderer texture_buff_lucky;
 	mainRenderer texture_buff_speed;
 	mainRenderer texture_kebab;
 	mainRenderer texture_skill_figure;
 	mainRenderer texture_skill_point;
+	mainRenderer texture_shop;
 
 	mainRenderer texture_item_Ball;
 	mainRenderer texture_barrel;
@@ -159,6 +165,8 @@ int main(int argc, char* argv[])
 	char timer_text[10] = "00:00";
 	char amunition_text[10] = "000";
 	
+	const char main_music[] = "Sounds\\main_theme.wav";
+
 	bool isRunning;
 
 	#pragma endregion
@@ -204,6 +212,11 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\bobr_preatack.png", &texture_beaver_preatack, 1, ren);
 	GetTexture("Textures\\bobr_atack.png", &texture_beaver_atack, 2, ren);
 
+	GetTexture("Textures\\barrel.png", &texture_barrel, 1, ren);
+
+	GetTexture("Textures\\texture_digit_atack.png", &texture_digit_atack, 7, ren);
+	GetTexture("Textures\\texture_digit_idle.png", &texture_digit_idle, 1, ren);
+
 	GetTexture("Textures\\krab.png", &texture_krab, 3, ren);
 
 	GetTexture("Textures\\BackGroundCave.png", &texture_backGround, 1, ren);
@@ -239,8 +252,9 @@ int main(int argc, char* argv[])
 	GetTexture("Textures\\potion_speed.png", &texture_buff_speed, 1, ren);
 	GetTexture("Textures\\potion_lucky.png", &texture_buff_lucky, 1, ren);
 	GetTexture("Textures\\kebab.png", &texture_kebab, 1, ren);
+	GetTexture("Textures\\shop.png", &texture_shop, 1, ren);
 
-	GetTexture("Textures\\barrel.png", &texture_barrel, 1, ren);
+	
 
 	GetTexture("Textures\\life_bar.png", &hpBarTexture, 1, ren);
 	GetTexture("Textures\\outside_life_bar.png", &hpBarEdgingTexture, 1, ren);
@@ -321,10 +335,10 @@ int main(int argc, char* argv[])
 	levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\SaveRoomTraps.txt");
 	levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item.txt");
 
-	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet);
+	InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet, &texture_digit_idle, &texture_digit_atack, &texture_barrel);
 	InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 	InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, &texture_item_Ball, 
-		&texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure);
+		&texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop);
 
 
 	while (flag)
@@ -332,6 +346,7 @@ int main(int argc, char* argv[])
 		switch (gameState)
 		{
 		case MAIN_MENU:
+			PlayMusic(main_music,&audio,settings.volume);
 			MainMenu(&gameState, &window, ren, win);
 			break;
 
@@ -571,12 +586,12 @@ int main(int argc, char* argv[])
 						{
 							levelBorders = LoadLevel(levelBorders, &bordersCount, &Laplas, "Levels\\Borders3.txt", &levelWidth, &levelHeight);
 							levelEnemys = LoadEnemys(levelEnemys, &enemysCount, "Enemys\\Enemy3.txt");
-							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet);
+							InitEnemys(levelEnemys, &enemysCount, &texture_beaver_run, &texture_beaver_atack, &texture_beaver_preatack, &texture_krab, &texture_acid_effect, &texture_tower, &texture_tower_bullet, &texture_digit_idle, &texture_digit_atack, &texture_barrel);
 							levelTraps = LoadTraps(levelTraps, &trapsCount, "Traps\\Trap3.txt");
 							InitTraps(levelTraps, &trapsCount, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes);
 							levelItems = LoadItems(levelItems, &itemsCount, "Items\\Item3.txt");
-							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel,
-								&texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure);
+							InitItems(levelItems, &itemsCount, &texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_barrel, 
+								&texture_item_Ball, &texture_item_acid, &texture_buff_speed, &texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop);
 						}
 					}
 
@@ -601,7 +616,7 @@ int main(int argc, char* argv[])
 				HeroDashAtack(&Laplas, &timeInGame, &enemysCount, levelEnemys);
 
 				//Удаление врагов с поле боя
-				EnemyDeath(&enemysCount, levelEnemys);
+				EnemyDeath(&enemysCount, levelEnemys, &Laplas, levelItems, &itemsCount);
 
 				//Атака ловушкой по ГГ
 				TrapAtack(&trapsCount, levelTraps, &Laplas, &timeInGame);
@@ -687,7 +702,7 @@ int main(int argc, char* argv[])
 				DrawHeroBullet(&Laplas, &window, ren, levelWidth, levelHeight);
 				DrawTrapsBullet(&Laplas, &window, &trapsCount, levelTraps, &texture_trap_dart, ren, levelWidth, levelHeight);
 
-				DrawItem(&Laplas, levelItems, &window, ren, levelWidth, levelHeight, &itemsCount);
+				DrawItem(&Laplas, levelItems, &window, ren, levelWidth, levelHeight, &itemsCount, fontNovemSmall);
 
 				//ГГ
 				DrawMainHero(&Laplas, window, ren, levelWidth, levelHeight);
@@ -699,8 +714,12 @@ int main(int argc, char* argv[])
 				////Эффект бафа
 				DrawBuffsEffect(ren, &Laplas, levelWidth, levelHeight, &window);
 
+				//отрисовка характеристик персонажа
 				DrawAmmoBar(ammoBarTexture, &window, ren);
 				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture, &window, ren);
+				DrawMoney(ren, &window, fontNovemSmall, Laplas);
+
+				//отрисовка хп ближайшего противника
 				if (enemysCount>0)
 				{
 					DrawEnemyHP(Laplas, levelEnemys, enemysCount, hpBarTexture, enemyHpBarEdgingTexture, &window, ren);
@@ -731,6 +750,7 @@ int main(int argc, char* argv[])
 			break;
 
 		case PAUSE_MENU:
+			stopMusic(&audio);
 			PauseMenu(&gameState, &window, ren, win);
 			break;
 

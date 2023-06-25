@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_Image.h>
+#include <SDL_mixer.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +38,7 @@
 #pragma region HERO_STATS
 
 #define HERO_HP 100
-#define HERO_DAMAGE 40
+#define HERO_DAMAGE 10
 #define HERO_SHOOT_DAMAGE 50
 #define HERO_DASH_CD 700
 #define HERO_SPEED 7
@@ -50,9 +51,21 @@
 #define DMG_BUFF_DUARATION 5000
 #define DMG_BUFF_PERCENT 1.30
 #define ITEM_COUNT 10
+#define START_MONEY 100
 
 #define DMG_POTION_DROP_CHANCE 90
 #define RUBBER_REBOUND_COUNT 3;
+#pragma endregion
+
+#pragma region BARREL_STATS
+
+#define BARREL_HP 50
+#define BARREL_DMG 10
+#define BARREL_SPEED 0
+#define BARREL_ATACK_CD 0
+#define BARREL_TRIGGERED_DISTANCE 50
+#define BARREL_REAWRD 50
+
 #pragma endregion
 
 #pragma region BEAVER_STATS
@@ -61,7 +74,19 @@
 #define BEAVER_DMG 10
 #define BEAVER_SPEED 8
 #define BEAVER_ATACK_CD 1500
-#define BEAVER_TRIGGERED_DISTANCE 100
+#define BEAVER_TRIGGERED_DISTANCE 300
+#define BEAVER_REAWRD 200
+
+#pragma endregion
+
+#pragma region TOWER_STATS
+
+#define TOWER_HP 200
+#define TOWER_DMG 10
+#define TOWER_SPEED 8
+#define TOWER_ATACK_CD 3000
+#define TOWER_TRIGGERED_DISTANCE 1000
+#define TOWER_REAWRD 300
 
 #pragma endregion
 
@@ -71,7 +96,19 @@
 #define KRAB_DMG 5
 #define KRAB_SPEED 3
 #define KRAB_ATACK_CD 1000
-#define KRAB_TRIGGERED_DISTANCE 100
+#define KRAB_TRIGGERED_DISTANCE 700
+#define KRAB_REAWRD 200
+
+#pragma endregion
+
+#pragma region DIGIT_STATS
+
+#define DIGIT_HP 50
+#define DIGIT_DMG 50
+#define DIGIT_SPEED 0
+#define DIGIT_ATACK_CD 1000
+#define DIGIT_TRIGGERED_DISTANCE 100
+#define DIGIT_REAWRD 100
 
 #pragma endregion
 
@@ -264,6 +301,7 @@ struct mainHero
 	mainBuffs buffs;
 	mainKeys keys;
 	twoParam curRoom;
+	int money;
 };
 /*
 0 - стойка
@@ -299,6 +337,7 @@ struct mainEnemys
 	int triggeredDistance;
 	int animation_type;
 	mainShoot shoot;
+	int reward;
 };
 
 struct mainItems
@@ -343,6 +382,13 @@ struct mainTextureSkill
 	mainRenderer iconAmmo;
 	mainRenderer iconWeapon;
 	mainRenderer iconPotion;
+};
+
+struct Audio
+{
+	Mix_Music* music;
+	Mix_Chunk* sound;
+	bool isPlaying;
 };
 
 int inline GetNumInRange(int leftBord, int rightBord)
