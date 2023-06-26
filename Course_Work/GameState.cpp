@@ -1,5 +1,6 @@
 #include "GameState.h"
 #include "LoadAndInit.h"
+#include "Audio.h"
 #include <SDL_mixer.h>
 
 
@@ -304,7 +305,7 @@ void PauseMenu(GameState* gameState, mainWindow* window, SDL_Renderer * ren, SDL
 	}
 }
 
-void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, SDL_Renderer* ren, SDL_Window* win, Audio audio) {
+void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, SDL_Renderer* ren, SDL_Window* win, Audio* audio) {
 
 	SDL_FRect musicVolumeLeftButton;
 	SDL_FRect musicVolumeRightButton;
@@ -314,11 +315,11 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 	SDL_FRect soundsVolumeRightButton;
 	SDL_FRect soundsVolumeBar;
 
+
 	mainRenderer plusButtonTexture;
 	mainRenderer minusButtonTexture;
 	mainRenderer volumeBarTexture;
-	mainRenderer ButtonTexture;
-	GetTextureDop("Textures\\button_exit.png", &ButtonTexture, 1, ren);
+	
 	GetTextureDop("Textures\\batton_plus.png", &plusButtonTexture, 1, ren);
 	GetTextureDop("Textures\\button_minus.png", &minusButtonTexture, 1, ren);
 	GetTextureDop("Textures\\volume_bar.png", &volumeBarTexture, 1, ren);
@@ -331,6 +332,12 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 
 
 	SDL_FRect exitButton;
+	SDL_FRect musicButton;
+
+	mainRenderer ButtonTexture;
+	mainRenderer musicButtonTexture;
+	GetTextureDop("Textures\\button_exit.png", &ButtonTexture, 1, ren);
+	GetTextureDop("Textures\\button_music.png", &musicButtonTexture, 1, ren);
 
 	SDL_Event ev;
 
@@ -367,6 +374,7 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 		skinPreview = { float(window->w/2 - skinTexture.textureSize.w/1.5),float(window->h / 1.8), float(skinTexture.textureSize.w), float(skinTexture.textureSize.h) };
 
 		exitButton = { float(window->w / 2.37),float(window->h / 1.2), float(window->w / 8.), float(window->h / 8.) };
+		musicButton = { float(window->w / 1.3),float(window->h / 1.2), float(window->w / 8.), float(window->h / 8.) };
 
 		
 
@@ -384,6 +392,7 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 
 
 		SDL_RenderCopyF(ren, ButtonTexture.texture, NULL, &exitButton);
+		SDL_RenderCopyF(ren, musicButtonTexture.texture, NULL, &musicButton);
 
 		SDL_RenderPresent(ren);
 
@@ -423,6 +432,21 @@ void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, 
 				}
 				else if (SDL_PointInFRect(&mousePoint, &skinRightButton) && settings->skin < 3) {
 					settings->skin++;
+				}
+
+				if (SDL_PointInFRect(&mousePoint, &musicButton)) {
+					if (settings->currMusic == 1)
+					{
+						StopMusic(audio);
+						PlayMusic("Sounds\\second_theme.wav", audio,settings->musicVolume);
+						settings->currMusic = 2;
+					}
+					else if (settings->currMusic == 2)
+					{
+						StopMusic(audio);
+						PlayMusic("Sounds\\main_theme.wav", audio, settings->musicVolume);
+						settings->currMusic = 1;
+					}
 				}
 
 				if (SDL_PointInFRect(&mousePoint, &exitButton))

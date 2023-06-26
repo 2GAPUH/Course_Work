@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
 	#pragma region VARIABLE_INIT
 
 	GameState gameState = MAIN_MENU;
-	Settings settings = { 0, 5, 1, false };
+	Settings settings = { 0, 5, 1, false , 1, 1};
 	int tmp;
 	mainMap map;
 
@@ -320,11 +320,15 @@ int main(int argc, char* argv[])
 
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 	const char main_music[] = "Sounds\\main_theme.wav";
+	const char second_music[] = "Sounds\\second_theme.wav";
 	const char walk_sound[] = "Sounds\\walk.mp3";
 	const char punch_sound[] = "Sounds\\punch.mp3";
 	const char shot_sound[] = "Sounds\\shot.mp3";
 
 	int bossLocEnemysCount = 3;
+	mainEnemys boss;
+	SDL_Rect movedEnemy;
+	bool drawBoss = false;
 
 	bool isRunning;
 
@@ -502,13 +506,38 @@ int main(int argc, char* argv[])
 		&texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop, &texture_bat_with_anvil, &texture_bat_without_anvil, &texture_anvil_without_bat, &texture_box, &texture_box_bullet);
 
 
+	boss.physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BOX_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+	boss.effect.underAtack = NULL;
+	boss.status.HP = BOX_HP;
+	boss.status.DMG = BOX_DMG;
+	boss.status.startHP = BOX_HP;
+	boss.status.alive = true;
+	boss.effect.atackCD = BOX_ATACK_CD;
+	boss.animation.run = texture_box;
+	boss.animation.atack = texture_box;
+	boss.animation.preAtack = texture_box;
+	boss.triggeredDistance = BOX_TRIGGERED_DISTANCE;
+	boss.animation_type = NULL;
+	boss.animation.bullet = texture_box_bullet;
+	boss.reward = BOX_REAWRD;
+	boss.lastAttack = 0;
+	boss.physic.speed = BOX_SPEED;
+
 	while (flag)
 	{
 		
 		switch (gameState)
 		{
 		case MAIN_MENU:
-			PlayMusic(main_music,&audio,settings.musicVolume);
+			if (settings.currMusic ==1 )
+			{
+				PlayMusic(main_music, &audio, settings.musicVolume);
+			}
+			else
+			{
+				PlayMusic(main_music, &audio, settings.musicVolume);
+			}
+			
 			MainMenu(&gameState, &window, ren, win);
 			break;
 
@@ -1036,6 +1065,65 @@ int main(int argc, char* argv[])
 				DrawLifeBar(Laplas,hpBarTexture, hpBarEdgingTexture,brokeHpBarEdgingTexture, &window, ren);
 				DrawMoney(ren, &window, fontNovemSmall, Laplas);
 
+
+				//box boss
+				/*if (drawBoss) {
+					movedEnemy = { boss.hitbox.x - boss.hitbox.w / 2,boss.hitbox.y - boss.hitbox.h / 2, boss.hitbox.w, boss.hitbox.h };
+					//map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i,  map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j
+					if (Laplas.hitbox.x >= window.w / 2.f && Laplas.hitbox.x <= map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i - window.w / 2.f)
+						movedEnemy.x -= Laplas.hitbox.x - window.w / 2.f;
+					if (Laplas.hitbox.x > map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i - window.w / 2.f)
+						movedEnemy.x -= map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].i - window.w;
+
+					if (Laplas.hitbox.y >= window.h / 2.f && Laplas.hitbox.y <= map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j - window.h / 2.f)
+						movedEnemy.y -= Laplas.hitbox.y - window.h / 2.f;
+					if (Laplas.hitbox.y > map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j - window.h / 2.f)
+						movedEnemy.y -= map.levelSize[Laplas.curRoom.i][Laplas.curRoom.j].j - window.h;
+
+					if (boss.animation_type == 1)
+					{
+						if (boss.physic.gazeDirection > 0)
+							SDL_RenderCopyEx(ren, boss.animation.run.texture, &boss.animation.run.frame, &movedEnemy, boss.animation.run.angel, 0, SDL_FLIP_HORIZONTAL);
+						else if (boss.physic.gazeDirection < 0)
+							SDL_RenderCopyEx(ren, boss.animation.run.texture, &boss.animation.run.frame, &movedEnemy, boss.animation.run.angel, 0, SDL_FLIP_NONE);
+						else if (boss.physic.gazeDirection == 0)
+						{
+							SDL_RenderCopyEx(ren, boss.animation.run.texture, &boss.animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+						}
+
+						if (SDL_GetTicks() - boss.animation.run.frameTime > 1000 / 15)
+						{
+							boss.animation.run.frame.x += boss.animation.run.textureSize.w / boss.animation.run.frameCount;
+							boss.animation.run.frameTime = SDL_GetTicks();
+						}
+
+						if (boss.animation.run.frame.x >= boss.animation.run.textureSize.w)
+							boss.animation.run.frame.x = 0;
+					}
+
+					else if (boss.animation_type == 6)
+					{
+						if (boss.physic.gazeDirection > 0)
+							SDL_RenderCopyEx(ren, boss.animation.atack.texture, &boss.animation.atack.frame, &movedEnemy, boss.animation.atack.angel, 0, SDL_FLIP_HORIZONTAL);
+						else if (boss.physic.gazeDirection < 0)
+							SDL_RenderCopyEx(ren, boss.animation.atack.texture, &boss.animation.atack.frame, &movedEnemy, boss.animation.atack.angel, 0, SDL_FLIP_NONE);
+						else if (boss.physic.gazeDirection == 0)
+						{
+							SDL_RenderCopyEx(ren, boss.animation.atack.texture, &boss.animation.atack.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+						}
+
+						if (SDL_GetTicks() - boss.animation.atack.frameTime > 1000 / 15)
+						{
+							boss.animation.atack.frame.x += boss.animation.atack.textureSize.w / boss.animation.atack.frameCount;
+							boss.animation.atack.frameTime = SDL_GetTicks();
+						}
+
+						if (boss.animation.atack.frame.x >= boss.animation.atack.textureSize.w)
+							boss.animation.atack.frame.x = 0;
+					}
+				}*/
+
+
 				//отрисовка хп ближайшего противника
 				if (map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]>0)
 				{
@@ -1063,11 +1151,11 @@ int main(int argc, char* argv[])
 			break;
 
 		case SETTINGS:
-			SettingsMenu(&gameState,&settings, &window, ren, win, audio);
+			SettingsMenu(&gameState,&settings, &window, ren, win, &audio);
 			break;
 
 		case PAUSE_MENU:
-			StopMusic(&audio);
+			//StopMusic(&audio);
 			PauseMenu(&gameState, &window, ren, win);
 			break;
 

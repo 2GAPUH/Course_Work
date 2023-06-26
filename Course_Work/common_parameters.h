@@ -180,6 +180,7 @@ struct Settings
 	int skin;
 	int isLoaded;
 	int loadNum;
+	int currMusic;
 };
 
 struct twoParam
@@ -377,6 +378,7 @@ struct mainEnemys
 	int reward;
 	int stage;
 	int lastAttack;
+	int sppedY;
 };
 
 struct mainItems

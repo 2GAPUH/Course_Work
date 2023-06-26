@@ -264,9 +264,9 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].status.startHP = TOWER_HP;
 			levelEnemys[i].status.alive = true;
 			levelEnemys[i].effect.atackCD = TOWER_ATACK_CD;
-			levelEnemys[i].animation.run = *texture_box;
-			levelEnemys[i].animation.atack = *texture_box;
-			levelEnemys[i].animation.preAtack = *texture_box;
+			levelEnemys[i].animation.run = *texture_tower;
+			levelEnemys[i].animation.atack = *texture_tower;
+			levelEnemys[i].animation.preAtack = *texture_tower;
 			levelEnemys[i].triggeredDistance = TOWER_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 			levelEnemys[i].animation.bullet = *texture_tower_bullet;
@@ -331,6 +331,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].reward = BOX_REAWRD;
 			levelEnemys[i].lastAttack = 0;
 			levelEnemys[i].physic.speed = BOX_SPEED;
+			levelEnemys[i].sppedY = BOX_SPEED;
 			break;
 
 

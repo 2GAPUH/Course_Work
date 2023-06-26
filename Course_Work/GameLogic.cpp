@@ -139,75 +139,97 @@ void BossStageOne(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas, 
 
 void BossStageTwo(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas) {
 	levelEnemys[0].hitbox.x += levelEnemys[0].physic.speed;
-	if (levelEnemys[0].hitbox.x < 70)
+	if (levelEnemys[0].hitbox.x < 80)
 	{
-		levelEnemys[0].hitbox.x = 70;
-		levelEnemys[0].physic.speed = 14;
-		levelEnemys[0].physic.gazeDirection = !levelEnemys[0].physic.gazeDirection;
+		levelEnemys[0].hitbox.x = 90;
+		levelEnemys[0].physic.speed = 8;
+		levelEnemys[0].physic.gazeDirection = 0;
 	}
-	else if (levelEnemys[0].hitbox.x + levelEnemys[0].hitbox.w > 1200)
+	else if (levelEnemys[0].hitbox.x> 1300)
 	{
-		levelEnemys[0].hitbox.x = 1200;
-		levelEnemys[0].physic.speed = -14;
-		levelEnemys[0].physic.gazeDirection = !levelEnemys[0].physic.gazeDirection;
+		levelEnemys[0].hitbox.x = 1250;
+		levelEnemys[0].physic.speed = -8;
+		levelEnemys[0].physic.gazeDirection = 1;
 	}
 
 }
 
 void BossStageThree(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas, int timeInGame) {
-	for (int i = 0; i < *enemysCount; i++)
-		if (levelEnemys[i].type != 6)
-		{
-			if (levelEnemys[i].hitbox.x > Laplas->hitbox.x - levelEnemys[i].hitbox.w / 1.25 && levelEnemys[i].hitbox.x < Laplas->hitbox.x + levelEnemys[i].hitbox.w / 1.25)
-				levelEnemys[i].animation_type = 6;
-			else
-				levelEnemys[i].animation_type = 1;
-		}
+	
+	/*if (levelEnemys[0].hitbox.x > Laplas->hitbox.x - levelEnemys[0].hitbox.w / 1.25 && levelEnemys[0].hitbox.x < Laplas->hitbox.x + levelEnemys[0].hitbox.w / 1.25)
+		levelEnemys[0].animation_type = 6;
+	else
+			levelEnemys[0].animation_type = 1;
 
-	for (int t = 0; t < *enemysCount; t++)
+	
+	if (levelEnemys[0].type == 6 && levelEnemys[0].animation_type == 6 && !levelEnemys[0].shoot.alive)
 	{
-		if (levelEnemys[t].type == 6 && levelEnemys[t].animation_type == 6 && !levelEnemys[t].shoot.alive)
-		{
-			levelEnemys[t].shoot.lastShoot = timeInGame;
+		levelEnemys[0].shoot.lastShoot = timeInGame;
 
-			levelEnemys[t].shoot.shootAtackCentere.x = levelEnemys[t].hitbox.x;
-			levelEnemys[t].shoot.shootAtackCentere.y = levelEnemys[t].hitbox.y + levelEnemys[t].hitbox.h;
-			levelEnemys[t].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
-			levelEnemys[t].shoot.alive = 1;
-		}
+		levelEnemys[0].shoot.shootAtackCentere.x = levelEnemys[0].hitbox.x;
+		levelEnemys[0].shoot.shootAtackCentere.y = levelEnemys[0].hitbox.y + levelEnemys[0].hitbox.h;
+		levelEnemys[0].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
+		levelEnemys[0].shoot.alive = 1;
 	}
+	
 
-	for (int j = 0; j < *enemysCount; j++)
+
+	if (levelEnemys[0].shoot.alive && levelEnemys[0].type == 6)
 	{
-		if (levelEnemys[j].shoot.alive && levelEnemys[j].type == 6)
-		{
-			levelEnemys[j].shoot.shootAtackCentere.y += levelEnemys[j].shoot.bulletSpeed / 2;
+		levelEnemys[0].shoot.shootAtackCentere.y += levelEnemys[0].shoot.bulletSpeed / 2;
 
-			if (!Laplas->effect.underAtack && CheckShootHitbox(&levelEnemys[j].shoot.shootAtackCentere, { Laplas->hitbox.x + Laplas->hitbox.w / 2,Laplas->hitbox.y + Laplas->hitbox.h / 2, Laplas->hitbox.w, Laplas->hitbox.h }))
+		if (!Laplas->effect.underAtack && CheckShootHitbox(&levelEnemys[0].shoot.shootAtackCentere, { Laplas->hitbox.x + Laplas->hitbox.w / 2,Laplas->hitbox.y + Laplas->hitbox.h / 2, Laplas->hitbox.w, Laplas->hitbox.h }))
+		{
+			levelEnemys[0].shoot.alive = 0;
+			Laplas->effect.underAtack = 1;
+			Laplas->effect.lastDamage = timeInGame;
+			if (!Laplas->buffs.itemBallActive)
 			{
-				levelEnemys[j].shoot.alive = 0;
-				Laplas->effect.underAtack = 1;
-				Laplas->effect.lastDamage = timeInGame;
-				if (!Laplas->buffs.itemBallActive)
-				{
-					Laplas->status.HP -= levelEnemys[j].status.DMG;
-				}
-				else
-					Laplas->buffs.itemBallActive = 0;
+				Laplas->status.HP -= levelEnemys[0].status.DMG;
+			}
+			else
+				Laplas->buffs.itemBallActive = 0;
 
-				if (Laplas->status.HP <= 0)
-				{
-					Laplas->status.alive = 0;
-				}
+			if (Laplas->status.HP <= 0)
+			{
+				Laplas->status.alive = 0;
 			}
-			}
+		}
 	}
+	
 
 	
 	if (levelEnemys[0].shoot.alive)
 	{
 			if (levelEnemys[0].shoot.shootAtackCentere.y > 960)
 				levelEnemys[0].shoot.alive = 0;
+	}*/
+
+	levelEnemys[0].hitbox.x += levelEnemys[0].physic.speed;
+	levelEnemys[0].hitbox.y += levelEnemys[0].sppedY;
+	if (levelEnemys[0].hitbox.x < 80)
+	{
+		levelEnemys[0].hitbox.x = 90;
+		levelEnemys[0].physic.speed = 8;
+		levelEnemys[0].physic.gazeDirection = 0;
+	}
+	else if (levelEnemys[0].hitbox.x > 1300)
+	{
+		levelEnemys[0].hitbox.x = 1250;
+		levelEnemys[0].physic.speed = -8;
+		levelEnemys[0].physic.gazeDirection = 1;
+	}
+	else if (levelEnemys[0].hitbox.y < 80)
+	{
+		levelEnemys[0].hitbox.y = 90;
+		levelEnemys[0].sppedY = 8;
+		levelEnemys[0].physic.gazeDirection = 0;
+	}
+	else if (levelEnemys[0].hitbox.y > 900)
+	{
+		levelEnemys[0].hitbox.y = 850;
+		levelEnemys[0].sppedY = -8;
+		levelEnemys[0].physic.gazeDirection = 1;
 	}
 }
 
@@ -400,10 +422,6 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 						}
 					}
 					break;
-
-				case 5:
-					//SkillLeveling();
-					break;
 				}
 
 				
@@ -438,7 +456,7 @@ void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[], mainHero *Laplas, ma
 		{
 			Laplas->money += levelEnemys->reward;
 			printf_s("%d", Laplas->money);
-			if (levelEnemys[d].type == 2 && GetNumInRange(0, 100)<=20)
+			if (levelEnemys[d].type == 2 && GetNumInRange(0, 100)<=100)
 			{
 				levelItems[*itemsCount - 1].hitbox.x = levelEnemys[d].hitbox.x;
 				levelItems[*itemsCount - 1].hitbox.y = levelEnemys[d].hitbox.y;
