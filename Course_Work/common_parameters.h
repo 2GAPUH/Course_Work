@@ -126,6 +126,17 @@
 
 #pragma endregion
 
+#pragma region BOX_BOSS
+
+#define BOX_HP 1000
+#define BOX_DMG 100
+#define BOX_SPEED -14
+#define BOX_ATACK_CD 1000
+#define BOX_TRIGGERED_DISTANCE 500
+#define BOX_REAWRD 10000
+
+#pragma endregion
+
 #pragma region TRAPS_STATS
 
 #define TRAP_DART_WIDTH 40
@@ -169,6 +180,7 @@ struct Settings
 	int skin;
 	int isLoaded;
 	int loadNum;
+	int currMusic;
 };
 
 struct twoParam
@@ -364,6 +376,9 @@ struct mainEnemys
 	int animation_type;
 	mainShoot shoot;
 	int reward;
+	int stage;
+	int lastAttack;
+	int sppedY;
 };
 
 struct mainItems

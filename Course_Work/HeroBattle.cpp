@@ -92,9 +92,15 @@ void HeroCommonAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEne
 				levelEnemys[i].status.HP -= POISON_DMG;
 				levelEnemys[i].effect.poisonLastDamage = timeInGame;
 			}
+			
 			levelEnemys[i].effect.underAtack = 1;
 			levelEnemys[i].status.HP -= Laplas->status.DMG;
-			levelEnemys[i].physic.impulse += 0.45;
+			
+			if (levelEnemys[i].type != 7)
+			{
+				levelEnemys[i].physic.impulse += 0.45;
+			}
+			
 			if (levelEnemys[i].status.HP <= 0)
 			{
 				levelEnemys[i].status.alive = 0;
@@ -127,7 +133,10 @@ void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnem
 				{
 					Laplas->battle.shoot[j].alive = 0;
 					levelEnemys[i].effect.underAtack = 1;
-					levelEnemys[i].physic.impulse += 0.45;
+					if (levelEnemys[i].type != 7)
+					{
+						levelEnemys[i].physic.impulse += 0.45;
+					}
 					levelEnemys[i].status.HP -= Laplas->status.Shoot_DMG;
 					if (levelEnemys[i].status.HP <= 0)
 					{

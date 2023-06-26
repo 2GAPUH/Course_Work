@@ -105,6 +105,134 @@ void HeroBulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
 		}
 }
 
+void BossLogic(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas) {
+	for (int i = 0; i < *enemysCount; i++)
+	{
+		if (levelEnemys[i].type == 7 && levelEnemys[i].status.HP <= levelEnemys[i].status.startHP && levelEnemys[i].status.HP > (levelEnemys[i].status.startHP * 2/3)) {
+			levelEnemys[i].stage = 1;
+		}
+		else if (levelEnemys[i].type == 7 && levelEnemys[i].status.HP <= (levelEnemys[i].status.startHP * 2 / 3) && levelEnemys[i].status.HP > (levelEnemys[i].status.startHP * 1 / 3))
+		{
+			levelEnemys[i].stage = 2;
+			levelEnemys[i].animation_type = 6;
+		}
+		else if (levelEnemys[i].type == 7 && levelEnemys[i].status.HP <= (levelEnemys[i].status.startHP * 12 / 3) && levelEnemys[i].status.HP > 0 && levelEnemys[i].stage != 3)
+		{
+			levelEnemys[i].hitbox.y = 100;
+			levelEnemys[i].stage = 3;
+		}
+	}
+}
+
+void BossStageOne(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas, int timeInGame, int* lastBossAtack, int *startEnemysCount) {
+	for (int i = 0; i < *startEnemysCount; i++)
+	{
+		if (levelEnemys[i].type != 7 && timeInGame - *lastBossAtack > 3000 && !levelEnemys[i].status.alive)
+		{
+			(*enemysCount)++;
+			levelEnemys[i].status.alive = true;
+			*lastBossAtack = timeInGame;
+			levelEnemys[i].status.HP = levelEnemys[i].status.startHP;
+		}
+	}
+}
+
+void BossStageTwo(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas) {
+	levelEnemys[0].hitbox.x += levelEnemys[0].physic.speed;
+	if (levelEnemys[0].hitbox.x < 80)
+	{
+		levelEnemys[0].hitbox.x = 90;
+		levelEnemys[0].physic.speed = 8;
+		levelEnemys[0].physic.gazeDirection = 0;
+	}
+	else if (levelEnemys[0].hitbox.x> 1300)
+	{
+		levelEnemys[0].hitbox.x = 1250;
+		levelEnemys[0].physic.speed = -8;
+		levelEnemys[0].physic.gazeDirection = 1;
+	}
+
+}
+
+void BossStageThree(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas, int timeInGame) {
+	
+	/*if (levelEnemys[0].hitbox.x > Laplas->hitbox.x - levelEnemys[0].hitbox.w / 1.25 && levelEnemys[0].hitbox.x < Laplas->hitbox.x + levelEnemys[0].hitbox.w / 1.25)
+		levelEnemys[0].animation_type = 6;
+	else
+			levelEnemys[0].animation_type = 1;
+
+	
+	if (levelEnemys[0].type == 6 && levelEnemys[0].animation_type == 6 && !levelEnemys[0].shoot.alive)
+	{
+		levelEnemys[0].shoot.lastShoot = timeInGame;
+
+		levelEnemys[0].shoot.shootAtackCentere.x = levelEnemys[0].hitbox.x;
+		levelEnemys[0].shoot.shootAtackCentere.y = levelEnemys[0].hitbox.y + levelEnemys[0].hitbox.h;
+		levelEnemys[0].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
+		levelEnemys[0].shoot.alive = 1;
+	}
+	
+
+
+	if (levelEnemys[0].shoot.alive && levelEnemys[0].type == 6)
+	{
+		levelEnemys[0].shoot.shootAtackCentere.y += levelEnemys[0].shoot.bulletSpeed / 2;
+
+		if (!Laplas->effect.underAtack && CheckShootHitbox(&levelEnemys[0].shoot.shootAtackCentere, { Laplas->hitbox.x + Laplas->hitbox.w / 2,Laplas->hitbox.y + Laplas->hitbox.h / 2, Laplas->hitbox.w, Laplas->hitbox.h }))
+		{
+			levelEnemys[0].shoot.alive = 0;
+			Laplas->effect.underAtack = 1;
+			Laplas->effect.lastDamage = timeInGame;
+			if (!Laplas->buffs.itemBallActive)
+			{
+				Laplas->status.HP -= levelEnemys[0].status.DMG;
+			}
+			else
+				Laplas->buffs.itemBallActive = 0;
+
+			if (Laplas->status.HP <= 0)
+			{
+				Laplas->status.alive = 0;
+			}
+		}
+	}
+	
+
+	
+	if (levelEnemys[0].shoot.alive)
+	{
+			if (levelEnemys[0].shoot.shootAtackCentere.y > 960)
+				levelEnemys[0].shoot.alive = 0;
+	}*/
+
+	levelEnemys[0].hitbox.x += levelEnemys[0].physic.speed;
+	levelEnemys[0].hitbox.y += levelEnemys[0].sppedY;
+	if (levelEnemys[0].hitbox.x < 80)
+	{
+		levelEnemys[0].hitbox.x = 90;
+		levelEnemys[0].physic.speed = 8;
+		levelEnemys[0].physic.gazeDirection = 0;
+	}
+	else if (levelEnemys[0].hitbox.x > 1300)
+	{
+		levelEnemys[0].hitbox.x = 1250;
+		levelEnemys[0].physic.speed = -8;
+		levelEnemys[0].physic.gazeDirection = 1;
+	}
+	else if (levelEnemys[0].hitbox.y < 80)
+	{
+		levelEnemys[0].hitbox.y = 90;
+		levelEnemys[0].sppedY = 8;
+		levelEnemys[0].physic.gazeDirection = 0;
+	}
+	else if (levelEnemys[0].hitbox.y > 900)
+	{
+		levelEnemys[0].hitbox.y = 850;
+		levelEnemys[0].sppedY = -8;
+		levelEnemys[0].physic.gazeDirection = 1;
+	}
+}
+
 void TrapBulletOutworldCheck(mainTraps levelTraps[], int* trapsCount, mainBorders levelBorders[])
 {
 	for (int f = 0; f < *trapsCount; f++)
@@ -141,7 +269,7 @@ void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas
 {
 	for (int i = 0; i < *enemysCount; i++)
 	{
-		if (levelEnemys[i].type != 6)
+		if (levelEnemys[i].type != 6 && levelEnemys[i].type != 7)
 		{
 			if (levelEnemys[i].triggered && levelEnemys[i].animation_type != 6 && levelEnemys[i].type != 4)
 			{
@@ -294,10 +422,6 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 						}
 					}
 					break;
-
-				case 5:
-					//SkillLeveling();
-					break;
 				}
 
 				
@@ -332,7 +456,7 @@ void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[], mainHero *Laplas, ma
 		{
 			Laplas->money += levelEnemys->reward ;
 			Laplas->status.souls += 1;
-			if (levelEnemys[d].type == 2 && GetNumInRange(0, 100)<=20)
+			if (levelEnemys[d].type == 2 && GetNumInRange(0, 100)<=100)
 			{
 				levelItems[*itemsCount - 1].hitbox.x = levelEnemys[d].hitbox.x;
 				levelItems[*itemsCount - 1].hitbox.y = levelEnemys[d].hitbox.y;

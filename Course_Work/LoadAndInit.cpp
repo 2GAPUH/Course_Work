@@ -190,7 +190,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect,
 	mainRenderer* texture_tower, mainRenderer* texture_tower_bullet, mainRenderer* texture_digit_idle, mainRenderer* texture_digit_atack,
 	mainRenderer* texture_bat_with_anvil, mainRenderer* texture_bat_without_anvil, mainRenderer* texture_anvil_without_bat, 
-	mainRenderer* texture_barrel)
+	mainRenderer* texture_barrel, mainRenderer* texture_box, mainRenderer* texture_box_bullet)
 {
 	for (int i = 0; i < *enemysCount; i++)
 	{
@@ -198,6 +198,8 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		levelEnemys[i].effect.poisoned = 0;
 		levelEnemys[i].effect.poisonLastDamage = 0;
 		levelEnemys[i].triggered = NULL;
+
+		levelEnemys[i].stage = 0;
 
 		switch(levelEnemys[i].type)
 		{	
@@ -311,6 +313,26 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].shoot.everShoot = 0;
 			break;
 
+		case 7:
+			//Box
+			levelEnemys[i].physic = { X_MOVE_L, X_MOVE_R, Y_MOVE, GAZE_DIRECTION, BOX_SPEED, GRAVITY, ACCELERATION_Y, ACCELERATION_X, IMPULSE, ON_BORDER };
+			levelEnemys[i].effect.underAtack = NULL;
+			levelEnemys[i].status.HP = BOX_HP;
+			levelEnemys[i].status.DMG = BOX_DMG;
+			levelEnemys[i].status.startHP = BOX_HP;
+			levelEnemys[i].status.alive = true;
+			levelEnemys[i].effect.atackCD = BOX_ATACK_CD;
+			levelEnemys[i].animation.run = *texture_box;
+			levelEnemys[i].animation.atack = *texture_box;
+			levelEnemys[i].animation.preAtack = *texture_box;
+			levelEnemys[i].triggeredDistance = BOX_TRIGGERED_DISTANCE;
+			levelEnemys[i].animation_type = NULL;
+			levelEnemys[i].animation.bullet = *texture_box_bullet;
+			levelEnemys[i].reward = BOX_REAWRD;
+			levelEnemys[i].lastAttack = 0;
+			levelEnemys[i].physic.speed = BOX_SPEED;
+			levelEnemys[i].sppedY = BOX_SPEED;
+			break;
 
 
 		}

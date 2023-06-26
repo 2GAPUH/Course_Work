@@ -15,7 +15,7 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 	mainRenderer* texture_beaver_preAtack, mainRenderer* texture_krab_run, mainRenderer* texture_acid_effect,
 	mainRenderer* texture_tower, mainRenderer* texture_tower_bullet, mainRenderer* texture_digit_idle, mainRenderer* texture_digit_atack,
 	mainRenderer* texture_bat_with_anvil, mainRenderer* texture_bat_without_anvil, mainRenderer* texture_anvil_without_bat,
-	mainRenderer* texture_barrel);
+	mainRenderer* texture_barrel, mainRenderer* texture_box, mainRenderer* texture_box_bullet);
 void InitTraps(mainTraps levelTraps[], int* trapsCount, mainRenderer* texture_dart_trap, mainRenderer* texture_pressure_plate,
 	mainRenderer* texture_trap_spikes);
 void InitItems(mainItems levelItems[], int* itemsCount, mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet,
