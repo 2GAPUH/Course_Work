@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
 	#pragma region VARIABLE_INIT
 
 	GameState gameState = MAIN_MENU;
-	Settings settings = { 1, 5, 1 };
+	Settings settings = { 1, 5, 1, false };
 	int tmp;
 	mainMap map;
 
@@ -306,6 +306,7 @@ int main(int argc, char* argv[])
 	int check = 1;
 
 	mainHero Laplas = {0};
+	Laplas.increaseDifficulty = 1;
 	mainTextureSkill texture_skill;
 	
 	static mainWindow window = { WINDOW_WIDTH ,WINDOW_HEIGHT };
@@ -492,6 +493,7 @@ int main(int argc, char* argv[])
 		&texture_barrel, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes,
 		&texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_item_Ball, &texture_item_acid, &texture_buff_speed,
 		&texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop, &texture_bat_with_anvil, &texture_bat_without_anvil, &texture_anvil_without_bat);
+
 
 	while (flag)
 	{
@@ -766,6 +768,14 @@ int main(int argc, char* argv[])
 										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
 										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
 									}
+								if (timeInGame / 60000 == Laplas.increaseDifficulty)
+								{
+									for (int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
+									{
+										map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.HP;
+									}
+									Laplas.increaseDifficulty++;
+								}
 							}
 							break;
 						
@@ -780,6 +790,15 @@ int main(int argc, char* argv[])
 										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
 										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
 									}
+								if (timeInGame / 60000 == Laplas.increaseDifficulty)
+								{
+									for (int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
+									{
+										map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.HP += 25;
+										map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.DMG += 10;
+									}
+									Laplas.increaseDifficulty++;
+								}
 							}
 							break;
 
@@ -796,6 +815,15 @@ int main(int argc, char* argv[])
 										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
 										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
 									}
+								if (timeInGame / 60000 == Laplas.increaseDifficulty)
+								{
+									for (int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
+									{
+										map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.HP += 25;
+										map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.DMG += 10;
+									}
+									Laplas.increaseDifficulty++;
+								}
 							}
 							break;
 
@@ -810,6 +838,16 @@ int main(int argc, char* argv[])
 										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
 										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
 									}
+								if (timeInGame / 60000 == Laplas.increaseDifficulty)
+								{
+									for (int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
+									{
+										map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.HP += 25;
+										map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.startHP += 25;
+										map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].status.DMG += 10;
+									}
+									Laplas.increaseDifficulty++;
+								}
 							}
 							break;
 						}
@@ -980,7 +1018,7 @@ int main(int argc, char* argv[])
 			break;
 
 		case LOAD_MENU:
-			LoadMenu(&gameState, &window, ren, win, settings, &Laplas);
+			LoadMenu(&gameState, &window, ren, win, &settings, &Laplas);
 			break;
 
 		case QUIT:
@@ -991,7 +1029,19 @@ int main(int argc, char* argv[])
 
 	}
 
-	//saveLaplas(&Laplas, "Saves\\1.txt", &settings);
+	switch (settings.loadNum)
+	{
+	case 1:
+		saveLaplas(&Laplas, "Saves\\1.txt", &settings);
+		break;
+	case 2:
+		saveLaplas(&Laplas, "Saves\\2.txt", &settings);
+		break;
+	case 3:
+		saveLaplas(&Laplas, "Saves\\3.txt", &settings);
+		break;
+	}
+	
 	TTF_CloseFont(fontNovemBig);
 	TTF_CloseFont(fontNovemSmall);
 

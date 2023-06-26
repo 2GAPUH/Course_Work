@@ -167,6 +167,8 @@ struct Settings
 	int musicVolume;
 	int soundsVolume;
 	int skin;
+	int isLoaded;
+	int loadNum;
 };
 
 struct twoParam
@@ -322,6 +324,7 @@ struct mainHero
 	twoParam curRoom;
 	int money;
 	int lastLocalSwap;
+	int increaseDifficulty;
 };
 
 

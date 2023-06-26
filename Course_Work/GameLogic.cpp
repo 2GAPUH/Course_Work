@@ -59,6 +59,20 @@ void EnemysBulletHitboxInRange(mainEnemys levelEnemys[], int* enemysCount, int* 
 	}
 }
 
+void EnemyHitLaplas(mainEnemys levelEnemys[], int* enemysCount, mainBorders levelBorders[], mainHero* Laplas) {
+	int curDistance;
+	for (int i = 0; i < *enemysCount; i++)
+	{
+		curDistance = sqrt((Laplas->hitbox.x - levelEnemys[i].hitbox.x) * (Laplas->hitbox.x - levelEnemys[i].hitbox.x) +
+			(Laplas->hitbox.y - levelEnemys[i].hitbox.y) * (Laplas->hitbox.y - levelEnemys[i].hitbox.y));
+
+		if (curDistance <= 100)
+		{
+			
+		}
+	}
+}
+
 void HeroBulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
 {
 	for (int i = 0; i < 10; i++)
@@ -111,7 +125,7 @@ void EnemyTrigger(mainEnemys levelEnemys[], mainHero* Laplas, int* enemysCount)
 	for (int i = 0; i < *enemysCount; i++)
 		if (!levelEnemys[i].triggered && sqrt((Laplas->hitbox.x - levelEnemys[i].hitbox.x) * (Laplas->hitbox.x - levelEnemys[i].hitbox.x) +
 			(Laplas->hitbox.y - levelEnemys[i].hitbox.y) * (Laplas->hitbox.y - levelEnemys[i].hitbox.y)) <
-			levelEnemys[i].triggeredDistance || levelEnemys[i].effect.underAtack)
+			levelEnemys[i].triggeredDistance || levelEnemys[i].effect.underAtack )
 		{
 			levelEnemys[i].triggered = 1;
 			if (levelEnemys[i].type == 5)
@@ -240,28 +254,17 @@ void ItemEquip(mainHero* Laplas, mainItems items[], int* itemsCount, int timeInG
 							Laplas->status.money -= items[i].cost;
 							Laplas->buffs.itemBallActive = 1;
 						}
-						else {
-							//print not enought money
-						}
-						break;
 
 					case 2:
 						if ((items[i].cost <= Laplas->status.money)) {
 							Laplas->status.money -= items[i].cost;
 							Laplas->buffs.itemRubberBulletActive = 1;
 						}
-						else {
-							//print not enought money
-						}
-						break;
 
 					case 3:
 						if ((items[i].cost <= Laplas->status.money)) {
 							Laplas->status.money -= items[i].cost;
 							Laplas->buffs.itemAcid = 1;
-						}
-						else {
-							//print not enought money
 						}
 					}
 					break;

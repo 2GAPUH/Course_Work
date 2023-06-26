@@ -11,7 +11,7 @@
 void MainMenu(GameState* gameState, mainWindow* window, SDL_Renderer* ren, SDL_Window* win);
 void PauseMenu(GameState* gameState, mainWindow* window, SDL_Renderer* ren, SDL_Window* win);
 void SettingsMenu(GameState* gameState, Settings* settings, mainWindow* window, SDL_Renderer* ren, SDL_Window* win, Audio audio);
-void LoadMenu(GameState* gameState, mainWindow* window, SDL_Renderer* ren, SDL_Window* win, Settings settings, mainHero* Laplas);
+void LoadMenu(GameState* gameState, mainWindow* window, SDL_Renderer* ren, SDL_Window* win, Settings* settings, mainHero* Laplas);
 void CreditsMenu(GameState* gameState, mainWindow* window, SDL_Renderer* ren, SDL_Window* win);
 void SkillLeveling(mainHero* Laplas,  mainWindow* window, SDL_Renderer* ren, SDL_Window* win, mainTextureSkill* texture_skill,
 	TTF_Font* font);
