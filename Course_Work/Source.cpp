@@ -145,7 +145,7 @@ void InitMap(mainMap* map, mainHero* Laplas, mainRenderer* texture_beaver_run, m
 	mainRenderer* texture_buff_DMG, mainRenderer* texture_item_Rubber_Bullet, mainRenderer* texture_item_Ball,
 	mainRenderer* texture_item_acid, mainRenderer* texture_buff_speed, mainRenderer* texture_buff_lucky,
 	mainRenderer* texture_skill_figure, mainRenderer* texture_kebab, mainRenderer* texture_shop, 
-	mainRenderer* texture_bat_with_anvil, mainRenderer* texture_bat_without_anvil, mainRenderer* texture_anvil_without_bat)
+	mainRenderer* texture_bat_with_anvil, mainRenderer* texture_bat_without_anvil, mainRenderer* texture_anvil_without_bat, mainRenderer* texture_box, mainRenderer* texture_box_bullet)
 {
 	char itemPath[] = "Items\\Item00.txt";
 	char bordersPath[] = "Levels\\Borders00.txt";
@@ -177,7 +177,7 @@ void InitMap(mainMap* map, mainHero* Laplas, mainRenderer* texture_beaver_run, m
 				InitEnemys(map->enemys[i][j], &map->enemysCount[i][j], texture_beaver_run, texture_beaver_atack, texture_beaver_preAtack,
 					texture_krab_run, texture_acid_effect, texture_tower, texture_tower_bullet,
 					texture_digit_idle, texture_digit_atack, texture_bat_with_anvil, texture_bat_without_anvil,
-					texture_anvil_without_bat, texture_barrel);
+					texture_anvil_without_bat, texture_barrel, texture_box, texture_box_bullet);
 
 				map->traps[i][j] = LoadTraps(map->traps[i][j], &map->trapsCount[i][j], trapsPath);
 				InitTraps(map->traps[i][j], &map->trapsCount[i][j], texture_dart_trap, texture_pressure_plate,
@@ -260,6 +260,8 @@ int main(int argc, char* argv[])
 	mainRenderer texture_beaver_preatack;
 	mainRenderer texture_beaver_atack;
 	mainRenderer texture_krab;
+	mainRenderer texture_box;
+	mainRenderer texture_box_bullet;
 	mainRenderer texture_platform;
 	mainRenderer texture_tmp_platform;
 	mainRenderer texture_trampline;
@@ -427,6 +429,9 @@ int main(int argc, char* argv[])
 
 	GetTexture("Textures\\acid_effect.png", &texture_acid_effect, 5, ren);
 
+	GetTexture("Textures\\box_boss.png", &texture_box, 1, ren);
+	GetTexture("Textures\\box_boss_bullet.png", &texture_box_bullet, 1, ren);
+
 	GetTexture("Textures\\tower.png", &texture_tower, 1, ren);
 	GetTexture("Textures\\tower_bullet.png", &texture_tower_bullet, 1, ren);
 
@@ -492,7 +497,7 @@ int main(int argc, char* argv[])
 		&texture_acid_effect, &texture_tower, &texture_tower_bullet, &texture_digit_idle, &texture_digit_atack,
 		&texture_barrel, &texture_trap_with_dart, &texture_pressure_plate, &texture_trap_spikes,
 		&texture_buff_DMG, &texture_item_Rubber_Bullet, &texture_item_Ball, &texture_item_acid, &texture_buff_speed,
-		&texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop, &texture_bat_with_anvil, &texture_bat_without_anvil, &texture_anvil_without_bat);
+		&texture_buff_lucky, &texture_skill_figure, &texture_kebab, &texture_shop, &texture_bat_with_anvil, &texture_bat_without_anvil, &texture_anvil_without_bat, &texture_box, &texture_box_bullet);
 
 
 	while (flag)
@@ -771,7 +776,7 @@ int main(int argc, char* argv[])
 										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
 										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
 									}
-								if (timeInGame / 60000 == Laplas.increaseDifficulty)
+								if (timeInGame / 60000 == Laplas.increaseDifficulty && map.map[Laplas.curRoom.i][Laplas.curRoom.j] != 98)
 								{
 									for (int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
 									{
@@ -793,7 +798,7 @@ int main(int argc, char* argv[])
 										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
 										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
 									}
-								if (timeInGame / 60000 == Laplas.increaseDifficulty)
+								if (timeInGame / 60000 == Laplas.increaseDifficulty && map.map[Laplas.curRoom.i][Laplas.curRoom.j] != 98)
 								{
 									for (int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
 									{
@@ -818,7 +823,7 @@ int main(int argc, char* argv[])
 										Laplas.hitbox.x = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.x;
 										Laplas.hitbox.y = map.borders[Laplas.curRoom.i][Laplas.curRoom.j][i].bordersHitbox.y;
 									}
-								if (timeInGame / 60000 == Laplas.increaseDifficulty)
+								if (timeInGame / 60000 == Laplas.increaseDifficulty && map.map[Laplas.curRoom.i][Laplas.curRoom.j] != 98)
 								{
 									for (int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
 									{

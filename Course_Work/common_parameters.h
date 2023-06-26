@@ -126,6 +126,19 @@
 
 #pragma endregion
 
+#pragma region BOX_BOSS
+
+#define BOX_HP 1000
+#define BOX_DMG 100
+#define BOX_SPEED 0
+#define BOX_ATACK_CD 1000
+#define BOX_TRIGGERED_DISTANCE 500
+#define BOX_REAWRD 10000
+#define BOX_DIVE_HEIGHT 0
+
+
+#pragma endregion
+
 #pragma region TRAPS_STATS
 
 #define TRAP_DART_WIDTH 40
