@@ -196,6 +196,7 @@
     <Text Include="Enemys\Enemy03.txt" />
     <Text Include="Enemys\Enemy04.txt" />
     <Text Include="Enemys\Enemy14.txt" />
+    <Text Include="Enemys\Enemy98.txt" />
     <Text Include="Enemys\Enemy99.txt" />
     <Text Include="Items\Item00.txt" />
     <Text Include="Items\Item01.txt" />
@@ -203,6 +204,7 @@
     <Text Include="Items\Item03.txt" />
     <Text Include="Items\Item04.txt" />
     <Text Include="Items\Item14.txt" />
+    <Text Include="Items\Item98.txt" />
     <Text Include="Items\Item99.txt" />
     <Text Include="Levels\Borders00.txt" />
     <Text Include="Levels\Borders01.txt" />
@@ -210,6 +212,7 @@
     <Text Include="Levels\Borders03.txt" />
     <Text Include="Levels\Borders04.txt" />
     <Text Include="Levels\Borders14.txt" />
+    <Text Include="Levels\Borders98.txt" />
     <Text Include="Levels\Borders99.txt" />
     <Text Include="map.txt" />
     <Text Include="Saves\1\main_hero.txt" />
@@ -219,6 +222,7 @@
     <Text Include="Traps\Trap03.txt" />
     <Text Include="Traps\Trap04.txt" />
     <Text Include="Traps\Trap14.txt" />
+    <Text Include="Traps\Trap98.txt" />
     <Text Include="Traps\Trap99.txt" />
   </ItemGroup>
   <ItemGroup>
