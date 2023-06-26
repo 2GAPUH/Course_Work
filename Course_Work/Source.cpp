@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
 	#pragma region VARIABLE_INIT
 
 	GameState gameState = MAIN_MENU;
-	Settings settings = { 1, 5, 1, false };
+	Settings settings = { 0, 5, 1, false };
 	int tmp;
 	mainMap map;
 
@@ -711,7 +711,7 @@ int main(int argc, char* argv[])
 				TrapBulletHitboxInRange(map.traps[Laplas.curRoom.i][Laplas.curRoom.j], &map.trapsCount[Laplas.curRoom.i][Laplas.curRoom.j], &map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
 				HeroBulletHitboxInRange(&Laplas, &map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
 				EnemysBulletHitboxInRange(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], &map.bordersCount[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
-
+				EnemyHitLaplas(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas);
 				//Выход за границы мира
 				HeroPhysicOutworldCheck(&Laplas, map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
 				EnemyPhysicOutworldCheck(&map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], map.borders[Laplas.curRoom.i][Laplas.curRoom.j]);
@@ -861,7 +861,7 @@ int main(int argc, char* argv[])
 					dopInitHero(&Laplas);
 
 				//Сброс резиста от дамага
-				if (Laplas.effect.lastDamage + Laplas.effect.afterAtackResist < timeInGame)
+				if (Laplas.effect.lastDamage + Laplas.effect.afterAtackResist + 3000 < timeInGame)
 					Laplas.effect.underAtack = 0;
 
 				//Активация ловушки

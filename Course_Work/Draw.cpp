@@ -377,26 +377,50 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 
 
 		case 3:
-			if (levelEnemys[i].physic.gazeDirection > 0)
-				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);
-			else if (levelEnemys[i].physic.gazeDirection < 0)
-				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
-			else if (levelEnemys[i].physic.gazeDirection == 0)
-			{
-				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+			switch (levelEnemys[i].animation_type) {
+			case 1:
+				if (levelEnemys[i].physic.gazeDirection > 0)
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);
+				else if (levelEnemys[i].physic.gazeDirection < 0)
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+				else if (levelEnemys[i].physic.gazeDirection == 0)
+				{
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+					break;
+				}
+
+				if ((levelEnemys[i].physic.xMoveL || levelEnemys[i].physic.xMoveR) && (SDL_GetTicks() - levelEnemys[i].animation.run.frameTime > 1000 / 15) && (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR != 0))
+				{
+					levelEnemys[i].animation.run.frame.x += levelEnemys[i].animation.run.textureSize.w / levelEnemys[i].animation.run.frameCount;
+					levelEnemys[i].animation.run.frameTime = SDL_GetTicks();
+				}
+
+				if (levelEnemys[i].animation.run.frame.x >= levelEnemys[i].animation.run.textureSize.w || (!levelEnemys[i].physic.xMoveL && !levelEnemys[i].physic.xMoveR) || (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR == 0))
+					levelEnemys[i].animation.run.frame.x = 0;
+				break;
+
+			case 6:
+				if (levelEnemys[i].physic.gazeDirection > 0)
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);
+				else if (levelEnemys[i].physic.gazeDirection < 0)
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+				else if (levelEnemys[i].physic.gazeDirection == 0)
+				{
+					SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_NONE);
+					break;
+				}
+
+				if ((levelEnemys[i].physic.xMoveL || levelEnemys[i].physic.xMoveR) && (SDL_GetTicks() - levelEnemys[i].animation.run.frameTime > 1000 / 15) && (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR != 0))
+				{
+					levelEnemys[i].animation.run.frame.x += levelEnemys[i].animation.run.textureSize.w / levelEnemys[i].animation.run.frameCount;
+					levelEnemys[i].animation.run.frameTime = SDL_GetTicks();
+				}
+
+				if (levelEnemys[i].animation.run.frame.x >= levelEnemys[i].animation.run.textureSize.w || (!levelEnemys[i].physic.xMoveL && !levelEnemys[i].physic.xMoveR) || (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR == 0))
+					levelEnemys[i].animation.run.frame.x = 0;
 				break;
 			}
-
-			if ((levelEnemys[i].physic.xMoveL || levelEnemys[i].physic.xMoveR) && (SDL_GetTicks() - levelEnemys[i].animation.run.frameTime > 1000 / 15) && (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR != 0))
-			{
-				levelEnemys[i].animation.run.frame.x += levelEnemys[i].animation.run.textureSize.w / levelEnemys[i].animation.run.frameCount;
-				levelEnemys[i].animation.run.frameTime = SDL_GetTicks();
-			}
-
-			if (levelEnemys[i].animation.run.frame.x >= levelEnemys[i].animation.run.textureSize.w || (!levelEnemys[i].physic.xMoveL && !levelEnemys[i].physic.xMoveR) || (levelEnemys[i].physic.xMoveL + levelEnemys[i].physic.xMoveR == 0))
-				levelEnemys[i].animation.run.frame.x = 0;
 			break;
-
 		case 4:
 			if (levelEnemys[i].physic.gazeDirection > 0)
 				SDL_RenderCopyEx(ren, levelEnemys[i].animation.run.texture, &levelEnemys[i].animation.run.frame, &movedEnemy, 0, 0, SDL_FLIP_HORIZONTAL);

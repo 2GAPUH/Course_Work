@@ -21,3 +21,4 @@ void TrapAtack(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, int* d
 void BuffsStateCheck(mainHero* Laplas, int timeInGame);
 bool CheckSkillFigure(mainHero* Laplas, int* itemsCount, mainItems levelItems[], mainWindow* window, SDL_Renderer* ren, SDL_Window* win,
 	mainTextureSkill* texture_skill, TTF_Font* font, Audio* audio);
+void EnemyHitLaplas(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas);

@@ -59,16 +59,18 @@ void EnemysBulletHitboxInRange(mainEnemys levelEnemys[], int* enemysCount, int* 
 	}
 }
 
-void EnemyHitLaplas(mainEnemys levelEnemys[], int* enemysCount, mainBorders levelBorders[], mainHero* Laplas) {
+void EnemyHitLaplas(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas) {
 	int curDistance;
 	for (int i = 0; i < *enemysCount; i++)
 	{
 		curDistance = sqrt((Laplas->hitbox.x - levelEnemys[i].hitbox.x) * (Laplas->hitbox.x - levelEnemys[i].hitbox.x) +
 			(Laplas->hitbox.y - levelEnemys[i].hitbox.y) * (Laplas->hitbox.y - levelEnemys[i].hitbox.y));
+		
 
-		if (curDistance <= 100)
+		if (curDistance <= 150 && Laplas->effect.underAtack == 0 && levelEnemys->animation_type == 6)
 		{
-			
+			Laplas->effect.underAtack = 1;
+			Laplas->status.HP -= levelEnemys->status.DMG;
 		}
 	}
 }
@@ -128,7 +130,7 @@ void EnemyTrigger(mainEnemys levelEnemys[], mainHero* Laplas, int* enemysCount)
 			levelEnemys[i].triggeredDistance || levelEnemys[i].effect.underAtack )
 		{
 			levelEnemys[i].triggered = 1;
-			if (levelEnemys[i].type == 5)
+			if (levelEnemys[i].type == 6)
 			{
 				levelEnemys[i].animation_type = 1;
 			}
