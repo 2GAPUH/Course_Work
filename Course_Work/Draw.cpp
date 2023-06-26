@@ -533,6 +533,26 @@ void DrawEnemys(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas, ma
 
 			SDL_RenderCopy(ren, levelEnemys[i].animation.bullet.texture, NULL, &movedEnemy);
 		}
+
+		if (levelEnemys[i].type == 6 && levelEnemys[i].shoot.alive)
+		{
+			SDL_Rect movedEnemy = { levelEnemys[i].shoot.shootAtackCentere.x - levelEnemys[i].animation.bullet.textureSize.w / 2,
+				levelEnemys[i].shoot.shootAtackCentere.y - levelEnemys[i].animation.bullet.textureSize.h / 2, 
+				levelEnemys[i].animation.bullet.textureSize.w, 
+				levelEnemys[i].animation.bullet.textureSize.h };
+
+			if (Laplas->hitbox.x >= window->w / 2.f && Laplas->hitbox.x <= levelWidth - window->w / 2.f)
+				movedEnemy.x -= Laplas->hitbox.x - window->w / 2.f;
+			if (Laplas->hitbox.x > levelWidth - window->w / 2.f)
+				movedEnemy.x -= levelWidth - window->w;
+
+			if (Laplas->hitbox.y >= window->h / 2.f && Laplas->hitbox.y <= levelHeight - window->h / 2.f)
+				movedEnemy.y -= Laplas->hitbox.y - window->h / 2.f;
+			if (Laplas->hitbox.y > levelHeight - window->h / 2.f)
+				movedEnemy.y -= levelHeight - window->h;
+
+			SDL_RenderCopy(ren, levelEnemys[i].animation.bullet.texture, NULL, &movedEnemy);
+		}
 	}
 }
 

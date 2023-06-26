@@ -117,7 +117,7 @@
 
 #define BAT_HP 30
 #define BAT_DMG 100
-#define BAT_SPEED 8
+#define BAT_SPEED 4
 #define BAT_ATACK_CD 1000
 #define BAT_TRIGGERED_DISTANCE 500
 #define BAT_REAWRD 100
@@ -265,6 +265,7 @@ struct mainShoot
 	SDL_Point shootAtackCentere;
 	int rebound_count;
 	int lastShoot;
+	bool everShoot;
 };
 
 struct mainBattle

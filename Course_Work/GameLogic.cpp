@@ -160,15 +160,22 @@ void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas
 
 		else if (levelEnemys[i].type == 6)
 		{
-			double len = sqrt((levelEnemys[i].hitbox.x - Laplas->hitbox.x) * (levelEnemys[i].hitbox.x - Laplas->hitbox.x) +
-				(levelEnemys[i].hitbox.y + BAT_DIVE_HEIGHT - Laplas->hitbox.y) * (levelEnemys[i].hitbox.y + BAT_DIVE_HEIGHT - Laplas->hitbox.y));
-			if (len > 10)
+			if (levelEnemys[i].animation_type != 6)
 			{
-				double dx = (levelEnemys[i].hitbox.x - Laplas->hitbox.x) / len * levelEnemys[i].physic.speed;
-				double dy = (levelEnemys[i].hitbox.y + BAT_DIVE_HEIGHT - Laplas->hitbox.y) / len * levelEnemys[i].physic.speed;
-				levelEnemys[i].hitbox.x -= dx;
-				levelEnemys[i].hitbox.y -= dy;
+				double len = sqrt((levelEnemys[i].hitbox.x - Laplas->hitbox.x) * (levelEnemys[i].hitbox.x - Laplas->hitbox.x) +
+					(levelEnemys[i].hitbox.y + BAT_DIVE_HEIGHT - Laplas->hitbox.y) * (levelEnemys[i].hitbox.y + BAT_DIVE_HEIGHT - Laplas->hitbox.y));
+				if (len > 10)
+				{
+					double dx = (levelEnemys[i].hitbox.x - Laplas->hitbox.x) / len * levelEnemys[i].physic.speed;
+					double dy = (levelEnemys[i].hitbox.y + BAT_DIVE_HEIGHT - Laplas->hitbox.y) / len * levelEnemys[i].physic.speed;
+					levelEnemys[i].hitbox.x -= dx;
+					levelEnemys[i].hitbox.y -= dy;
+				}
+				else
+					levelEnemys[i].animation_type = 6;
 			}
+			else
+				levelEnemys[i].hitbox.y -= levelEnemys[i].physic.speed;
 		}
 		
 	}
@@ -389,7 +396,7 @@ void TrapAtack(int* trapsCount, mainTraps levelTraps[], mainHero* Laplas, int* d
 		{
 			levelTraps[j].shoot.shootAtackCentere.x += levelTraps[j].shoot.bulletSpeed;
 
-			if (!Laplas->effect.underAtack && CheckShootHitbox(&levelTraps[j].shoot.shootAtackCentere, &Laplas->hitbox))
+			if (!Laplas->effect.underAtack && CheckShootHitbox(&levelTraps[j].shoot.shootAtackCentere, Laplas->hitbox))
 			{
 				levelTraps[j].shoot.alive = 0;
 				Laplas->effect.underAtack = 1;

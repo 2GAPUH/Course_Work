@@ -56,13 +56,13 @@ void AddNewBullet(mainHero* Laplas)
 	}
 }
 
-bool CheckShootHitbox(SDL_Point* shoot, SDL_Rect* enemy)
+bool CheckShootHitbox(SDL_Point* shoot, SDL_Rect enemy)
 {
 	// Вычисляем расстояние между центрами окружностей
-	float distance = sqrt((shoot->x - enemy->x) * (shoot->x - enemy->x) + (shoot->y - enemy->y) * (shoot->y - enemy->y));
+	float distance = sqrt((shoot->x - enemy.x) * (shoot->x - enemy.x) + (shoot->y - enemy.y) * (shoot->y - enemy.y));
 
 	// Если расстояние меньше или равно сумме радиусов, то окружности пересекаются
-	if (distance <= (HERO_BULLET_WIDTH + HERO_BULLET_HIGHT) / 4 + (enemy->w + enemy->h) / 4)
+	if (distance <= (HERO_BULLET_WIDTH + HERO_BULLET_HIGHT) / 4 + (enemy.w + enemy.h) / 4)
 		return 1;
 	else
 		return 0;
@@ -123,7 +123,7 @@ void HeroShootAtack(mainHero* Laplas, int* deltaTime, int* enemysCount, mainEnem
 			Laplas->battle.shoot[j].shootAtackCentere.x += Laplas->battle.shoot[j].bulletSpeed;
 			for (int i = 0; i < *enemysCount; i++)
 			{
-				if (!levelEnemys[i].effect.underAtack && CheckShootHitbox(&Laplas->battle.shoot[j].shootAtackCentere, &levelEnemys[i].hitbox))
+				if (!levelEnemys[i].effect.underAtack && CheckShootHitbox(&Laplas->battle.shoot[j].shootAtackCentere, levelEnemys[i].hitbox))
 				{
 					Laplas->battle.shoot[j].alive = 0;
 					levelEnemys[i].effect.underAtack = 1;
