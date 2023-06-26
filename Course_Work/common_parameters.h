@@ -153,12 +153,13 @@ struct mainWindow
 };
 
 typedef enum GameState {
-	IN_GAME,
+	LOAD_MENU,
 	SETTINGS,
 	CREDITS,
 	QUIT,
 	MAIN_MENU,
-	PAUSE_MENU
+	PAUSE_MENU,
+	IN_GAME
 };
 
 struct Settings

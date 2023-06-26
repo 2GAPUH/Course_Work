@@ -19,7 +19,7 @@ void DrawHeroBullet(mainHero* Laplas, mainWindow* window, SDL_Renderer* ren, int
 void DrawTrapsBullet(mainHero* Laplas, mainWindow* window, int* trapsCount, mainTraps levelTraps[], mainRenderer* trap_dart
 	, SDL_Renderer* ren, int levelWidth, int levelHeight);
 void DrawAmmoBar(mainRenderer ammoBarTexture, mainWindow* window, SDL_Renderer* ren);
-void DrawLifeBar(mainHero laplas, mainRenderer hpBarTexture, mainRenderer hpBarEdgingTexture, mainWindow* window, SDL_Renderer* ren);
+void DrawLifeBar(mainHero laplas, mainRenderer hpBarTexture, mainRenderer hpBarEdgingTexture, mainRenderer brokeHpBarEdgingTexture, mainWindow* window, SDL_Renderer* ren);
 void DrawBuffsEffect(SDL_Renderer* ren, mainHero* Laplas, int levelWidth, int levelHeight, mainWindow* window);
 void DrawItemsEffect(SDL_Renderer* ren, mainHero* Laplas, int levelWidth, int levelHeight, mainWindow* window);
 void DrawEnemyHP(mainHero Laplas, mainEnemys* levelEnemys, int enemysCount, mainRenderer hpBarTexture, mainRenderer enemyHpBarEdgingTexture, mainWindow* window, SDL_Renderer* ren);

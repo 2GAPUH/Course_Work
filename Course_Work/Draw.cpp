@@ -725,11 +725,18 @@ void DrawTrapsBullet(mainHero* Laplas, mainWindow* window, int* trapsCount, main
 		}
 }
 
-void DrawLifeBar(mainHero laplas, mainRenderer hpBarTexture, mainRenderer hpBarEdgingTexture, mainWindow* window, SDL_Renderer* ren) {
+void DrawLifeBar(mainHero laplas, mainRenderer hpBarTexture, mainRenderer hpBarEdgingTexture, mainRenderer brokeHpBarEdgingTexture, mainWindow* window, SDL_Renderer* ren) {
 	SDL_FRect hpBar = { float(window->w / 11), float(window->h) - float(window->h / 4.95), float(window->w / 32.8) * laplas.status.HP / 10,  float(window->h / 14.3) };
 	SDL_FRect hpBarEdging = { float(window->w / 30), float(window->h) - float(window->h / 4.15), float(window->w / 2.7),  float(window->h / 7.2) };
 	SDL_RenderCopyF(ren, hpBarTexture.texture, NULL, &hpBar);
-	SDL_RenderCopyF(ren, hpBarEdgingTexture.texture, NULL, &hpBarEdging);
+	if (laplas.status.HP > HERO_HP)
+	{
+		SDL_RenderCopyF(ren, brokeHpBarEdgingTexture.texture, NULL, &hpBarEdging);
+	}
+	else
+	{
+		SDL_RenderCopyF(ren, hpBarEdgingTexture.texture, NULL, &hpBarEdging);
+	}
 }
 
 void DrawAmmoBar(mainRenderer ammoBarTexture, mainWindow* window, SDL_Renderer* ren) {
