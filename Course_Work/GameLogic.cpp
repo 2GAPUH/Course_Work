@@ -330,8 +330,8 @@ void EnemyDeath(int* enemysCount, mainEnemys levelEnemys[], mainHero *Laplas, ma
 	for (int d = 0; d < *enemysCount; d++)
 		if (!levelEnemys[d].status.alive)
 		{
-			Laplas->money += levelEnemys->reward;
-			printf_s("%d", Laplas->money);
+			Laplas->money += levelEnemys->reward ;
+			Laplas->status.souls += 1;
 			if (levelEnemys[d].type == 2 && GetNumInRange(0, 100)<=20)
 			{
 				levelItems[*itemsCount - 1].hitbox.x = levelEnemys[d].hitbox.x;
