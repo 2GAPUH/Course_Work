@@ -324,6 +324,8 @@ int main(int argc, char* argv[])
 	const char punch_sound[] = "Sounds\\punch.mp3";
 	const char shot_sound[] = "Sounds\\shot.mp3";
 
+	int bossLocEnemysCount = 3;
+
 	bool isRunning;
 
 	#pragma endregion
@@ -751,7 +753,7 @@ int main(int argc, char* argv[])
 
 				//Анимация атаки
 				for (int i = 0; i < map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j]; i++)
-					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].type != 6)
+					if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].type != 6 && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].type != 7)
 					{
 						if (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.x > Laplas.hitbox.x - map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.w / 1.25 && map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.x < Laplas.hitbox.x + map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].hitbox.w / 1.25)
 							map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][i].animation_type = 6;
@@ -972,8 +974,19 @@ int main(int argc, char* argv[])
 					}
 				}
 
-
-
+				BossLogic(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j],&Laplas);
+				switch (map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][0].stage)
+				{
+				case 1:
+					BossStageOne(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, timeInGame, &map.enemys[Laplas.curRoom.i][Laplas.curRoom.j][0].lastAttack, &bossLocEnemysCount);
+					break;
+				case 2:
+					BossStageTwo(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas);
+					break;
+				case 3:
+					BossStageThree(map.enemys[Laplas.curRoom.i][Laplas.curRoom.j], &map.enemysCount[Laplas.curRoom.i][Laplas.curRoom.j], &Laplas, timeInGame);
+					break;
+				}
 
 				#pragma endregion 
 

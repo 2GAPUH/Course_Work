@@ -130,12 +130,10 @@
 
 #define BOX_HP 1000
 #define BOX_DMG 100
-#define BOX_SPEED 0
+#define BOX_SPEED -14
 #define BOX_ATACK_CD 1000
 #define BOX_TRIGGERED_DISTANCE 500
 #define BOX_REAWRD 10000
-#define BOX_DIVE_HEIGHT 0
-
 
 #pragma endregion
 
@@ -377,6 +375,8 @@ struct mainEnemys
 	int animation_type;
 	mainShoot shoot;
 	int reward;
+	int stage;
+	int lastAttack;
 };
 
 struct mainItems

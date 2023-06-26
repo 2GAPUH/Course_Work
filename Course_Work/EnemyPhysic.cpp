@@ -107,7 +107,7 @@ void EnemyPhysicGravity(mainEnemys Enemy[], int* enemysCount)
 {
 	for (int i = 0; i < *enemysCount;i++)
 	{
-		if (Enemy[i].type != 6)
+		if (Enemy[i].type != 6 && Enemy[i].type != 7)
 		{
 			Enemy[i].position.y += Enemy[i].physic.gravity * Enemy[i].physic.accelerationY;
 			if (Enemy[i].physic.accelerationY < 1)

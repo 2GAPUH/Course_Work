@@ -22,3 +22,7 @@ void BuffsStateCheck(mainHero* Laplas, int timeInGame);
 bool CheckSkillFigure(mainHero* Laplas, int* itemsCount, mainItems levelItems[], mainWindow* window, SDL_Renderer* ren, SDL_Window* win,
 	mainTextureSkill* texture_skill, TTF_Font* font, Audio* audio);
 void EnemyHitLaplas(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas);
+void BossLogic(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas);
+void BossStageOne(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas, int timeInGame, int* lastBossAtack, int* startEnemysCount);
+void BossStageTwo(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas);
+void BossStageThree(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas, int timeInGame);

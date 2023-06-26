@@ -199,6 +199,8 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 		levelEnemys[i].effect.poisonLastDamage = 0;
 		levelEnemys[i].triggered = NULL;
 
+		levelEnemys[i].stage = 0;
+
 		switch(levelEnemys[i].type)
 		{	
 		case 1:
@@ -320,13 +322,15 @@ void InitEnemys(mainEnemys levelEnemys[], int* enemysCount, mainRenderer* textur
 			levelEnemys[i].status.startHP = BOX_HP;
 			levelEnemys[i].status.alive = true;
 			levelEnemys[i].effect.atackCD = BOX_ATACK_CD;
-			levelEnemys[i].animation.run = *texture_digit_idle;
-			levelEnemys[i].animation.atack = *texture_digit_atack;
-			levelEnemys[i].animation.preAtack = *texture_digit_idle;
+			levelEnemys[i].animation.run = *texture_box;
+			levelEnemys[i].animation.atack = *texture_box;
+			levelEnemys[i].animation.preAtack = *texture_box;
 			levelEnemys[i].triggeredDistance = BOX_TRIGGERED_DISTANCE;
 			levelEnemys[i].animation_type = NULL;
 			levelEnemys[i].animation.bullet = *texture_box_bullet;
 			levelEnemys[i].reward = BOX_REAWRD;
+			levelEnemys[i].lastAttack = 0;
+			levelEnemys[i].physic.speed = BOX_SPEED;
 			break;
 
 

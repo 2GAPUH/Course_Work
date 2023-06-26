@@ -105,6 +105,112 @@ void HeroBulletOutworldCheck(mainHero* Laplas, mainBorders levelBorders[])
 		}
 }
 
+void BossLogic(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas) {
+	for (int i = 0; i < *enemysCount; i++)
+	{
+		if (levelEnemys[i].type == 7 && levelEnemys[i].status.HP <= levelEnemys[i].status.startHP && levelEnemys[i].status.HP > (levelEnemys[i].status.startHP * 2/3)) {
+			levelEnemys[i].stage = 1;
+		}
+		else if (levelEnemys[i].type == 7 && levelEnemys[i].status.HP <= (levelEnemys[i].status.startHP * 2 / 3) && levelEnemys[i].status.HP > (levelEnemys[i].status.startHP * 1 / 3))
+		{
+			levelEnemys[i].stage = 2;
+			levelEnemys[i].animation_type = 6;
+		}
+		else if (levelEnemys[i].type == 7 && levelEnemys[i].status.HP <= (levelEnemys[i].status.startHP * 12 / 3) && levelEnemys[i].status.HP > 0 && levelEnemys[i].stage != 3)
+		{
+			levelEnemys[i].hitbox.y = 100;
+			levelEnemys[i].stage = 3;
+		}
+	}
+}
+
+void BossStageOne(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas, int timeInGame, int* lastBossAtack, int *startEnemysCount) {
+	for (int i = 0; i < *startEnemysCount; i++)
+	{
+		if (levelEnemys[i].type != 7 && timeInGame - *lastBossAtack > 3000 && !levelEnemys[i].status.alive)
+		{
+			(*enemysCount)++;
+			levelEnemys[i].status.alive = true;
+			*lastBossAtack = timeInGame;
+			levelEnemys[i].status.HP = levelEnemys[i].status.startHP;
+		}
+	}
+}
+
+void BossStageTwo(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas) {
+	levelEnemys[0].hitbox.x += levelEnemys[0].physic.speed;
+	if (levelEnemys[0].hitbox.x < 70)
+	{
+		levelEnemys[0].hitbox.x = 70;
+		levelEnemys[0].physic.speed = 14;
+		levelEnemys[0].physic.gazeDirection = !levelEnemys[0].physic.gazeDirection;
+	}
+	else if (levelEnemys[0].hitbox.x + levelEnemys[0].hitbox.w > 1200)
+	{
+		levelEnemys[0].hitbox.x = 1200;
+		levelEnemys[0].physic.speed = -14;
+		levelEnemys[0].physic.gazeDirection = !levelEnemys[0].physic.gazeDirection;
+	}
+
+}
+
+void BossStageThree(mainEnemys levelEnemys[], int* enemysCount, mainHero* Laplas, int timeInGame) {
+	for (int i = 0; i < *enemysCount; i++)
+		if (levelEnemys[i].type != 6)
+		{
+			if (levelEnemys[i].hitbox.x > Laplas->hitbox.x - levelEnemys[i].hitbox.w / 1.25 && levelEnemys[i].hitbox.x < Laplas->hitbox.x + levelEnemys[i].hitbox.w / 1.25)
+				levelEnemys[i].animation_type = 6;
+			else
+				levelEnemys[i].animation_type = 1;
+		}
+
+	for (int t = 0; t < *enemysCount; t++)
+	{
+		if (levelEnemys[t].type == 6 && levelEnemys[t].animation_type == 6 && !levelEnemys[t].shoot.alive)
+		{
+			levelEnemys[t].shoot.lastShoot = timeInGame;
+
+			levelEnemys[t].shoot.shootAtackCentere.x = levelEnemys[t].hitbox.x;
+			levelEnemys[t].shoot.shootAtackCentere.y = levelEnemys[t].hitbox.y + levelEnemys[t].hitbox.h;
+			levelEnemys[t].shoot.bulletSpeed = TRAPS_BULLET_SPEED;
+			levelEnemys[t].shoot.alive = 1;
+		}
+	}
+
+	for (int j = 0; j < *enemysCount; j++)
+	{
+		if (levelEnemys[j].shoot.alive && levelEnemys[j].type == 6)
+		{
+			levelEnemys[j].shoot.shootAtackCentere.y += levelEnemys[j].shoot.bulletSpeed / 2;
+
+			if (!Laplas->effect.underAtack && CheckShootHitbox(&levelEnemys[j].shoot.shootAtackCentere, { Laplas->hitbox.x + Laplas->hitbox.w / 2,Laplas->hitbox.y + Laplas->hitbox.h / 2, Laplas->hitbox.w, Laplas->hitbox.h }))
+			{
+				levelEnemys[j].shoot.alive = 0;
+				Laplas->effect.underAtack = 1;
+				Laplas->effect.lastDamage = timeInGame;
+				if (!Laplas->buffs.itemBallActive)
+				{
+					Laplas->status.HP -= levelEnemys[j].status.DMG;
+				}
+				else
+					Laplas->buffs.itemBallActive = 0;
+
+				if (Laplas->status.HP <= 0)
+				{
+					Laplas->status.alive = 0;
+				}
+			}
+			}
+	}
+
+	
+	if (levelEnemys[0].shoot.alive)
+	{
+			if (levelEnemys[0].shoot.shootAtackCentere.y > 960)
+				levelEnemys[0].shoot.alive = 0;
+	}
+}
+
 void TrapBulletOutworldCheck(mainTraps levelTraps[], int* trapsCount, mainBorders levelBorders[])
 {
 	for (int f = 0; f < *trapsCount; f++)
@@ -141,7 +247,7 @@ void EnemysMovement(int* enemysCount, mainEnemys levelEnemys[], mainHero* Laplas
 {
 	for (int i = 0; i < *enemysCount; i++)
 	{
-		if (levelEnemys[i].type != 6)
+		if (levelEnemys[i].type != 6 && levelEnemys[i].type != 7)
 		{
 			if (levelEnemys[i].triggered && levelEnemys[i].animation_type != 6 && levelEnemys[i].type != 4)
 			{
