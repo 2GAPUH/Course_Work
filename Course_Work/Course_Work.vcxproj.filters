@@ -277,6 +277,18 @@
     <Text Include="Traps\Trap99.txt">
       <Filter>Файлы ресурсов\Traps</Filter>
     </Text>
+    <Text Include="Enemys\Enemy98.txt">
+      <Filter>Файлы ресурсов\Enemys</Filter>
+    </Text>
+    <Text Include="Levels\Borders98.txt">
+      <Filter>Файлы ресурсов\Borders</Filter>
+    </Text>
+    <Text Include="Items\Item98.txt">
+      <Filter>Файлы ресурсов\Items</Filter>
+    </Text>
+    <Text Include="Traps\Trap98.txt">
+      <Filter>Файлы ресурсов\Traps</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <Font Include="Fonts\novem.ttf">
